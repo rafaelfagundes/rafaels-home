@@ -1,0 +1,2358 @@
+{
+ "meta": {
+  "name": "Rafael's Home",
+  "source": "blueprint.pdf (AutoCAD 2022, A0, page rotated 270°)",
+  "scale": "1:50",
+  "metersPerPt": 0.017638888888888885,
+  "units": "m",
+  "storeys": 1,
+  "coordinateSystem": "x along the 31.50 m side (street at x=0), y along the 19.00 m side; three.js (x, elevation, y)",
+  "levels": {
+   "street": 0.0,
+   "garage": 0.28,
+   "entry": 0.45,
+   "interior": 0.47,
+   "yard": 0.28
+  },
+  "frontSetbackLabeled": 3.8,
+  "frontSetbackMeasured": 3.719,
+  "eyeHeight": 1.6,
+  "extractedBy": "tools/extract/extract_house.py"
+ },
+ "lot": {
+  "width": 31.502,
+  "depth": 18.999,
+  "polygon": [
+   [
+    0,
+    0
+   ],
+   [
+    31.502,
+    0
+   ],
+   [
+    31.502,
+    18.999
+   ],
+   [
+    0,
+    18.999
+   ]
+  ]
+ },
+ "walls": [
+  {
+   "id": "w01",
+   "polygon": [
+    [
+     3.719,
+     5.622
+    ],
+    [
+     6.983,
+     5.622
+    ],
+    [
+     6.983,
+     5.497
+    ],
+    [
+     3.882,
+     5.497
+    ],
+    [
+     3.882,
+     2.121
+    ],
+    [
+     5.283,
+     2.121
+    ],
+    [
+     5.283,
+     1.996
+    ],
+    [
+     3.719,
+     1.996
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.47,
+   "kind": "wall"
+  },
+  {
+   "id": "w02",
+   "polygon": [
+    [
+     7.878,
+     3.901
+    ],
+    [
+     8.003,
+     3.901
+    ],
+    [
+     8.003,
+     2.121
+    ],
+    [
+     8.253,
+     2.121
+    ],
+    [
+     8.253,
+     1.996
+    ],
+    [
+     6.479,
+     1.996
+    ],
+    [
+     6.479,
+     2.121
+    ],
+    [
+     7.878,
+     2.121
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.27,
+   "kind": "wall"
+  },
+  {
+   "id": "w03",
+   "polygon": [
+    [
+     9.999,
+     4.0
+    ],
+    [
+     10.122,
+     4.0
+    ],
+    [
+     10.122,
+     2.121
+    ],
+    [
+     11.523,
+     2.121
+    ],
+    [
+     11.523,
+     1.996
+    ],
+    [
+     9.749,
+     1.996
+    ],
+    [
+     9.749,
+     2.121
+    ],
+    [
+     9.999,
+     2.121
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.27,
+   "kind": "wall"
+  },
+  {
+   "id": "w04",
+   "polygon": [
+    [
+     14.118,
+     5.497
+    ],
+    [
+     14.019,
+     5.497
+    ],
+    [
+     14.019,
+     5.622
+    ],
+    [
+     14.118,
+     5.622
+    ],
+    [
+     14.118,
+     5.821
+    ],
+    [
+     14.243,
+     5.821
+    ],
+    [
+     14.243,
+     2.121
+    ],
+    [
+     16.345,
+     2.121
+    ],
+    [
+     16.345,
+     1.996
+    ],
+    [
+     12.719,
+     1.996
+    ],
+    [
+     12.719,
+     2.121
+    ],
+    [
+     14.118,
+     2.121
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.27,
+   "kind": "wall"
+  },
+  {
+   "id": "w05",
+   "polygon": [
+    [
+     17.541,
+     2.121
+    ],
+    [
+     19.378,
+     2.121
+    ],
+    [
+     19.378,
+     3.996
+    ],
+    [
+     18.879,
+     3.996
+    ],
+    [
+     18.879,
+     4.121
+    ],
+    [
+     19.378,
+     4.121
+    ],
+    [
+     19.378,
+     5.721
+    ],
+    [
+     19.503,
+     5.721
+    ],
+    [
+     19.503,
+     1.996
+    ],
+    [
+     17.541,
+     1.996
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.27,
+   "kind": "wall"
+  },
+  {
+   "id": "w06",
+   "polygon": [
+    [
+     17.541,
+     3.996
+    ],
+    [
+     17.537,
+     6.741
+    ],
+    [
+     19.505,
+     6.741
+    ],
+    [
+     19.505,
+     6.617
+    ],
+    [
+     17.663,
+     6.617
+    ],
+    [
+     17.663,
+     4.121
+    ],
+    [
+     18.284,
+     4.121
+    ],
+    [
+     18.284,
+     3.996
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.27,
+   "kind": "wall"
+  },
+  {
+   "id": "w07",
+   "polygon": [
+    [
+     8.003,
+     5.497
+    ],
+    [
+     8.003,
+     4.697
+    ],
+    [
+     7.878,
+     4.697
+    ],
+    [
+     7.878,
+     5.497
+    ],
+    [
+     7.779,
+     5.497
+    ],
+    [
+     7.779,
+     5.622
+    ],
+    [
+     13.322,
+     5.622
+    ],
+    [
+     13.322,
+     5.497
+    ],
+    [
+     10.122,
+     5.497
+    ],
+    [
+     10.122,
+     4.598
+    ],
+    [
+     9.999,
+     4.598
+    ],
+    [
+     9.999,
+     5.497
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.47,
+   "kind": "wall"
+  },
+  {
+   "id": "w08",
+   "polygon": [
+    [
+     14.019,
+     6.617
+    ],
+    [
+     14.019,
+     6.741
+    ],
+    [
+     15.742,
+     6.741
+    ],
+    [
+     15.742,
+     6.617
+    ],
+    [
+     14.243,
+     6.617
+    ],
+    [
+     14.243,
+     6.517
+    ],
+    [
+     14.118,
+     6.517
+    ],
+    [
+     14.118,
+     6.617
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.47,
+   "kind": "wall"
+  },
+  {
+   "id": "w09",
+   "polygon": [
+    [
+     13.322,
+     6.741
+    ],
+    [
+     13.322,
+     6.617
+    ],
+    [
+     12.539,
+     6.617
+    ],
+    [
+     12.539,
+     6.741
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.47,
+   "kind": "pillar"
+  },
+  {
+   "id": "w10",
+   "polygon": [
+    [
+     15.659,
+     7.84
+    ],
+    [
+     16.463,
+     7.84
+    ],
+    [
+     16.463,
+     7.538
+    ],
+    [
+     15.659,
+     7.538
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.47,
+   "kind": "pillar"
+  },
+  {
+   "id": "w11",
+   "polygon": [
+    [
+     3.878,
+     11.297
+    ],
+    [
+     3.078,
+     11.297
+    ],
+    [
+     3.078,
+     11.601
+    ],
+    [
+     4.38,
+     11.601
+    ],
+    [
+     4.38,
+     11.8
+    ],
+    [
+     4.502,
+     11.8
+    ],
+    [
+     4.502,
+     11.477
+    ],
+    [
+     4.003,
+     11.477
+    ],
+    [
+     4.003,
+     8.118
+    ],
+    [
+     3.878,
+     8.118
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.47,
+   "kind": "wall"
+  },
+  {
+   "id": "w12",
+   "polygon": [
+    [
+     4.38,
+     13.0
+    ],
+    [
+     9.104,
+     13.0
+    ],
+    [
+     9.104,
+     12.876
+    ],
+    [
+     4.502,
+     12.876
+    ],
+    [
+     4.502,
+     12.797
+    ],
+    [
+     4.38,
+     12.797
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.47,
+   "kind": "wall"
+  },
+  {
+   "id": "w13",
+   "polygon": [
+    [
+     10.998,
+     13.0
+    ],
+    [
+     10.998,
+     16.12
+    ],
+    [
+     11.843,
+     16.12
+    ],
+    [
+     11.843,
+     15.996
+    ],
+    [
+     11.123,
+     15.996
+    ],
+    [
+     11.123,
+     13.0
+    ],
+    [
+     11.729,
+     13.0
+    ],
+    [
+     11.729,
+     13.1
+    ],
+    [
+     11.853,
+     13.1
+    ],
+    [
+     11.853,
+     12.876
+    ],
+    [
+     9.9,
+     12.876
+    ],
+    [
+     9.9,
+     13.0
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.47,
+   "kind": "wall"
+  },
+  {
+   "id": "w14",
+   "polygon": [
+    [
+     12.539,
+     13.917
+    ],
+    [
+     11.853,
+     13.917
+    ],
+    [
+     11.853,
+     13.697
+    ],
+    [
+     11.729,
+     13.697
+    ],
+    [
+     11.729,
+     14.042
+    ],
+    [
+     12.522,
+     14.042
+    ],
+    [
+     12.522,
+     15.312
+    ],
+    [
+     12.539,
+     15.322
+    ],
+    [
+     12.539,
+     16.12
+    ],
+    [
+     12.664,
+     16.12
+    ],
+    [
+     12.664,
+     12.876
+    ],
+    [
+     12.539,
+     12.876
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.47,
+   "kind": "wall"
+  },
+  {
+   "id": "w15",
+   "polygon": [
+    [
+     9.002,
+     16.12
+    ],
+    [
+     9.002,
+     13.998
+    ],
+    [
+     8.88,
+     13.998
+    ],
+    [
+     8.88,
+     16.12
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.47,
+   "kind": "wall"
+  },
+  {
+   "id": "w16",
+   "polygon": [
+    [
+     16.463,
+     16.12
+    ],
+    [
+     16.463,
+     15.816
+    ],
+    [
+     15.659,
+     15.816
+    ],
+    [
+     15.659,
+     16.12
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.47,
+   "kind": "pillar"
+  },
+  {
+   "id": "w17",
+   "polygon": [
+    [
+     3.078,
+     19.001
+    ],
+    [
+     9.002,
+     19.001
+    ],
+    [
+     9.002,
+     17.996
+    ],
+    [
+     8.88,
+     17.996
+    ],
+    [
+     8.88,
+     18.847
+    ],
+    [
+     3.882,
+     18.847
+    ],
+    [
+     3.882,
+     18.697
+    ],
+    [
+     3.078,
+     18.697
+    ]
+   ],
+   "base": 0.0,
+   "height": 3.47,
+   "kind": "wall"
+  }
+ ],
+ "openings": [
+  {
+   "id": "J01",
+   "tag": "J01",
+   "kind": "window",
+   "axis": "y",
+   "center": [
+    3.94,
+    6.869
+   ],
+   "width": 2.502,
+   "thickness": 0.121,
+   "rect": [
+    3.88,
+    5.618,
+    4.001,
+    8.12
+   ],
+   "sill": 0.0,
+   "height": 2.4,
+   "description": "full-height glazing + brise soleil"
+  },
+  {
+   "id": "J02",
+   "tag": "J02",
+   "kind": "window",
+   "axis": "x",
+   "center": [
+    5.881,
+    2.058
+   ],
+   "width": 1.2,
+   "thickness": 0.121,
+   "rect": [
+    5.281,
+    1.998,
+    6.481,
+    2.119
+   ],
+   "sill": 1.0,
+   "height": 1.2
+  },
+  {
+   "id": "J02",
+   "tag": "J02",
+   "kind": "window",
+   "axis": "x",
+   "center": [
+    12.121,
+    2.058
+   ],
+   "width": 1.2,
+   "thickness": 0.121,
+   "rect": [
+    11.521,
+    1.998,
+    12.721,
+    2.119
+   ],
+   "sill": 1.0,
+   "height": 1.2
+  },
+  {
+   "id": "J02",
+   "tag": "J02",
+   "kind": "window",
+   "axis": "x",
+   "center": [
+    16.943,
+    2.058
+   ],
+   "width": 1.2,
+   "thickness": 0.121,
+   "rect": [
+    16.343,
+    1.998,
+    17.543,
+    2.119
+   ],
+   "sill": 1.0,
+   "height": 1.2
+  },
+  {
+   "id": "J03",
+   "tag": "J03",
+   "kind": "window",
+   "axis": "x",
+   "center": [
+    9.001,
+    2.058
+   ],
+   "width": 1.501,
+   "thickness": 0.121,
+   "rect": [
+    8.251,
+    1.998,
+    9.751,
+    2.119
+   ],
+   "sill": 1.6,
+   "height": 0.6
+  },
+  {
+   "id": "J04",
+   "tag": "J04",
+   "kind": "window",
+   "axis": "y",
+   "center": [
+    19.441,
+    6.169
+   ],
+   "width": 0.9,
+   "thickness": 0.121,
+   "rect": [
+    19.38,
+    5.719,
+    19.501,
+    6.619
+   ],
+   "sill": 1.6,
+   "height": 0.6
+  },
+  {
+   "id": "J05",
+   "tag": "J05",
+   "kind": "window",
+   "axis": "x",
+   "center": [
+    12.191,
+    16.06
+   ],
+   "width": 0.701,
+   "thickness": 0.116,
+   "rect": [
+    11.841,
+    16.002,
+    12.541,
+    16.118
+   ],
+   "sill": 1.6,
+   "height": 0.6
+  },
+  {
+   "id": "P02",
+   "tag": "P02",
+   "kind": "door",
+   "axis": "x",
+   "center": [
+    7.381,
+    5.558
+   ],
+   "width": 0.8,
+   "thickness": 0.119,
+   "rect": [
+    6.981,
+    5.499,
+    7.781,
+    5.618
+   ],
+   "operation": "swing",
+   "sill": 0.0,
+   "height": 2.1
+  },
+  {
+   "id": "P03",
+   "tag": "P03",
+   "kind": "door",
+   "axis": "y",
+   "center": [
+    7.941,
+    4.299
+   ],
+   "width": 0.8,
+   "thickness": 0.121,
+   "rect": [
+    7.88,
+    3.899,
+    8.001,
+    4.699
+   ],
+   "operation": "sliding",
+   "sill": 0.0,
+   "height": 2.1
+  },
+  {
+   "id": "P04",
+   "tag": "P04",
+   "kind": "door",
+   "axis": "y",
+   "center": [
+    10.061,
+    4.299
+   ],
+   "width": 0.601,
+   "thickness": 0.119,
+   "rect": [
+    10.001,
+    3.998,
+    10.12,
+    4.6
+   ],
+   "operation": "sliding",
+   "sill": 0.0,
+   "height": 2.1
+  },
+  {
+   "id": "P05",
+   "tag": "P05",
+   "kind": "door",
+   "axis": "x",
+   "center": [
+    13.67,
+    5.559
+   ],
+   "width": 0.701,
+   "thickness": 0.121,
+   "rect": [
+    13.32,
+    5.499,
+    14.021,
+    5.62
+   ],
+   "operation": "swing",
+   "sill": 0.0,
+   "height": 2.1
+  },
+  {
+   "id": "P06",
+   "tag": "P06",
+   "kind": "door",
+   "axis": "y",
+   "center": [
+    14.181,
+    6.169
+   ],
+   "width": 0.701,
+   "thickness": 0.121,
+   "rect": [
+    14.12,
+    5.819,
+    14.241,
+    6.519
+   ],
+   "operation": "swing",
+   "sill": 0.0,
+   "height": 2.1
+  },
+  {
+   "id": "P07",
+   "tag": "P07",
+   "kind": "door",
+   "axis": "x",
+   "center": [
+    13.67,
+    6.679
+   ],
+   "width": 0.701,
+   "thickness": 0.121,
+   "rect": [
+    13.32,
+    6.619,
+    14.021,
+    6.739
+   ],
+   "operation": "sliding",
+   "sill": 0.0,
+   "height": 2.1
+  },
+  {
+   "id": "P08",
+   "tag": "P08",
+   "kind": "door",
+   "axis": "x",
+   "center": [
+    16.639,
+    6.679
+   ],
+   "width": 1.799,
+   "thickness": 0.121,
+   "rect": [
+    15.74,
+    6.619,
+    17.539,
+    6.739
+   ],
+   "operation": "sliding",
+   "sill": 0.0,
+   "height": 2.1,
+   "description": "glass slider + brise soleil"
+  },
+  {
+   "id": "P09",
+   "tag": "P09",
+   "kind": "door",
+   "axis": "x",
+   "center": [
+    18.581,
+    4.066
+   ],
+   "width": 0.599,
+   "thickness": 0.106,
+   "rect": [
+    18.282,
+    4.013,
+    18.881,
+    4.119
+   ],
+   "operation": "sliding",
+   "sill": 0.0,
+   "height": 2.1
+  },
+  {
+   "id": "P10",
+   "tag": "P10",
+   "kind": "door",
+   "axis": "y",
+   "center": [
+    12.602,
+    9.809
+   ],
+   "width": 6.138,
+   "thickness": 0.121,
+   "rect": [
+    12.541,
+    6.739,
+    12.662,
+    12.878
+   ],
+   "operation": "sliding",
+   "sill": 0.0,
+   "height": 2.1,
+   "description": "glass sliding wall to veranda"
+  },
+  {
+   "id": "P11",
+   "tag": "P11",
+   "kind": "door",
+   "axis": "x",
+   "center": [
+    9.502,
+    12.938
+   ],
+   "width": 0.8,
+   "thickness": 0.121,
+   "rect": [
+    9.102,
+    12.878,
+    9.902,
+    12.998
+   ],
+   "operation": "sliding",
+   "sill": 0.0,
+   "height": 2.1
+  },
+  {
+   "id": "P12",
+   "tag": "P12",
+   "kind": "door",
+   "axis": "y",
+   "center": [
+    11.791,
+    13.398
+   ],
+   "width": 0.601,
+   "thickness": 0.121,
+   "rect": [
+    11.731,
+    13.098,
+    11.851,
+    13.699
+   ],
+   "operation": "swing",
+   "sill": 0.0,
+   "height": 2.1
+  },
+  {
+   "id": "P01",
+   "tag": "P01",
+   "kind": "door",
+   "axis": "y",
+   "center": [
+    4.441,
+    12.299
+   ],
+   "width": 1.001,
+   "thickness": 0.119,
+   "rect": [
+    4.382,
+    11.798,
+    4.5,
+    12.799
+   ],
+   "operation": "swing",
+   "sill": 0.0,
+   "height": 2.1,
+   "description": "front door"
+  },
+  {
+   "id": "O20",
+   "tag": null,
+   "kind": "passage",
+   "axis": "y",
+   "center": [
+    8.941,
+    13.499
+   ],
+   "width": 1.001,
+   "thickness": 0.119,
+   "rect": [
+    8.882,
+    12.998,
+    9.0,
+    14.0
+   ],
+   "sill": 0.0,
+   "height": 2.1,
+   "note": "unlabelled opening in the drawing; modelled as an open passage"
+  },
+  {
+   "id": "O21",
+   "tag": null,
+   "kind": "passage",
+   "axis": "x",
+   "center": [
+    10.0,
+    16.06
+   ],
+   "width": 2.0,
+   "thickness": 0.116,
+   "rect": [
+    9.0,
+    16.002,
+    11.0,
+    16.118
+   ],
+   "sill": 0.0,
+   "height": 2.1,
+   "note": "unlabelled opening in the drawing; modelled as an open passage"
+  }
+ ],
+ "rooms": [
+  {
+   "id": "semi_suite_1",
+   "key": "semi_suite_1",
+   "namePt": "Semi-suíte 1",
+   "polygon": [
+    [
+     3.884,
+     2.123
+    ],
+    [
+     3.884,
+     5.495
+    ],
+    [
+     7.876,
+     5.495
+    ],
+    [
+     7.876,
+     2.123
+    ]
+   ],
+   "areaComputed": 13.461,
+   "areaLabeled": 13.52,
+   "ceiling": 2.8,
+   "floor": 0.47,
+   "label": [
+    5.896,
+    3.732
+   ],
+   "indoor": true,
+   "ceilingSource": "label"
+  },
+  {
+   "id": "bathroom",
+   "key": "bathroom",
+   "namePt": "Sanitário",
+   "polygon": [
+    [
+     8.005,
+     2.123
+    ],
+    [
+     8.005,
+     5.495
+    ],
+    [
+     9.997,
+     5.495
+    ],
+    [
+     9.997,
+     2.123
+    ]
+   ],
+   "areaComputed": 6.715,
+   "areaLabeled": 6.76,
+   "ceiling": 2.8,
+   "floor": 0.47,
+   "label": [
+    9.009,
+    4.102
+   ],
+   "indoor": true,
+   "ceilingSource": "label"
+  },
+  {
+   "id": "semi_suite_2",
+   "key": "semi_suite_2",
+   "namePt": "Semi-suíte 2",
+   "polygon": [
+    [
+     10.124,
+     2.123
+    ],
+    [
+     10.124,
+     5.495
+    ],
+    [
+     14.116,
+     5.495
+    ],
+    [
+     14.116,
+     2.123
+    ]
+   ],
+   "areaComputed": 13.461,
+   "areaLabeled": 13.52,
+   "ceiling": 2.8,
+   "floor": 0.47,
+   "label": [
+    12.136,
+    3.732
+   ],
+   "indoor": true,
+   "ceilingSource": "label"
+  },
+  {
+   "id": "master_suite",
+   "key": "master_suite",
+   "namePt": "Suíte Master",
+   "polygon": [
+    [
+     14.245,
+     2.123
+    ],
+    [
+     14.245,
+     6.615
+    ],
+    [
+     17.535,
+     6.614
+    ],
+    [
+     17.54,
+     2.124
+    ]
+   ],
+   "areaComputed": 14.784,
+   "areaLabeled": 14.85,
+   "ceiling": 2.8,
+   "floor": 0.47,
+   "label": [
+    15.68,
+    4.335
+   ],
+   "indoor": true,
+   "ceilingSource": "label"
+  },
+  {
+   "id": "closet",
+   "key": "closet",
+   "namePt": "Closet",
+   "polygon": [
+    [
+     18.286,
+     3.994
+    ],
+    [
+     18.286,
+     4.008
+    ],
+    [
+     18.877,
+     4.008
+    ],
+    [
+     18.877,
+     3.994
+    ],
+    [
+     19.376,
+     3.994
+    ],
+    [
+     19.376,
+     2.123
+    ],
+    [
+     17.54,
+     2.124
+    ],
+    [
+     17.54,
+     3.994
+    ]
+   ],
+   "areaComputed": 3.445,
+   "areaLabeled": 3.45,
+   "ceiling": 2.8,
+   "floor": 0.47,
+   "label": [
+    17.845,
+    3.486
+   ],
+   "indoor": true,
+   "ceilingSource": "label"
+  },
+  {
+   "id": "master_bath",
+   "key": "master_bath",
+   "namePt": "Sanitário (Suíte)",
+   "polygon": [
+    [
+     17.665,
+     4.123
+    ],
+    [
+     17.665,
+     6.615
+    ],
+    [
+     19.375,
+     6.615
+    ],
+    [
+     19.376,
+     4.123
+    ]
+   ],
+   "areaComputed": 4.261,
+   "areaLabeled": 4.3,
+   "ceiling": 2.8,
+   "floor": 0.47,
+   "label": [
+    18.665,
+    5.201
+   ],
+   "indoor": true,
+   "ceilingSource": "label"
+  },
+  {
+   "id": "hallway",
+   "key": "hallway",
+   "namePt": "Circulação",
+   "polygon": [
+    [
+     12.6,
+     6.615
+    ],
+    [
+     14.116,
+     6.615
+    ],
+    [
+     14.116,
+     5.624
+    ],
+    [
+     12.6,
+     5.624
+    ]
+   ],
+   "areaComputed": 1.5,
+   "areaLabeled": 1.58,
+   "ceiling": 2.8,
+   "floor": 0.47,
+   "label": [
+    13.254,
+    5.941
+   ],
+   "indoor": true,
+   "ceilingSource": "label"
+  },
+  {
+   "id": "living",
+   "key": "living",
+   "namePt": "Sala de Estar",
+   "polygon": [
+    [
+     4.504,
+     11.475
+    ],
+    [
+     4.504,
+     12.874
+    ],
+    [
+     6.35,
+     12.874
+    ],
+    [
+     6.35,
+     9.878
+    ],
+    [
+     8.275,
+     9.878
+    ],
+    [
+     8.275,
+     5.624
+    ],
+    [
+     4.006,
+     5.624
+    ],
+    [
+     4.005,
+     11.475
+    ]
+   ],
+   "areaComputed": 24.492,
+   "areaLabeled": 24.5,
+   "ceiling": 3.0,
+   "floor": 0.47,
+   "label": [
+    5.91,
+    7.741
+   ],
+   "indoor": true,
+   "ceilingSource": "label"
+  },
+  {
+   "id": "dining",
+   "key": "dining",
+   "namePt": "Sala de Jantar",
+   "polygon": [
+    [
+     12.536,
+     9.878
+    ],
+    [
+     12.537,
+     6.615
+    ],
+    [
+     12.6,
+     6.615
+    ],
+    [
+     12.6,
+     5.624
+    ],
+    [
+     8.275,
+     5.624
+    ],
+    [
+     8.275,
+     9.878
+    ]
+   ],
+   "areaComputed": 18.194,
+   "areaLabeled": 18.2,
+   "ceiling": 3.0,
+   "floor": 0.47,
+   "label": [
+    10.012,
+    7.711
+   ],
+   "indoor": true,
+   "ceilingSource": "label"
+  },
+  {
+   "id": "kitchen",
+   "key": "kitchen",
+   "namePt": "Cozinha",
+   "polygon": [
+    [
+     6.35,
+     12.874
+    ],
+    [
+     11.855,
+     12.874
+    ],
+    [
+     11.855,
+     12.94
+    ],
+    [
+     12.537,
+     12.94
+    ],
+    [
+     12.536,
+     9.878
+    ],
+    [
+     6.35,
+     9.878
+    ]
+   ],
+   "areaComputed": 18.574,
+   "areaLabeled": 18.57,
+   "ceiling": 3.0,
+   "floor": 0.47,
+   "label": [
+    7.764,
+    11.466
+   ],
+   "indoor": true,
+   "ceilingSource": "label"
+  },
+  {
+   "id": "service",
+   "key": "service",
+   "namePt": "Serviço",
+   "polygon": [
+    [
+     10.996,
+     15.997
+    ],
+    [
+     10.996,
+     13.002
+    ],
+    [
+     9.005,
+     13.002
+    ],
+    [
+     9.004,
+     15.997
+    ]
+   ],
+   "areaComputed": 5.965,
+   "areaLabeled": 6.24,
+   "ceiling": 2.7,
+   "floor": 0.47,
+   "label": [
+    9.646,
+    14.163
+   ],
+   "indoor": true,
+   "ceilingSource": "label"
+  },
+  {
+   "id": "powder_room",
+   "key": "powder_room",
+   "namePt": "Lavabo",
+   "polygon": [
+    [
+     11.727,
+     13.002
+    ],
+    [
+     11.125,
+     13.002
+    ],
+    [
+     11.125,
+     15.994
+    ],
+    [
+     12.537,
+     15.997
+    ],
+    [
+     12.537,
+     15.324
+    ],
+    [
+     12.52,
+     15.314
+    ],
+    [
+     12.52,
+     14.044
+    ],
+    [
+     11.727,
+     14.044
+    ]
+   ],
+   "areaComputed": 3.361,
+   "areaLabeled": 3.42,
+   "ceiling": 2.7,
+   "floor": 0.47,
+   "label": [
+    11.379,
+    15.17
+   ],
+   "indoor": true,
+   "ceilingSource": "label"
+  },
+  {
+   "id": "hall",
+   "key": "hall",
+   "namePt": "Hall",
+   "polygon": [
+    [
+     11.855,
+     12.94
+    ],
+    [
+     11.855,
+     13.915
+    ],
+    [
+     12.537,
+     13.915
+    ],
+    [
+     12.537,
+     12.94
+    ]
+   ],
+   "areaComputed": 0.665,
+   "areaLabeled": null,
+   "ceiling": 2.7,
+   "floor": 0.47,
+   "label": [
+    12.205,
+    13.418
+   ],
+   "indoor": true,
+   "ceilingSource": "assumed"
+  }
+ ],
+ "outdoor": [
+  {
+   "id": "veranda",
+   "key": "veranda",
+   "namePt": "Varanda",
+   "polygon": [
+    [
+     15.66,
+     6.74
+    ],
+    [
+     15.66,
+     12.88
+    ],
+    [
+     12.66,
+     12.88
+    ],
+    [
+     12.66,
+     6.74
+    ]
+   ],
+   "areaComputed": 18.42,
+   "floor": 0.47,
+   "kind": "covered",
+   "label": [
+    13.91,
+    10.192
+   ],
+   "indoor": false,
+   "areaLabeled": 28.15,
+   "ceiling": 3.0
+  },
+  {
+   "id": "gourmet",
+   "key": "gourmet",
+   "namePt": "Espaço Gourmet",
+   "polygon": [
+    [
+     15.66,
+     12.88
+    ],
+    [
+     15.66,
+     16.12
+    ],
+    [
+     12.66,
+     16.12
+    ],
+    [
+     12.66,
+     12.88
+    ]
+   ],
+   "areaComputed": 9.72,
+   "floor": 0.47,
+   "kind": "covered",
+   "label": [
+    13.46,
+    14.313
+   ],
+   "indoor": false,
+   "ceiling": 3.0,
+   "note": "part of the 28.15 m² veranda in the drawing; split at the powder-room wall line"
+  },
+  {
+   "id": "terrace",
+   "key": "terrace",
+   "namePt": "Terraço",
+   "polygon": [
+    [
+     20.5,
+     6.74
+    ],
+    [
+     20.5,
+     9.74
+    ],
+    [
+     15.66,
+     9.74
+    ],
+    [
+     15.66,
+     6.74
+    ]
+   ],
+   "areaComputed": 14.52,
+   "floor": 0.47,
+   "kind": "terrace",
+   "label": [
+    17.885,
+    8.568
+   ],
+   "indoor": false
+  },
+  {
+   "id": "garage",
+   "key": "garage",
+   "namePt": "Garagem",
+   "polygon": [
+    [
+     8.88,
+     13.0
+    ],
+    [
+     3.08,
+     13.0
+    ],
+    [
+     3.08,
+     18.697
+    ],
+    [
+     3.882,
+     18.697
+    ],
+    [
+     3.882,
+     18.847
+    ],
+    [
+     8.88,
+     18.847
+    ]
+   ],
+   "areaComputed": 33.788,
+   "floor": 0.28,
+   "kind": "covered",
+   "label": [
+    5.737,
+    15.847
+   ],
+   "indoor": false,
+   "areaLabeled": 35.63,
+   "ceiling": 3.0
+  },
+  {
+   "id": "entry",
+   "key": "entry",
+   "namePt": "Hall de Entrada",
+   "polygon": [
+    [
+     4.38,
+     13.0
+    ],
+    [
+     4.38,
+     11.601
+    ],
+    [
+     3.08,
+     11.601
+    ],
+    [
+     3.08,
+     13.0
+    ]
+   ],
+   "areaComputed": 1.818,
+   "floor": 0.45,
+   "kind": "covered",
+   "label": [
+    3.745,
+    12.118
+   ],
+   "indoor": false
+  },
+  {
+   "id": "front_walk",
+   "key": "front_walk",
+   "namePt": "Passeio",
+   "polygon": [
+    [
+     3.72,
+     0.75
+    ],
+    [
+     3.72,
+     11.6
+    ],
+    [
+     1.88,
+     11.6
+    ],
+    [
+     1.88,
+     0.75
+    ]
+   ],
+   "areaComputed": 19.964,
+   "floor": 0.28,
+   "kind": "paving",
+   "label": [
+    2.053,
+    11.177
+   ],
+   "indoor": false
+  },
+  {
+   "id": "driveway",
+   "key": "driveway",
+   "namePt": "Rampa da Garagem",
+   "polygon": [
+    [
+     3.08,
+     13.0
+    ],
+    [
+     3.08,
+     19.0
+    ],
+    [
+     0.0,
+     19.0
+    ],
+    [
+     0.0,
+     13.0
+    ]
+   ],
+   "areaComputed": 18.48,
+   "floor": 0.0,
+   "kind": "paving",
+   "label": [
+    1.31,
+    15.71
+   ],
+   "indoor": false,
+   "slope": {
+    "axis": "x",
+    "from_": 0.0,
+    "to": 0.28,
+    "note": "SOBE 9,00% ramp from the street up to the garage"
+   }
+  },
+  {
+   "id": "entry_walk",
+   "key": "entry_walk",
+   "namePt": "Acesso",
+   "polygon": [
+    [
+     3.08,
+     11.6
+    ],
+    [
+     3.08,
+     13.0
+    ],
+    [
+     0.0,
+     13.0
+    ],
+    [
+     0.0,
+     11.6
+    ]
+   ],
+   "areaComputed": 4.312,
+   "floor": 0.0,
+   "kind": "paving",
+   "label": [
+    1.54,
+    12.3
+   ],
+   "indoor": false,
+   "slope": {
+    "axis": "x",
+    "from_": 0.0,
+    "to": 0.45
+   }
+  },
+  {
+   "id": "side_path",
+   "key": "side_path",
+   "namePt": "Circulação (lateral)",
+   "polygon": [
+    [
+     20.5,
+     0.75
+    ],
+    [
+     1.88,
+     0.75
+    ],
+    [
+     1.88,
+     2.0
+    ],
+    [
+     19.5,
+     2.0
+    ],
+    [
+     19.5,
+     6.74
+    ],
+    [
+     20.5,
+     6.74
+    ]
+   ],
+   "areaComputed": 28.015,
+   "floor": 0.28,
+   "kind": "paving",
+   "label": [
+    12.473,
+    1.427
+   ],
+   "indoor": false
+  },
+  {
+   "id": "rear_path",
+   "key": "rear_path",
+   "namePt": "Circulação (fundos)",
+   "polygon": [
+    [
+     16.46,
+     18.12
+    ],
+    [
+     16.46,
+     16.12
+    ],
+    [
+     9.0,
+     16.12
+    ],
+    [
+     9.0,
+     18.85
+    ],
+    [
+     12.18,
+     18.85
+    ],
+    [
+     12.18,
+     18.12
+    ]
+   ],
+   "areaComputed": 17.241,
+   "floor": 0.28,
+   "kind": "paving",
+   "label": [
+    13.52,
+    17.215
+   ],
+   "indoor": false
+  },
+  {
+   "id": "pool",
+   "key": "pool",
+   "namePt": "Piscina",
+   "polygon": [
+    [
+     18.737,
+     11.663
+    ],
+    [
+     18.737,
+     15.663
+    ],
+    [
+     24.737,
+     15.663
+    ],
+    [
+     24.737,
+     11.663
+    ]
+   ],
+   "areaComputed": 24.006,
+   "floor": 0.28,
+   "kind": "pool",
+   "label": [
+    21.612,
+    13.551
+   ],
+   "indoor": false,
+   "areaLabeled": 24.0,
+   "depth": 1.4
+  },
+  {
+   "id": "garden_front",
+   "key": "garden_front",
+   "namePt": "Jardim (frente)",
+   "polygon": [
+    [
+     1.88,
+     0.15
+    ],
+    [
+     1.88,
+     11.6
+    ],
+    [
+     0.6,
+     11.6
+    ],
+    [
+     0.6,
+     0.15
+    ]
+   ],
+   "areaComputed": 14.656,
+   "floor": 0.28,
+   "kind": "garden",
+   "label": [
+    1.242,
+    5.843
+   ],
+   "indoor": false
+  },
+  {
+   "id": "garden_side",
+   "key": "garden_side",
+   "namePt": "Jardim (lateral)",
+   "polygon": [
+    [
+     20.5,
+     0.15
+    ],
+    [
+     20.5,
+     0.75
+    ],
+    [
+     1.88,
+     0.75
+    ],
+    [
+     1.88,
+     0.15
+    ]
+   ],
+   "areaComputed": 11.172,
+   "floor": 0.28,
+   "kind": "garden",
+   "label": [
+    9.686,
+    0.454
+   ],
+   "indoor": false
+  },
+  {
+   "id": "garden_rear",
+   "key": "garden_rear",
+   "namePt": "Jardim (fundos)",
+   "polygon": [
+    [
+     16.46,
+     18.12
+    ],
+    [
+     16.46,
+     18.85
+    ],
+    [
+     12.18,
+     18.85
+    ],
+    [
+     12.18,
+     18.12
+    ]
+   ],
+   "areaComputed": 3.124,
+   "floor": 0.28,
+   "kind": "garden",
+   "label": [
+    14.235,
+    18.49
+   ],
+   "indoor": false
+  },
+  {
+   "id": "garden",
+   "key": "garden",
+   "namePt": "Jardim",
+   "polygon": [
+    [
+     31.352,
+     0.15
+    ],
+    [
+     20.5,
+     0.15
+    ],
+    [
+     20.5,
+     9.74
+    ],
+    [
+     15.66,
+     9.74
+    ],
+    [
+     15.66,
+     16.12
+    ],
+    [
+     16.46,
+     16.12
+    ],
+    [
+     16.46,
+     18.849
+    ],
+    [
+     31.352,
+     18.849
+    ]
+   ],
+   "areaComputed": 220.835,
+   "floor": 0.28,
+   "kind": "garden",
+   "label": [
+    27.28,
+    9.284
+   ],
+   "indoor": false,
+   "holes": [
+    [
+     [
+      24.737,
+      15.663
+     ],
+     [
+      18.737,
+      15.663
+     ],
+     [
+      18.737,
+      11.663
+     ],
+     [
+      24.737,
+      11.663
+     ]
+    ]
+   ]
+  }
+ ],
+ "perimeterWalls": [
+  {
+   "id": "wall_north",
+   "polygon": [
+    [
+     31.502,
+     0.0
+    ],
+    [
+     31.502,
+     0.15
+    ],
+    [
+     0.0,
+     0.15
+    ],
+    [
+     0.0,
+     0.0
+    ]
+   ],
+   "height": 2.2
+  },
+  {
+   "id": "wall_east",
+   "polygon": [
+    [
+     31.502,
+     0.0
+    ],
+    [
+     31.502,
+     18.999
+    ],
+    [
+     31.352,
+     18.999
+    ],
+    [
+     31.352,
+     0.0
+    ]
+   ],
+   "height": 2.2
+  },
+  {
+   "id": "wall_south",
+   "polygon": [
+    [
+     31.502,
+     18.849
+    ],
+    [
+     31.502,
+     18.999
+    ],
+    [
+     9.0,
+     18.999
+    ],
+    [
+     9.0,
+     18.849
+    ]
+   ],
+   "height": 2.2
+  },
+  {
+   "id": "wall_front",
+   "polygon": [
+    [
+     0.6,
+     0.15
+    ],
+    [
+     0.6,
+     11.6
+    ],
+    [
+     0.0,
+     11.6
+    ],
+    [
+     0.0,
+     0.15
+    ]
+   ],
+   "height": 2.2,
+   "note": "0.60 m double line along the street up to the entrance; drawn like the 2.20 m wall, could be a planter"
+  }
+ ],
+ "dimensionsFound": [
+  {
+   "text": "554",
+   "at": [
+    19.76,
+    4.773
+   ]
+  },
+  {
+   "text": "400",
+   "at": [
+    5.883,
+    1.623
+   ]
+  },
+  {
+   "text": "16",
+   "at": [
+    3.798,
+    1.621
+   ]
+  },
+  {
+   "text": "372",
+   "at": [
+    1.861,
+    1.623
+   ]
+  }
+ ],
+ "checks": {
+  "openingTags": [
+   "J01",
+   "J02",
+   "J03",
+   "J04",
+   "J05",
+   "P01",
+   "P02",
+   "P03",
+   "P04",
+   "P05",
+   "P06",
+   "P07",
+   "P08",
+   "P09",
+   "P10",
+   "P11",
+   "P12"
+  ],
+  "splitLivingDiningX": 8.275
+ }
+}

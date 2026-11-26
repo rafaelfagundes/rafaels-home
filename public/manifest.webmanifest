@@ -1,0 +1,9 @@
+{
+  "name": "Rafael's Home",
+  "short_name": "Rafael's Home",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#edf0f0",
+  "theme_color": "#edf0f0",
+  "icons": [{ "src": "house.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
