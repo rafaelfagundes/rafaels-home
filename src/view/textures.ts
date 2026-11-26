@@ -19,6 +19,8 @@ export const patterns = {
   boundary: { color: '#b9b6ae', size: [1.2, 1.2] },
   concrete: { color: '#bdbab4', size: [1.6, 1.6], roughness: 0.35 },
   pavers: { color: '#cfcac0', size: [1.2, 1.2], tiles: [1, 2] },
+  waterRipple: { color: '#2f8fd0', size: [2.4, 2.4] },
+  poolTile: { color: '#1f2a30', size: [0.6, 0.6], tiles: [4, 4] },
   darkPavers: { color: '#b4afa6', size: [1.2, 1.2], tiles: [1, 2] },
   garage: { color: '#a9a6a0', size: [1.6, 1.6] },
   deck: { color: '#8a7a66', size: [1.12, 1.8], boards: 8 },
@@ -54,6 +56,7 @@ export function getTexture(name: PatternName) {
       const u = x / size
       const v = y / size
       let shade = 1 + strength * ((noise(x, y) - 0.5) * 0.09 + wave(u * 3 + v * 2) * wave(v * 5 - u) * 0.035)
+      if (name === 'waterRipple') shade += wave(u * 5 + v * 3 + wave(v * 2) * 0.45) * 0.13
       if (pattern.boards) {
         const board = Math.floor(u * pattern.boards)
         shade += (noise(board, 7) - 0.5) * 0.13 + wave(u * 92 + wave(v * 2 + board) * 0.22) * 0.035

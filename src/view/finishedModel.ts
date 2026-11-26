@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 import { floorAt, rectangle, segments, type Footprint, type Point, type Ring } from '../model/geometry'
-import { house, p10FixedEnd, zones, type Zone } from '../model/house'
+import { architecturalZones, house, p10FixedEnd, type Zone } from '../model/house'
 import { classifyWallFace, isStoneTileRoom, outwardNormals } from '../model/wallFinishes'
 import { openingHeights, prismGeometry } from './model'
 import type { PatternName } from './textures'
@@ -100,7 +100,7 @@ function beams(part: 'ceiling' | 'eave', extent: readonly [number, number, numbe
   }
 }
 
-for (const zone of zones) {
+for (const zone of architecturalZones) {
   if (zone.kind === 'pool') continue
   prism('floor', floorFinish(zone), zone, -0.035, x => floorAt(zone, x), zone.key === 'side_path')
   if (!zone.indoor || !zone.ceiling) continue

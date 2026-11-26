@@ -3,12 +3,13 @@ import { Html, Line, OrbitControls } from '@react-three/drei'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { contains, floorElevation, planToWorld, type Point } from '../model/geometry'
-import { collision, house, whiteCollision, zonePose, zones } from '../model/house'
+import { collision, house, walkingFloors, whiteCollision, zonePose, zones } from '../model/house'
 import { dictionary, roomName } from '../model/i18n'
 import { useApp } from '../model/store'
 import { formatLength } from '../model/units'
-import { createFloorOcclusion, edgeLines, layers, poolCoping } from './model'
+import { createFloorOcclusion, edgeLines, layers } from './model'
 import { finishedLayers, mullions, whiteEave, whiteEaveLines } from './finishedModel'
+import Landscape from './Landscape'
 import { getTexture, patterns, type PatternName } from './textures'
 
 const colors = {
@@ -52,13 +53,13 @@ function FinishedArchitecture({ walk, showRoof }: { walk: boolean; showRoof: boo
 
 function Architecture() {
   const mode = useApp(s => s.mode)
-  const { shadows, style, roofInDollhouse } = useApp(s => s.settings)
+  const { shadows, style, lighting, roofInDollhouse } = useApp(s => s.settings)
   const showRoof = mode === 'walk' || roofInDollhouse
   const finished = style === 'finished'
   return <>
     {finished && <FinishedArchitecture walk={mode === 'walk'} showRoof={showRoof} />}
     {layers.map(([layer, geometry]) => (finished
-      ? layer === 'ground' || layer === 'basin' || layer === 'water'
+      ? layer === 'ground'
       : layer !== 'roof' || mode === 'walk') &&
       <mesh key={layer} geometry={geometry} userData={{ pick: true, floor: floorLayers.has(layer) }}
         castShadow={layer === 'wall'} receiveShadow={layer !== 'glass'}>
@@ -68,9 +69,7 @@ function Architecture() {
           depthWrite={layer !== 'glass'} />
       </mesh>
     )}
-    {finished && <mesh geometry={poolCoping} userData={{ pick: true, floor: true }} receiveShadow>
-      <meshStandardMaterial color={colors.covered} roughness={0.95} />
-    </mesh>}
+    <Landscape white={!finished} night={lighting === 'night'} />
     {!finished && <lineSegments geometry={edgeLines}>
       <lineBasicMaterial color="#596964" transparent opacity={0.31} />
     </lineSegments>}
@@ -180,7 +179,7 @@ function Walker() {
     if (position[0] !== pose.position[0] || position[1] !== pose.position[1]) {
       useApp.setState({ pose: { ...pose, position } })
     }
-    const floor = floorElevation(position, zones) + house.meta.eyeHeight
+    const floor = floorElevation(position, walkingFloors) + house.meta.eyeHeight
     if (height.current === undefined || version.current !== teleportVersion) height.current = floor
     else height.current = THREE.MathUtils.damp(height.current, floor, 16, dt)
     version.current = teleportVersion
@@ -287,7 +286,7 @@ function Annotations() {
   const target = useApp(s => s.target)
   const [a, b] = points
   return <>
-    {target && mode === 'walk' && <mesh position={planToWorld(target, floorElevation(target, zones) + 0.022)} rotation={[-Math.PI / 2, 0, 0]}>
+    {target && mode === 'walk' && <mesh position={planToWorld(target, floorElevation(target, walkingFloors) + 0.022)} rotation={[-Math.PI / 2, 0, 0]}>
       <ringGeometry args={[0.18, 0.225, 32]} />
       <meshBasicMaterial color="#32635a" side={THREE.DoubleSide} />
     </mesh>}

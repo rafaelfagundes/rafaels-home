@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 import { closestPoint, floorAt, planToWorld, rectangle, segments, type Footprint, type Point } from '../model/geometry'
-import { house, pool, zones } from '../model/house'
+import { architecturalZones, house, outdoorFeatures, pool } from '../model/house'
 
 type Layer = 'floor' | 'paving' | 'garden' | 'covered' | 'wall' | 'glass' | 'water' | 'basin' | 'trim' | 'roof' | 'ground'
 type Height = number | ((x: number) => number)
@@ -42,14 +42,14 @@ function prism(layer: Layer, footprint: Footprint, bottom: Height, top: Height, 
   groups.set(layer, list)
 }
 
-for (const zone of zones) {
+for (const zone of architecturalZones) {
   if (zone.kind === 'pool') continue
   const layer = zone.kind === 'garden' ? 'garden' : zone.kind === 'paving' ? 'paving' : zone.indoor ? 'floor' : 'covered'
   prism(layer, zone, -0.035, x => floorAt(zone, x))
   if (zone.ceiling) prism('roof', zone, zone.floor + zone.ceiling, zone.floor + zone.ceiling + 0.10)
 }
 
-prism('ground', { ...house.lot, holes: [pool.polygon] }, -0.17, -0.04)
+prism('ground', { ...house.lot, holes: [pool.polygon, outdoorFeatures.lounge.polygon] }, -0.17, -0.04)
 const poolBottom = pool.floor - (pool.depth ?? 1.4)
 prism('basin', { polygon: pool.polygon }, poolBottom - 0.12, poolBottom)
 const poolEdges = segments(pool.polygon)
@@ -63,7 +63,6 @@ for (const [[a, b], i] of poolEdges.map((edge, i) => [edge, i] as const)) {
 }
 const copingFootprint = { polygon: pool.polygon, holes: [inset] }
 prism('covered', copingFootprint, pool.floor - 0.06, pool.floor + 0.015)
-export const poolCoping = prismGeometry(copingFootprint, pool.floor - 0.06, pool.floor + 0.015)
 prism('water', { polygon: inset }, pool.floor - 0.16, pool.floor - 0.15)
 
 for (const wall of house.walls) prism('wall', wall, wall.base, wall.height, true)

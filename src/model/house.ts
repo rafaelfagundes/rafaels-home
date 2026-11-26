@@ -1,6 +1,7 @@
 import raw from '../data/house.json'
+import { createOutdoorFeatures, planters, trees } from './landscape'
 import { createCollision } from './collision'
-import { contains, rectangle, segments, type Floor, type Footprint, type Point, type Ring } from './geometry'
+import { contains, polygonArea, rectangle, segments, type Floor, type Footprint, type Point, type Ring } from './geometry'
 
 export interface Zone extends Floor {
   id: string
@@ -43,12 +44,28 @@ export const house = raw as unknown as {
     dashedLines: { axis: 'x' | 'y'; at: number; start: number; end: number; dashes: number }[]
   }
 }
-export const zones = [...house.rooms, ...house.outdoor]
 export const pool = house.outdoor.find(zone => zone.kind === 'pool')!
+export const outdoorFeatures = createOutdoorFeatures(house.meta.levels.yard, pool)
+const { deck, lounge, woodDeck, bench, firePit, steps, loungeApron, apronNotch } = outdoorFeatures
+export const architecturalZones = [...house.rooms, ...house.outdoor].map(zone => {
+  if (zone.key === 'side_path') return { ...zone, floor: zone.floor + 0.03 }
+  if (zone.key !== 'garden') return zone
+  // Cut the lounge and its apron out of the lawn along the terrace-side boundary.
+  const polygon = zone.polygon.flatMap(point =>
+    point[0] === apronNotch[0][0] && point[1] === apronNotch[2][1] ? apronNotch : [point])
+  const garden = { ...zone, polygon }
+  return { ...garden, areaComputed: polygonArea(garden) }
+})
+export const zones = [...architecturalZones, deck, woodDeck, lounge]
+export const walkingFloors = [...steps, lounge, woodDeck, deck, ...loungeApron, ...architecturalZones]
+export const plantExclusions = [
+  ...loungeApron, ...zones.filter(zone => zone.kind !== 'garden'), ...house.walls, ...house.perimeterWalls, ...planters, ...trees,
+]
+
 const p10 = house.openings.find(opening => opening.id === 'P10')!
 export const p10FixedEnd = p10.rect[1] + 4
 const obstacles = [
-  ...house.walls, ...house.perimeterWalls, pool,
+  ...house.walls, ...house.perimeterWalls, pool, ...bench, firePit, ...planters, ...trees,
   ...house.openings.filter(opening => opening.kind === 'window').map(opening => ({ polygon: rectangle(opening.rect) })),
 ]
 export const whiteCollision = createCollision(house.lot, obstacles)

@@ -1,12 +1,17 @@
 import { lazy, Suspense, useEffect, useRef, type PointerEvent, type ReactNode } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { createRoot } from 'react-dom/client'
-import { collision, house, safePosition, whiteCollision, zonePose, zones } from './model/house'
+import { collision, house, outdoorFeatures, safePosition, whiteCollision, zonePose, zones } from './model/house'
 import { dictionary, roomName } from './model/i18n'
 import { useApp, type Panel } from './model/store'
 import { formatArea } from './model/units'
+import { planters } from './model/landscape'
 import type { Footprint } from './model/geometry'
 import './styles.css'
+
+const landscapeFills: Record<string, string> = {
+  pool_deck: '#d7cfc1', fire_lounge: '#aba79f', wood_deck: '#ac987e', side_path: '#ac987e',
+}
 
 const Scene = lazy(() => import('./view/Scene'))
 
@@ -51,8 +56,14 @@ function Plan({ interactive = false }: { interactive?: boolean }) {
     onClick={interactive ? navigate : undefined}>
     <path d={pathFor(house.lot)} fill="#e2e7dd" />
     {zones.map(zone => <path key={zone.id} d={pathFor(zone)} fillRule="evenodd"
-      fill={zone.kind === 'garden' ? '#d9e4d5' : zone.kind === 'pool' ? '#a8cbd7' : zone.indoor ? '#f8f6ed' : '#e1e4df'}
+      fill={landscapeFills[zone.key] ?? (zone.kind === 'garden' ? '#d9e4d5' : zone.kind === 'pool' ? '#a8cbd7' : zone.indoor ? '#f8f6ed' : '#e1e4df')}
       stroke="#8f9f962e" strokeWidth=".07" />)}
+    {outdoorFeatures.loungeApron.map((slab, index) => <path key={index} d={pathFor(slab)} fill={landscapeFills.pool_deck} />)}
+    {outdoorFeatures.steps.map((step, index) => <path key={index} d={pathFor(step)}
+      fill="#c7c2b8" stroke="#96918a" strokeWidth=".06" />)}
+    {outdoorFeatures.bench.map((bench, index) => <path key={index} d={pathFor(bench)} fill="#ded9cd" />)}
+    <path d={pathFor(outdoorFeatures.firePit)} fill="#3b3935" />
+    {planters.map(planter => <path key={planter.point.join(',')} d={pathFor(planter)} fill="#41483e" />)}
     {[...house.walls, ...house.perimeterWalls].map(wall => <path key={wall.id} d={pathFor(wall)}
       fillRule="evenodd" fill="#4b5b55" />)}
     {house.openings.map((opening, i) => {
