@@ -369,6 +369,39 @@ perimeter = [
          note='0.60 m double line along the street up to the entrance; drawn like the 2.20 m wall, could be a planter'),
 ]
 
+# ---------------------------------------------------------------- roof / eaves
+# "PROJEÇÃO DO BEIRAL" is drawn as dashed 0.24 pt lines (dash ≈0.37 m, gap ≈0.19 m).
+# Collect them by grouping short collinear segments.
+from collections import defaultdict
+_dash = defaultdict(list)
+for d in drawings:
+    if d['type'] != 's' or abs((d.get('width') or 0) - 0.24) > 0.01: continue
+    col = d.get('color') or (0, 0, 0)
+    if col[0] > 0.5 or col[1] > 0.5: continue
+    for it in d['items']:
+        if it[0] != 'l': continue
+        a, b = M(it[1]), M(it[2]); L = math.dist(a, b)
+        if not (0.2 < L < 0.47): continue
+        if abs(a[1] - b[1]) < 0.005: _dash[('y', round(a[1], 2))].append((min(a[0], b[0]), max(a[0], b[0])))
+        elif abs(a[0] - b[0]) < 0.005: _dash[('x', round(a[0], 2))].append((min(a[1], b[1]), max(a[1], b[1])))
+eave_lines = []
+for (ax, v), segs in sorted(_dash.items()):
+    if len(segs) < 5: continue
+    lo = min(s[0] for s in segs); hi = max(s[1] for s in segs)
+    eave_lines.append(dict(axis=ax, at=r3(v), start=r3(lo), end=r3(hi), dashes=len(segs)))
+def _line(ax, near):
+    return min((l for l in eave_lines if l['axis'] == ax), key=lambda l: abs(l['at'] - near))['at']
+# Solid thin line at x≈19.85 closes the east eave (no dashes on the sheet there).
+EAST = 19.85
+FRONT = _line('x', 3.08); NORTH = _line('y', 1.2); SEMI_E = _line('x', 7.88)
+SOUTH_TERR = _line('y', 7.54); VER_E = _line('x', 16.46)
+HOUSE_N = min(g.bounds[1] for g in WALL_POLYS)
+eave_poly = Polygon([(FRONT, NORTH), (SEMI_E, NORTH), (SEMI_E, HOUSE_N), (EAST, HOUSE_N), (EAST, SOUTH_TERR),
+                     (VER_E, SOUTH_TERR), (VER_E, 16.12), (9.0, 16.12), (9.0, LOT_D - 0.15), (FRONT, LOT_D - 0.15)])
+roof = dict(eave=poly_coords(eave_poly), area=r3(eave_poly.area), top=r3(INTERIOR_FLOOR + 3.0 + 0.35),
+            slabThickness=0.25, fasciaHeight=0.30, dashedLines=eave_lines,
+            note='single flat roof level following the dashed eave lines; internal dashed lines (roof breaks) recorded but not modelled as separate levels')
+
 # ---------------------------------------------------------------- walls output
 def wall_height(g):
     near = [r['ceiling'] for r in rooms if Polygon(r['polygon']).distance(g) < 0.3]
@@ -397,7 +430,7 @@ house = dict(
               frontSetbackLabeled=3.80, frontSetbackMeasured=r3(min(g.bounds[0] for g in WALL_POLYS if g.bounds[1] < 3)),
               eyeHeight=1.6, extractedBy='tools/extract/extract_house.py'),
     lot=dict(width=r3(LOT_W), depth=r3(LOT_D), polygon=[[0, 0], [r3(LOT_W), 0], [r3(LOT_W), r3(LOT_D)], [0, r3(LOT_D)]]),
-    walls=walls, openings=openings, rooms=rooms, outdoor=outdoor, perimeterWalls=perimeter,
+    walls=walls, openings=openings, rooms=rooms, outdoor=outdoor, perimeterWalls=perimeter, roof=roof,
     dimensionsFound=dims,
     checks=dict(openingTags=found_tags, splitLivingDiningX=r3(SPLIT_X)),
 )
@@ -407,6 +440,7 @@ with open(OUT, 'w') as f:
 
 # ---------------------------------------------------------------- report + debug image
 print(f'lot {LOT_W:.3f} x {LOT_D:.3f} m (expected 31.50 x 19.00)')
+print(f"roof eave area {roof['area']} m², dashed eave lines {[(l['axis'], l['at']) for l in eave_lines]}")
 print(f'walls {len(walls)}  openings {len(openings)}  tags {found_tags}')
 for r in rooms:
     print(f"  {r['id']:14s} computed {r['areaComputed']:6.2f}  labelled {r['areaLabeled']}  ceiling {r['ceiling']}")
@@ -422,6 +456,7 @@ try:
     for o in sorted(outdoor, key=lambda o: o['kind'] == 'pool'): dr.polygon(T(o['polygon']), fill=colors.get(o['kind'], (230, 230, 230)), outline=(150, 150, 150))
     for r in rooms: dr.polygon(T(r['polygon']), fill=(255, 250, 235), outline=(200, 120, 0))
     for w in perimeter + walls: dr.polygon(T(w['polygon']), fill=(60, 60, 60))
+    dr.line(T(roof['eave'] + [roof['eave'][0]]), fill=(160, 0, 160), width=2)
     for o in openings:
         x0, y0, x1, y1 = o['rect']
         dr.rectangle(T([(x0, y0), (x1, y1)]), fill=(220, 0, 0) if o['kind'] == 'door' else (0, 120, 255) if o['kind'] == 'window' else (0, 180, 0))

@@ -2303,6 +2303,120 @@
    "note": "0.60 m double line along the street up to the entrance; drawn like the 2.20 m wall, could be a planter"
   }
  ],
+ "roof": {
+  "eave": [
+   [
+    3.08,
+    1.2
+   ],
+   [
+    7.88,
+    1.2
+   ],
+   [
+    7.88,
+    1.996
+   ],
+   [
+    19.85,
+    1.996
+   ],
+   [
+    19.85,
+    7.54
+   ],
+   [
+    16.46,
+    7.54
+   ],
+   [
+    16.46,
+    16.12
+   ],
+   [
+    9.0,
+    16.12
+   ],
+   [
+    9.0,
+    18.849
+   ],
+   [
+    3.08,
+    18.849
+   ]
+  ],
+  "area": 227.749,
+  "top": 3.82,
+  "slabThickness": 0.25,
+  "fasciaHeight": 0.3,
+  "dashedLines": [
+   {
+    "axis": "x",
+    "at": 3.08,
+    "start": 1.198,
+    "end": 18.699,
+    "dashes": 32
+   },
+   {
+    "axis": "x",
+    "at": 3.76,
+    "start": 1.998,
+    "end": 5.62,
+    "dashes": 7
+   },
+   {
+    "axis": "x",
+    "at": 7.88,
+    "start": 1.198,
+    "end": 5.62,
+    "dashes": 11
+   },
+   {
+    "axis": "x",
+    "at": 13.46,
+    "start": 4.699,
+    "end": 13.799,
+    "dashes": 16
+   },
+   {
+    "axis": "x",
+    "at": 16.46,
+    "start": 7.54,
+    "end": 15.818,
+    "dashes": 15
+   },
+   {
+    "axis": "y",
+    "at": 1.2,
+    "start": 3.08,
+    "end": 7.88,
+    "dashes": 9
+   },
+   {
+    "axis": "y",
+    "at": 4.7,
+    "start": 10.12,
+    "end": 13.46,
+    "dashes": 6
+   },
+   {
+    "axis": "y",
+    "at": 7.54,
+    "start": 16.461,
+    "end": 19.501,
+    "dashes": 6
+   },
+   {
+    "axis": "y",
+    "at": 13.8,
+    "start": 3.08,
+    "end": 13.46,
+    "dashes": 19
+   }
+  ],
+  "note": "single flat roof level following the dashed eave lines; internal dashed lines (roof breaks) recorded but not modelled as separate levels"
+ },
  "dimensionsFound": [
   {
    "text": "554",
