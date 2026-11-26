@@ -1,10 +1,11 @@
+import { collision, safePosition, whiteCollision } from './house'
 import { create } from 'zustand'
 import type { Point, WorldPoint } from './geometry'
+import { parseWalkLink, type Pose } from './walkLink'
 import { helpSeen, loadSettings, rememberHelp, saveSettings, type Settings } from './settings'
 
 export type Mode = 'walk' | 'dollhouse'
 export type Panel = 'rooms' | 'settings' | 'help' | 'plan'
-export interface Pose { position: Point; heading: number; pitch: number }
 
 interface State {
   mode: Mode
@@ -24,11 +25,16 @@ interface State {
   addPoint: (point: WorldPoint) => void
 }
 
+const settings = loadSettings()
+const walkCollision = settings.style === 'white' ? whiteCollision : collision
+const linkedPose = parseWalkLink(typeof window === 'undefined' ? '' : window.location.search)
+const initialPose = linkedPose && walkCollision.isFree(linkedPose.position) ? linkedPose : undefined
+
 export const useApp = create<State>((set, get) => ({
   mode: 'walk',
-  panel: helpSeen() ? null : 'help',
-  settings: loadSettings(),
-  pose: { position: [3.75, 12.3], heading: 0, pitch: 0 },
+  panel: initialPose || helpSeen() ? null : 'help',
+  settings,
+  pose: initialPose ?? { position: [3.75, 12.3], heading: 0, pitch: 0 },
   teleportVersion: 0,
   target: null,
   joystick: [0, 0],
@@ -42,6 +48,14 @@ export const useApp = create<State>((set, get) => ({
   changeSettings: patch => {
     const settings = { ...get().settings, ...patch }
     saveSettings(settings)
+    const { pose, settings: previous } = get()
+    if (previous.style === 'white' && settings.style === 'finished' && !collision.isFree(pose.position)) {
+      const position = safePosition(pose.position)
+      if (position) {
+        set({ settings, pose: { ...pose, position }, target: null })
+        return
+      }
+    }
     set({ settings })
   },
   jump: (position, heading) => set(state => ({

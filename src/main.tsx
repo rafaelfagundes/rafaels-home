@@ -1,13 +1,19 @@
 import { lazy, Suspense, useEffect, useRef, type PointerEvent, type ReactNode } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { createRoot } from 'react-dom/client'
-import { house, safePosition, zonePose, zones } from './model/house'
+import { collision, house, outdoorFeatures, safePosition, whiteCollision, zonePose, zones } from './model/house'
 import { dictionary, roomName } from './model/i18n'
 import { useApp, type Panel } from './model/store'
 import { formatArea } from './model/units'
+import { planters } from './model/landscape'
 import type { Footprint } from './model/geometry'
 import './styles.css'
 
+const landscapeFills: Record<string, string> = {
+  pool_deck: '#d7cfc1', fire_lounge: '#aba79f', wood_deck: '#ac987e', side_path: '#ac987e',
+}
+
+const showStats = new URLSearchParams(window.location.search).has('stats')
 const Scene = lazy(() => import('./view/Scene'))
 
 const icons = {
@@ -20,6 +26,8 @@ const icons = {
   help: 'M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0ZM9 9a3 3 0 1 1 4.7 2.5c-1 .6-1.7 1.1-1.7 2.5m0 3h.01',
   expand: 'M9 4H4v5m11-5h5v5M4 15v5h5m11-5v5h-5',
   minus: 'M5 12h14', close: 'm6 6 12 12M18 6 6 18',
+  sun: 'M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5',
+  moon: 'M20.8 15A9 9 0 0 1 9 3.2 9 9 0 1 0 20.8 15Z',
   chevron: 'm9 6 6 6-6 6',
 }
 
@@ -41,7 +49,7 @@ function Plan({ interactive = false }: { interactive?: boolean }) {
     const matrix = event.currentTarget.getScreenCTM()
     if (!matrix) return
     const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse())
-    const position = safePosition([point.x, point.y])
+    const position = safePosition([point.x, point.y], undefined, useApp.getState().settings.style === 'white' ? whiteCollision : collision)
     if (position) jump(position, pose.heading)
   }
   return <svg viewBox={`-0.2 -0.2 ${house.lot.width + 0.4} ${house.lot.depth + 0.4}`}
@@ -49,8 +57,14 @@ function Plan({ interactive = false }: { interactive?: boolean }) {
     onClick={interactive ? navigate : undefined}>
     <path d={pathFor(house.lot)} fill="#e2e7dd" />
     {zones.map(zone => <path key={zone.id} d={pathFor(zone)} fillRule="evenodd"
-      fill={zone.kind === 'garden' ? '#d9e4d5' : zone.kind === 'pool' ? '#a8cbd7' : zone.indoor ? '#f8f6ed' : '#e1e4df'}
+      fill={landscapeFills[zone.key] ?? (zone.kind === 'garden' ? '#d9e4d5' : zone.kind === 'pool' ? '#a8cbd7' : zone.indoor ? '#f8f6ed' : '#e1e4df')}
       stroke="#8f9f962e" strokeWidth=".07" />)}
+    {outdoorFeatures.loungeApron.map((slab, index) => <path key={index} d={pathFor(slab)} fill={landscapeFills.pool_deck} />)}
+    {outdoorFeatures.steps.map((step, index) => <path key={index} d={pathFor(step)}
+      fill="#c7c2b8" stroke="#96918a" strokeWidth=".06" />)}
+    {outdoorFeatures.bench.map((bench, index) => <path key={index} d={pathFor(bench)} fill="#ded9cd" />)}
+    <path d={pathFor(outdoorFeatures.firePit)} fill="#3b3935" />
+    {planters.map(planter => <path key={planter.point.join(',')} d={pathFor(planter)} fill="#41483e" />)}
     {[...house.walls, ...house.perimeterWalls].map(wall => <path key={wall.id} d={pathFor(wall)}
       fillRule="evenodd" fill="#4b5b55" />)}
     {house.openings.map((opening, i) => {
@@ -101,7 +115,7 @@ function Rooms() {
     <h3>{indoor ? t.inside : t.outside}</h3>
     <ul>{zones.filter(zone => zone.indoor === indoor).map(zone => <li key={zone.id}>
       <button className="room-row" onClick={() => {
-        const { position, heading } = zonePose(zone)
+        const { position, heading } = zonePose(zone, useApp.getState().settings.style === 'white' ? whiteCollision : collision)
         jump(position, heading)
       }}>
         <span>{roomName(zone, language)}</span>
@@ -123,6 +137,14 @@ function Settings() {
     <label>{t.units}<select value={settings.units} onChange={event => change({ units: event.target.value === 'metric' ? 'metric' : 'imperial' })}>
       <option value="imperial">{t.imperial}</option><option value="metric">{t.metric}</option>
     </select></label>
+    <label>{t.style}<select value={settings.style} onChange={event => change({ style: event.target.value === 'white' ? 'white' : 'finished' })}>
+      <option value="finished">{t.finished}</option><option value="white">{t.white}</option>
+    </select></label>
+    <label>{t.lighting}<select value={settings.lighting} onChange={event => change({ lighting: event.target.value === 'night' ? 'night' : 'day' })}>
+      <option value="day">{t.day}</option><option value="night">{t.night}</option>
+    </select></label>
+    <label>{t.roofInDollhouse}<input type="checkbox" checked={settings.roofInDollhouse}
+      onChange={event => change({ roofInDollhouse: event.target.checked })} /></label>
     <label>{t.labels}<input type="checkbox" checked={settings.labels}
       onChange={event => change({ labels: event.target.checked })} /></label>
     <label>{t.shadows}<select value={settings.shadows} onChange={event => {
@@ -156,8 +178,13 @@ function App() {
   const { mode, panel, setMode, setPanel, measuring, toggleMeasure } = useApp(useShallow(s => ({ mode: s.mode, panel: s.panel, setMode: s.setMode, setPanel: s.setPanel, measuring: s.measuring, toggleMeasure: s.toggleMeasure })))
   const language = useApp(s => s.settings.language)
   const t = dictionary[language]
+  const night = useApp(s => s.settings.lighting === 'night')
+  const style = useApp(s => s.settings.style)
+  const changeSettings = useApp(s => s.changeSettings)
+  const lightingAction = night ? t.switchToDay : t.switchToNight
   const points = useApp(s => s.points)
   const map = useRef<HTMLDivElement>(null)
+  const stats = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     document.documentElement.lang = language
@@ -177,8 +204,8 @@ function App() {
   }
 
   return <main className="app">
-    <div className="viewport">
-      <Suspense fallback={<p className="loading">{t.loading}</p>}><Scene /></Suspense>
+    <div className="viewport" data-style={style} data-lighting={night ? 'night' : 'day'}>
+      <Suspense fallback={<p className="loading">{t.loading}</p>}><Scene stats={showStats ? stats : undefined} /></Suspense>
     </div>
     <header className="topbar surface">
       <div className="brand"><span className="brand-icon"><Icon name="house" /></span><h1>Rafael’s Home</h1></div>
@@ -186,8 +213,11 @@ function App() {
         {(['walk', 'dollhouse'] as const).map(value => <button key={value} aria-pressed={mode === value}
           onClick={() => setMode(value)}><Icon name={value} />{t[value]}</button>)}
       </div>
+      <button className="icon-button" aria-label={lightingAction} title={lightingAction}
+        onClick={() => changeSettings({ lighting: night ? 'day' : 'night' })}><Icon name={night ? 'moon' : 'sun'} /></button>
       <button className="icon-button top-help" aria-label={t.help} title={t.help}
         onClick={() => setPanel('help')}><Icon name="help" /></button>
+      {showStats && <div className="render-stats" ref={stats} />}
     </header>
     <div className="map surface" ref={map}>
       <button className="icon-button map-show" onClick={() => togglePlan(false)} aria-label={t.showPlan}

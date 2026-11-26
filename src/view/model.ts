@@ -1,14 +1,14 @@
 import * as THREE from 'three'
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 import { closestPoint, floorAt, planToWorld, rectangle, segments, type Footprint, type Point } from '../model/geometry'
-import { house, pool, zones } from '../model/house'
+import { architecturalZones, house, outdoorFeatures, pool } from '../model/house'
 
 type Layer = 'floor' | 'paving' | 'garden' | 'covered' | 'wall' | 'glass' | 'water' | 'basin' | 'trim' | 'roof' | 'ground'
 type Height = number | ((x: number) => number)
 const groups = new Map<Layer, THREE.BufferGeometry[]>()
 const outlines: THREE.BufferGeometry[] = []
 
-function prism(layer: Layer, footprint: Footprint, bottom: Height, top: Height, edges = false) {
+export function prismGeometry(footprint: Footprint, bottom: Height, top: Height) {
   const path = (ring: readonly Point[]) => ring.map(([x, y]) => new THREE.Vector2(x, y))
   const shape = new THREE.Shape(path(footprint.polygon))
   shape.holes = (footprint.holes ?? []).map(hole => new THREE.Path(path(hole)))
@@ -31,20 +31,25 @@ function prism(layer: Layer, footprint: Footprint, bottom: Height, top: Height, 
   for (let i = 0; i < positions.count; i++) {
     uv.setXY(i, positions.getX(i) / house.lot.width, 1 - positions.getZ(i) / house.lot.depth)
   }
+  return geometry
+}
+
+function prism(layer: Layer, footprint: Footprint, bottom: Height, top: Height, edges = false) {
+  const geometry = prismGeometry(footprint, bottom, top)
   if (edges) outlines.push(new THREE.EdgesGeometry(geometry, 24))
   const list = groups.get(layer) ?? []
   list.push(geometry)
   groups.set(layer, list)
 }
 
-for (const zone of zones) {
+for (const zone of architecturalZones) {
   if (zone.kind === 'pool') continue
   const layer = zone.kind === 'garden' ? 'garden' : zone.kind === 'paving' ? 'paving' : zone.indoor ? 'floor' : 'covered'
   prism(layer, zone, -0.035, x => floorAt(zone, x))
   if (zone.ceiling) prism('roof', zone, zone.floor + zone.ceiling, zone.floor + zone.ceiling + 0.10)
 }
 
-prism('ground', { ...house.lot, holes: [pool.polygon] }, -0.17, -0.04)
+prism('ground', { ...house.lot, holes: [pool.polygon, outdoorFeatures.lounge.polygon] }, -0.17, -0.04)
 const poolBottom = pool.floor - (pool.depth ?? 1.4)
 prism('basin', { polygon: pool.polygon }, poolBottom - 0.12, poolBottom)
 const poolEdges = segments(pool.polygon)
@@ -56,21 +61,20 @@ for (const [[a, b], i] of poolEdges.map((edge, i) => [edge, i] as const)) {
   const ring = [a, b, inset[(i + 1) % inset.length], inset[i]]
   prism('basin', { polygon: ring }, poolBottom, pool.floor - 0.06)
 }
-prism('covered', { polygon: pool.polygon, holes: [inset] }, pool.floor - 0.06, pool.floor + 0.015)
+const copingFootprint = { polygon: pool.polygon, holes: [inset] }
+prism('covered', copingFootprint, pool.floor - 0.06, pool.floor + 0.015)
 prism('water', { polygon: inset }, pool.floor - 0.16, pool.floor - 0.15)
 
 for (const wall of house.walls) prism('wall', wall, wall.base, wall.height, true)
 for (const wall of house.perimeterWalls) prism('wall', wall, 0, house.meta.levels.yard + wall.height, true)
 
-for (const opening of house.openings) {
+export function openingHeights(opening: (typeof house.openings)[number], head: number = house.meta.levels.interior + opening.sill + opening.height) {
   const [x0, y0, x1, y1] = opening.rect
-  const footprint = { polygon: rectangle(opening.rect) }
   const alongX = opening.axis === 'x'
   const middleX = (x0 + x1) / 2
   const middleY = (y0 + y1) / 2
   const floor = house.meta.levels.interior
   const sill = floor + opening.sill
-  const head = sill + opening.height
   const ends: Point[] = alongX ? [[x0, middleY], [x1, middleY]] : [[middleX, y0], [middleX, y1]]
   const adjacent = ends.map(end => house.walls.map(wall => ({
     height: wall.height,
@@ -80,6 +84,17 @@ for (const opening of house.openings) {
     })),
   })).sort((a, b) => a.distance - b.distance)[0])
   const top = Math.max(...adjacent.filter(wall => wall.distance < 0.18).map(wall => wall.height), head)
+  return { sill, head, top }
+}
+
+for (const opening of house.openings) {
+  const [x0, y0, x1, y1] = opening.rect
+  const footprint = { polygon: rectangle(opening.rect) }
+  const alongX = opening.axis === 'x'
+  const middleX = (x0 + x1) / 2
+  const middleY = (y0 + y1) / 2
+  const floor = house.meta.levels.interior
+  const { sill, head, top } = openingHeights(opening)
   if (top > head) prism('wall', footprint, head, top, true)
   if (opening.kind === 'window') {
     prism('wall', footprint, 0, sill, true)

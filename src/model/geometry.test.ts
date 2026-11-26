@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createCollision } from './collision'
 import { contains, floorElevation, planToWorld, pointInPolygon, polygonArea, rectangle } from './geometry'
-import { collision, house, pool, zonePose, zones } from './house'
+import { collision, house, p10FixedEnd, pool, whiteCollision, zonePose, zones } from './house'
 
 describe('blueprint geometry', () => {
   it('preserves the plan axes in world space', () => {
@@ -53,6 +53,15 @@ describe('walking collision', () => {
     expect(collision.move([3.75, 12.3], [1.5, 0])[0]).toBeCloseTo(5.25)
   })
 
+  it('blocks the north P10 pane and leaves the south doorway walkable in finished style', () => {
+    const [x, north, east, south] = house.openings.find(opening => opening.id === 'P10')!.rect
+    const paneY = (north + p10FixedEnd) / 2
+    const doorY = (p10FixedEnd + south) / 2
+    expect(collision.move([x - 0.6, paneY], [1.3, 0])[0]).toBeLessThanOrEqual(x - 0.25)
+    expect(collision.move([x - 0.6, doorY], [1.3, 0])[0]).toBeGreaterThan(east + 0.25)
+    expect(whiteCollision.move([x - 0.6, paneY], [1.3, 0])[0]).toBeGreaterThan(east + 0.25)
+  })
+
   it('keeps the player in bounds and out of the window and pool', () => {
     expect(walker.move([1, 1], [-3, 0])[0]).toBeGreaterThanOrEqual(0.25)
     expect(collision.isFree(house.openings.find(opening => opening.kind === 'window')!.center)).toBe(false)
@@ -62,6 +71,19 @@ describe('walking collision', () => {
   it('provides a walkable destination for every room-list entry', () => {
     for (const zone of zones) expect(collision.isFree(zonePose(zone).position), zone.key).toBe(true)
   })
+
+  it.each(['fire_lounge', 'pool_deck', 'pool', 'terrace', 'garden', 'wood_deck', 'veranda', 'gourmet'])(
+    'faces the indoor centroid from the %s destination',
+    key => {
+      const zone = zones.find(zone => zone.key === key)!
+      // Area-weighted centroid of the indoor floor polygons in the blueprint.
+      const center = [10.22217493154, 7.33087264455]
+      for (const walkCollision of [collision, whiteCollision]) {
+        const { position: [x, y], heading } = zonePose(zone, walkCollision)
+        expect(heading).toBeCloseTo(Math.atan2(center[1] - y, center[0] - x), 8)
+      }
+    },
+  )
 
   it('faces at least four metres of clear space from the living room destination', () => {
     const living = house.rooms.find(zone => zone.key === 'living')!
