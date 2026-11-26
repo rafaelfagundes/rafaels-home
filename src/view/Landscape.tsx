@@ -3,8 +3,8 @@ import { useRef } from 'react'
 import * as THREE from 'three'
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 import { floorElevation, planToWorld, segments, type Footprint, type WorldPoint } from '../model/geometry'
-import { outdoorFeatures, plantExclusions, pool, walkingFloors } from '../model/house'
-import { generatePlanterPlants, generatePlants, planters, trees, type PlantKind } from '../model/landscape'
+import { house, outdoorFeatures, plantExclusions, pool, walkingFloors } from '../model/house'
+import { generatePlanterPlants, generatePlants, planters, trees, walkwayLights, type PlantKind } from '../model/landscape'
 import { prismGeometry } from './model'
 import { getTexture, patterns, type PatternName } from './textures'
 
@@ -64,6 +64,8 @@ const basinGeometry = merge([
   }, poolBottom, deck.floor - 0.065)),
 ])
 const waterGeometry = slab(poolInterior, waterline - 0.008, waterline)
+const finishedPaving = mergeGeometries([pavingGeometry, loungeFloorGeometry])!
+const finishedConcrete = mergeGeometries([benchGeometry, copingGeometry])!
 
 interface Instance {
   position: WorldPoint
@@ -192,9 +194,16 @@ for (const { mesh } of plantBatches.slice(5)) mesh.castShadow = true
 const underwater = batch(new THREE.CircleGeometry(0.088, 12), poolLights.map(({ point, heading }) => ({
   position: planToWorld(point, waterline - 0.4), heading, scale: [1, 1, 1],
 })), '#e1f6ec', '#dddeda')
-const stairLights = batch(box, steps.map(({ light }) => ({
-  position: [...light], scale: [0.033, 0.044, 0.18],
-})), '#ffe3b4', '#dadbd8')
+const stepLights = batch(box, [
+  ...steps.map(({ light }): Instance => ({ position: [...light], scale: [0.033, 0.044, 0.18] })),
+  ...walkwayLights([woodDeck, ...house.outdoor.filter(zone =>
+    zone.key === 'front_walk' || zone.key === 'entry_walk',
+  )]).map(({ point, heading }): Instance => ({
+    position: planToWorld(point, worldFloor(point) + 0.014), scale: [0.12, 0.024, 0.05], heading,
+  })),
+], '#ffe3b4', '#dadbd8')
+const stepLightCount = stepLights.mesh.count
+stepLights.mesh.computeBoundingSphere()
 
 const flames = batch(cone, Array.from({ length: 11 }, (_, index) => ({
   position: [-0.87 + index * 0.174, 0.09, Math.sin(index * 2.2) * 0.075],
@@ -230,21 +239,22 @@ function OutdoorEffects({ white, night }: { white: boolean; night: boolean }) {
     water?.offset.set(time * 0.053, Math.sin(time * 0.47) * 0.12)
     const flicker = Math.sin(time * 8.1) * 0.55 + Math.sin(time * 13.7) * 0.3 + Math.sin(time * 23) * 0.15
     if (flameGroup.current) flameGroup.current.scale.y = 1 + 0.21 * flicker
-    if (fireLight.current) fireLight.current.intensity = 4 + flicker * 0.7
+    if (night && fireLight.current) fireLight.current.intensity = 4 + flicker * 0.7
   })
   underwater.mesh.material.color.set(white ? underwater.white : underwater.color)
   underwater.mesh.material.emissive.set(underwater.color)
-  underwater.mesh.material.emissiveIntensity = white ? 0 : night ? 2.5 : 0.65
-  stairLights.mesh.material.color.set(white ? stairLights.white : stairLights.color)
-  stairLights.mesh.material.emissive.set(stairLights.color)
-  stairLights.mesh.material.emissiveIntensity = night && !white ? 2.2 : 0
+  underwater.mesh.material.emissiveIntensity = night ? 4 : 0.65
+  stepLights.mesh.material.color.set(white ? stepLights.white : stepLights.color)
+  stepLights.mesh.material.emissive.set(stepLights.color)
+  stepLights.mesh.material.emissiveIntensity = night && !white ? 2.2 : 0
   return <>
-    <primitive object={stairLights.mesh} />
+    <primitive object={stepLights.mesh} count={white ? steps.length : stepLightCount} />
     {!white && <>
       <primitive object={underwater.mesh} />
       <mesh geometry={waterGeometry}>
-        <meshStandardMaterial map={water} color={water ? '#ffffff' : '#2f8fd0'} emissive="#2f8fd0" emissiveMap={water}
-          emissiveIntensity={night ? 0.9 : 0.25} roughness={0.22} transparent opacity={0.63} depthWrite={false} />
+        <meshStandardMaterial map={water} color={water ? '#ffffff' : '#3fa3d6'}
+          emissive={water ? '#ffffff' : '#3fa3d6'} emissiveMap={water}
+          emissiveIntensity={night ? 1.65 : 0.48} roughness={0.22} transparent opacity={0.68} depthWrite={false} />
       </mesh>
       <group ref={flameGroup} position={planToWorld(fireCenter, lounge.floor + 0.30)}>
         <primitive object={flameMesh} />
@@ -261,15 +271,12 @@ function OutdoorEffects({ white, night }: { white: boolean; night: boolean }) {
 export default function Landscape({ white, night }: { white: boolean; night: boolean }) {
   for (const { mesh, color, white: lightColor } of plantBatches) mesh.material.color.set(white ? lightColor : color)
   return <>
-    <Surface geometry={pavingGeometry} white={white} pattern="pavers" color="#cfcac0" floor />
+    <Surface geometry={white ? pavingGeometry : finishedPaving} white={white} pattern="pavers" color="#cfcac0" floor />
     <Surface geometry={woodGeometry} white={white} pattern="deck" color="#8a7a66" floor />
-    <Surface geometry={loungeFloorGeometry} white={white} pattern="pavers" color="#cfcac0" floor />
-    <Surface geometry={benchGeometry} white={white} pattern="concrete" color="#bdbab4" />
+    {white && <Surface geometry={loungeFloorGeometry} white pattern="pavers" color="#cfcac0" floor />}
+    <Surface geometry={white ? benchGeometry : finishedConcrete} white={white} pattern="concrete" color="#bdbab4" />
     <Surface geometry={troughGeometry} white={white} color="#1b1b1b" />
-    {!white && <>
-      <Surface geometry={copingGeometry} white={false} pattern="concrete" color="#bdbab4" />
-      <Surface geometry={basinGeometry} white={false} pattern="poolTile" color="#1f2a30" />
-    </>}
+    {!white && <Surface geometry={basinGeometry} white={false} pattern="poolTile" color="#1f2a30" />}
     {white && whiteEdges.map((geometry, index) => <lineSegments key={index} geometry={geometry}>
       <lineBasicMaterial color="#596964" transparent opacity={0.31} />
     </lineSegments>)}

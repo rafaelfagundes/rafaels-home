@@ -1,7 +1,27 @@
 import { describe, expect, it } from 'vitest'
 import { contains, floorElevation, polygonArea, type Point } from './geometry'
 import { collision, house, outdoorFeatures, plantExclusions, pool, walkingFloors, whiteCollision, zonePose, zones } from './house'
-import { generatePlants, planters, trees } from './landscape'
+import { generatePlants, planters, trees, walkwayLights } from './landscape'
+
+it('pairs each inset pool corner with the corresponding outer corner', () => {
+  const { poolInterior } = outdoorFeatures
+  pool.polygon.forEach(([x, y], index) => {
+    const [innerX, innerY] = poolInterior.polygon[index]
+    expect(innerX - x).toBeCloseTo(Math.sign(pool.label[0] - x) * 0.3)
+    expect(innerY - y).toBeCloseTo(Math.sign(pool.label[1] - y) * 0.3)
+  })
+})
+
+it('places fixtures inside and along both edges of the wood deck and front walk', () => {
+  const frontWalk = house.outdoor.find(zone => zone.key === 'front_walk')!
+  for (const zone of [outdoorFeatures.woodDeck, frontWalk]) {
+    const lights = walkwayLights([zone])
+    expect(lights.length).toBeGreaterThanOrEqual(2)
+    expect(lights.every(({ point }) => contains(zone, point))).toBe(true)
+    const axis = zone === frontWalk ? 0 : 1
+    expect(new Set(lights.map(({ point }) => point[axis])).size).toBe(2)
+  }
+})
 
 describe('landscape placement', () => {
   it('uses seeded placement and populates each plant family within the instance budget', () => {

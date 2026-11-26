@@ -15,6 +15,7 @@ export const en = {
   start: 'Start exploring', loading: 'Loading house…', unavailable: 'This viewer needs WebGL.',
   measureFirst: 'Pick the first point', measureSecond: 'Pick the second point',
   measureAgain: 'Pick a point to start again',
+  drawCalls: 'draw calls', triangles: 'triangles',
 }
 
 export const pt: Record<keyof typeof en, string> = {
@@ -34,6 +35,7 @@ export const pt: Record<keyof typeof en, string> = {
   start: 'Começar a explorar', loading: 'Carregando a casa…', unavailable: 'Este visualizador precisa de WebGL.',
   measureFirst: 'Selecione o primeiro ponto', measureSecond: 'Selecione o segundo ponto',
   measureAgain: 'Selecione um ponto para medir novamente',
+  drawCalls: 'chamadas de desenho', triangles: 'triângulos',
 }
 
 export type Language = 'en' | 'pt-BR'

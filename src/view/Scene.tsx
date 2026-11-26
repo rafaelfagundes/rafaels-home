@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Html, Line, OrbitControls } from '@react-three/drei'
-import { useEffect, useMemo, useRef } from 'react'
+import { Html, Line, OrbitControls, PerformanceMonitor } from '@react-three/drei'
+import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import * as THREE from 'three'
 import { contains, floorElevation, planToWorld, type Point } from '../model/geometry'
 import { collision, house, walkingFloors, whiteCollision, zonePose, zones } from '../model/house'
@@ -10,7 +10,14 @@ import { formatLength } from '../model/units'
 import { createFloorOcclusion, edgeLines, layers } from './model'
 import { finishedLayers, mullions, whiteEave, whiteEaveLines } from './finishedModel'
 import Landscape from './Landscape'
+import { desktop, Lighting, touch } from './Lighting'
 import { getTexture, patterns, type PatternName } from './textures'
+
+const maxDpr = THREE.MathUtils.clamp(window.devicePixelRatio, 1, 2)
+const initialDpr = touch ? Math.min(1.5, maxDpr) : maxDpr
+const rendererOptions = { toneMapping: THREE.ACESFilmicToneMapping, outputColorSpace: THREE.SRGBColorSpace }
+const showStats = new URLSearchParams(window.location.search).has('stats')
+const performanceBounds = (refresh: number): [number, number] => refresh > 90 ? [50, 85] : [35, 55]
 
 const colors = {
   floor: '#dcdedb', paving: '#bec6c5', garden: '#d1dfce', covered: '#d4d7d1',
@@ -18,7 +25,6 @@ const colors = {
   trim: '#a4aeaa', roof: '#faf9f4', ground: '#c8cfca',
 }
 const floorLayers = new Set(['floor', 'paving', 'garden', 'covered', 'ground'])
-const desktop = matchMedia('(pointer: fine) and (min-width: 800px)').matches
 const floorOcclusion = desktop ? createFloorOcclusion() : null
 
 const frameGeometry = new THREE.BoxGeometry()
@@ -32,7 +38,9 @@ mullionMesh.castShadow = true
 mullionMesh.receiveShadow = true
 mullionMesh.userData.pick = true
 
-function FinishedArchitecture({ walk, showRoof }: { walk: boolean; showRoof: boolean }) {
+const warmFinishes = new Set(['plaster', 'stoneTile', 'feature', 'concrete', 'ceilingWood'])
+
+function FinishedArchitecture({ walk, showRoof, night }: { walk: boolean; showRoof: boolean; night: boolean }) {
   return <>
     {finishedLayers.map(({ part, finish, geometry }) => {
       if ((part === 'ceiling' && !walk) || (part === 'eave' && !showRoof)) return null
@@ -40,10 +48,12 @@ function FinishedArchitecture({ walk, showRoof }: { walk: boolean; showRoof: boo
       const pattern = patterns[finish as PatternName]
       const map = pattern ? getTexture(finish as PatternName) : null
       const color = map ? '#ffffff' : pattern?.color ?? (glass ? '#9fc6c4' : finish === 'roofDeck' ? '#77746e' : '#151515')
+      const warm = warmFinishes.has(finish)
       const roughness = glass ? 0.05 : finish === 'concrete' ? patterns.concrete.roughness : 0.85
       return <mesh key={part + ':' + finish} geometry={geometry} userData={{ pick: true, floor: part === 'floor' }}
         castShadow={!glass && (part === 'wall' || part === 'eave')} receiveShadow={!glass}>
         <meshStandardMaterial color={color} map={map} roughness={roughness} metalness={0}
+          emissive="#ffd2a2" emissiveMap={warm ? map : null} emissiveIntensity={night && warm ? 0.25 : 0}
           transparent={glass} opacity={glass ? 0.25 : 1} depthWrite={!glass} />
       </mesh>
     })}
@@ -57,7 +67,7 @@ function Architecture() {
   const showRoof = mode === 'walk' || roofInDollhouse
   const finished = style === 'finished'
   return <>
-    {finished && <FinishedArchitecture walk={mode === 'walk'} showRoof={showRoof} />}
+    {finished && <FinishedArchitecture walk={mode === 'walk'} showRoof={showRoof} night={lighting === 'night'} />}
     {layers.map(([layer, geometry]) => (finished
       ? layer === 'ground'
       : layer !== 'roof' || mode === 'walk') &&
@@ -84,33 +94,10 @@ function Architecture() {
   </>
 }
 
-function Lighting() {
-  const { shadows: quality, style, lighting, roofInDollhouse } = useApp(s => s.settings)
-  const mode = useApp(s => s.mode)
-  const night = lighting === 'night'
-  const finished = style === 'finished'
-  const size = desktop && finished ? 1024 : desktop && quality === 'high' ? 2048 : 512
-  const castShadow = quality !== 'off' && (finished || desktop || quality === 'high')
-  const light = useRef<THREE.DirectionalLight>(null)
-  useEffect(() => {
-    if (light.current) light.current.shadow.needsUpdate = castShadow
-  }, [castShadow, size, style, mode, roofInDollhouse])
-  return <>
-    {night && <color attach="background" args={['#3b4f73']} />}
-    <hemisphereLight args={night ? ['#acc4f7', '#69728d', 0.8] : ['#ffffff', '#b1bab6', 2.12]} />
-    <directionalLight key={size} ref={light} position={[7, 20, 13]}
-      color={night ? '#b9ccff' : finished ? '#fff4e6' : '#ffffff'} intensity={night ? 0.35 : 1.7}
-      castShadow={castShadow} shadow-autoUpdate={false}
-      shadow-mapSize={[size, size]} shadow-camera-left={-32} shadow-camera-right={32}
-      shadow-camera-top={22} shadow-camera-bottom={-22} shadow-camera-far={65}
-      shadow-normalBias={0.035} shadow-bias={-0.00015} shadow-radius={3} />
-    {mode === 'walk' && <ambientLight intensity={night ? 0.12 : 0.28} />}
-  </>
-}
-
 function Walker() {
   const camera = useThree(s => s.camera)
   const height = useRef<number | undefined>(undefined)
+  const floorSample = useRef<{ x: number; z: number; eye: number }>({ x: NaN, z: NaN, eye: 0 })
   const version = useRef(-1)
   const keys = useRef(new Set<string>())
   const movementKeys = useMemo(() => new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']), [])
@@ -151,9 +138,9 @@ function Walker() {
     const side = Math.sin(heading)
     let position = pose.position
     if (!panel) {
-      const pressed = (...names: string[]) => Number(names.some(key => keys.current.has(key)))
-      const forward = joystick[1] + pressed('w', 'arrowup') - pressed('s', 'arrowdown')
-      const right = joystick[0] + pressed('d', 'arrowright') - pressed('a', 'arrowleft')
+      const held = keys.current
+      const forward = joystick[1] + Number(held.has('w') || held.has('arrowup')) - Number(held.has('s') || held.has('arrowdown'))
+      const right = joystick[0] + Number(held.has('d') || held.has('arrowright')) - Number(held.has('a') || held.has('arrowleft'))
       const magnitude = Math.max(1, Math.hypot(forward, right))
       const speed = 2.75 * dt
       if (forward || right) {
@@ -179,11 +166,17 @@ function Walker() {
     if (position[0] !== pose.position[0] || position[1] !== pose.position[1]) {
       useApp.setState({ pose: { ...pose, position } })
     }
-    const floor = floorElevation(position, walkingFloors) + house.meta.eyeHeight
+    const sample = floorSample.current
+    if (position[0] !== sample.x || position[1] !== sample.z) {
+      sample.x = position[0]
+      sample.z = position[1]
+      sample.eye = floorElevation(position, walkingFloors) + house.meta.eyeHeight
+    }
+    const floor = sample.eye
     if (height.current === undefined || version.current !== teleportVersion) height.current = floor
     else height.current = THREE.MathUtils.damp(height.current, floor, 16, dt)
     version.current = teleportVersion
-    camera.position.set(...planToWorld(position, height.current))
+    camera.position.set(position[0], height.current, position[1])
     camera.lookAt(camera.position.x + front * Math.cos(pitch), height.current + Math.sin(pitch), camera.position.z + side * Math.cos(pitch))
   })
   return null
@@ -310,15 +303,42 @@ function Annotations() {
   </>
 }
 
+function RenderStats({ output, language }: { output: RefObject<HTMLDivElement | null>; language: keyof typeof dictionary }) {
+  const sample = useRef({ frames: 0, seconds: 0 })
+  const t = dictionary[language]
+  useFrame(({ gl }, delta) => {
+    const current = sample.current
+    current.frames++
+    current.seconds += delta
+    if (current.seconds < 1) return
+    const { calls, triangles } = gl.info.render
+    if (output.current) {
+      output.current.textContent = `${Math.round(current.frames / current.seconds)} FPS · ${calls} ${t.drawCalls} · ${triangles} ${t.triangles} · ${gl.getPixelRatio().toFixed(2)} DPR`
+    }
+    current.frames = 0
+    current.seconds = 0
+  })
+  return null
+}
+
 export default function Scene() {
   const mode = useApp(s => s.mode)
   const language = useApp(s => s.settings.language)
-  return <Canvas dpr={[1, 2]} shadows camera={{ fov: 55, near: 0.035, far: 180 }}
-    fallback={<p className="loading">{dictionary[language].unavailable}</p>}>
-    <Lighting />
-    <Architecture />
-    {mode === 'walk' ? <Walker /> : <Orbit />}
-    <Gestures />
-    <Annotations />
-  </Canvas>
+  const [dpr, setDpr] = useState(initialDpr)
+  const stats = useRef<HTMLDivElement>(null)
+  return <>
+    <Canvas dpr={dpr} gl={rendererOptions} shadows camera={{ fov: 55, near: 0.035, far: 180 }}
+      fallback={<p className="loading">{dictionary[language].unavailable}</p>}>
+      {maxDpr > 1 && <PerformanceMonitor bounds={performanceBounds}
+        onIncline={() => setDpr(value => Math.min(maxDpr, value + 0.25))}
+        onDecline={() => setDpr(value => Math.max(1, value - 0.25))} />}
+      {showStats && <RenderStats output={stats} language={language} />}
+      <Lighting />
+      <Architecture />
+      {mode === 'walk' ? <Walker /> : <Orbit />}
+      <Gestures />
+      <Annotations />
+    </Canvas>
+    {showStats && <div className="render-stats" ref={stats} />}
+  </>
 }

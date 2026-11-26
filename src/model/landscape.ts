@@ -1,4 +1,4 @@
-import { contains, floorElevation, polygonArea, rectangle, type Floor, type Footprint, type Point } from './geometry'
+import { contains, floorElevation, polygonArea, rectangle, segments, type Floor, type Footprint, type Point } from './geometry'
 import type { Zone } from './house'
 
 type Rect = readonly [number, number, number, number]
@@ -27,7 +27,11 @@ export function createOutdoorFeatures(yard: number, pool: Zone) {
     ],
     holes: [pool.polygon],
   })
-  const poolInterior = footprint([west + 0.3, north + 0.3, east - 0.3, south - 0.3])
+  // Keep each inset vertex paired with its outer corner when building the basin walls.
+  const poolInterior: Footprint = { polygon: pool.polygon.map(([x, y]) => [
+    x === west ? west + 0.3 : east - 0.3,
+    y === north ? north + 0.3 : south - 0.3,
+  ]) }
   // The first tread starts below the paving. Existing camera damping smooths each riser.
   const steps = [0, 1, 2].map(index => ({
     ...footprint([21.4 + index * 0.3, 6.9, 21.7 + index * 0.3, 9.7]),
@@ -54,6 +58,26 @@ export function createOutdoorFeatures(yard: number, pool: Zone) {
     heading: index < 3 ? 0 : Math.PI,
   }))
   return { deck, lounge, woodDeck, loungeApron, apronNotch, poolInterior, poolLights, steps, bench, firePit, fireBasin, fireCenter }
+}
+
+export function walkwayLights(walkways: readonly Zone[]) {
+  return walkways.flatMap(zone => {
+    const edges = segments(zone.polygon)
+    const longEdges = edges.map(([a, b]) => Math.hypot(b[0] - a[0], b[1] - a[1]))
+    const longest = Math.max(...longEdges)
+    return edges.flatMap(([[ax, ay], [bx, by]], index) => {
+      const length = longEdges[index]
+      if (length < longest * 0.9) return []
+      const count = Math.max(1, Math.round(length / 1.55))
+      const heading = -Math.atan2(by - ay, bx - ax)
+      return Array.from({ length: count }, (_, i) => {
+        const t = (i + 0.5) / count
+        const point: Point = [ax + (bx - ax) * t, ay + (by - ay) * t]
+        const inside: Point = [point[0] + Math.sin(heading) * 0.09, point[1] + Math.cos(heading) * 0.09]
+        return { point: contains(zone, inside) ? inside : [2 * point[0] - inside[0], 2 * point[1] - inside[1]] as Point, heading }
+      })
+    })
+  })
 }
 
 export const planters = ([
