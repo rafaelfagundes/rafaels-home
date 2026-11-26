@@ -1,6 +1,9 @@
 export const en = {
   walk: 'Walk', dollhouse: 'Dollhouse', rooms: 'Rooms', measure: 'Measure',
   settings: 'Settings', help: 'Help', close: 'Close', language: 'Language',
+  style: 'Style', finished: 'Finished', white: 'White model', lighting: 'Lighting', day: 'Day', night: 'Night',
+  roofInDollhouse: 'Roof in dollhouse', switchToDay: 'Switch to day', switchToNight: 'Switch to night',
+  fire_lounge: 'Fire-Pit Lounge', wood_deck: 'Wood Deck', pool_deck: 'Pool Deck',
   units: 'Units', imperial: 'Imperial', metric: 'Metric', labels: 'Room labels',
   shadows: 'Shadows', off: 'Off', low: 'Low', high: 'High', clear: 'Clear',
   plan: 'Floor plan', expand: 'Expand plan', collapse: 'Hide plan', showPlan: 'Show plan',
@@ -17,6 +20,9 @@ export const en = {
 export const pt: Record<keyof typeof en, string> = {
   walk: 'Caminhar', dollhouse: 'Maquete', rooms: 'Ambientes', measure: 'Medir',
   settings: 'Configurações', help: 'Ajuda', close: 'Fechar', language: 'Idioma',
+  style: 'Estilo', finished: 'Acabado', white: 'Maquete branca', lighting: 'Iluminação', day: 'Dia', night: 'Noite',
+  roofInDollhouse: 'Telhado na maquete', switchToDay: 'Mudar para dia', switchToNight: 'Mudar para noite',
+  fire_lounge: 'Lounge com Lareira Externa', wood_deck: 'Deck de Madeira', pool_deck: 'Deck da Piscina',
   units: 'Unidades', imperial: 'Imperial', metric: 'Métrico', labels: 'Nomes dos ambientes',
   shadows: 'Sombras', off: 'Desligadas', low: 'Baixa', high: 'Alta', clear: 'Limpar',
   plan: 'Planta baixa', expand: 'Ampliar planta', collapse: 'Ocultar planta', showPlan: 'Mostrar planta',
@@ -47,5 +53,7 @@ const englishRooms: Record<string, string> = {
 }
 
 export function roomName(zone: { key: string; namePt: string }, language: Language) {
+  const { key } = zone
+  if (key === 'fire_lounge' || key === 'wood_deck' || key === 'pool_deck') return dictionary[language][key]
   return language === 'en' && Object.hasOwn(englishRooms, zone.key) ? englishRooms[zone.key] : zone.namePt
 }

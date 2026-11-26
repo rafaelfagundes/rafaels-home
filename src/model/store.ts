@@ -1,3 +1,4 @@
+import { collision, safePosition } from './house'
 import { create } from 'zustand'
 import type { Point, WorldPoint } from './geometry'
 import { helpSeen, loadSettings, rememberHelp, saveSettings, type Settings } from './settings'
@@ -42,6 +43,14 @@ export const useApp = create<State>((set, get) => ({
   changeSettings: patch => {
     const settings = { ...get().settings, ...patch }
     saveSettings(settings)
+    const { pose, settings: previous } = get()
+    if (previous.style === 'white' && settings.style === 'finished' && !collision.isFree(pose.position)) {
+      const position = safePosition(pose.position)
+      if (position) {
+        set({ settings, pose: { ...pose, position }, target: null })
+        return
+      }
+    }
     set({ settings })
   },
   jump: (position, heading) => set(state => ({

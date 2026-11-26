@@ -3,11 +3,13 @@ import { Html, Line, OrbitControls } from '@react-three/drei'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { contains, floorElevation, planToWorld, type Point } from '../model/geometry'
-import { collision, house, zonePose, zones } from '../model/house'
+import { collision, house, whiteCollision, zonePose, zones } from '../model/house'
 import { dictionary, roomName } from '../model/i18n'
 import { useApp } from '../model/store'
 import { formatLength } from '../model/units'
-import { createFloorOcclusion, edgeLines, layers } from './model'
+import { createFloorOcclusion, edgeLines, layers, poolCoping } from './model'
+import { finishedLayers, mullions, whiteEave, whiteEaveLines } from './finishedModel'
+import { getTexture, patterns, type PatternName } from './textures'
 
 const colors = {
   floor: '#dcdedb', paving: '#bec6c5', garden: '#d1dfce', covered: '#d4d7d1',
@@ -18,11 +20,46 @@ const floorLayers = new Set(['floor', 'paving', 'garden', 'covered', 'ground'])
 const desktop = matchMedia('(pointer: fine) and (min-width: 800px)').matches
 const floorOcclusion = desktop ? createFloorOcclusion() : null
 
+const frameGeometry = new THREE.BoxGeometry()
+const frameMaterial = new THREE.MeshStandardMaterial({ color: '#151515', roughness: 0.7 })
+const mullionMesh = new THREE.InstancedMesh(frameGeometry, frameMaterial, mullions.length)
+for (const [index, { position, scale }] of mullions.entries()) {
+  const matrix = new THREE.Matrix4().makeScale(...scale).setPosition(...position)
+  mullionMesh.setMatrixAt(index, matrix)
+}
+mullionMesh.castShadow = true
+mullionMesh.receiveShadow = true
+mullionMesh.userData.pick = true
+
+function FinishedArchitecture({ walk, showRoof }: { walk: boolean; showRoof: boolean }) {
+  return <>
+    {finishedLayers.map(({ part, finish, geometry }) => {
+      if ((part === 'ceiling' && !walk) || (part === 'eave' && !showRoof)) return null
+      const glass = finish === 'glazing'
+      const pattern = patterns[finish as PatternName]
+      const map = pattern ? getTexture(finish as PatternName) : null
+      const color = map ? '#ffffff' : pattern?.color ?? (glass ? '#9fc6c4' : finish === 'roofDeck' ? '#77746e' : '#151515')
+      const roughness = glass ? 0.05 : finish === 'concrete' ? patterns.concrete.roughness : 0.85
+      return <mesh key={part + ':' + finish} geometry={geometry} userData={{ pick: true, floor: part === 'floor' }}
+        castShadow={!glass && (part === 'wall' || part === 'eave')} receiveShadow={!glass}>
+        <meshStandardMaterial color={color} map={map} roughness={roughness} metalness={0}
+          transparent={glass} opacity={glass ? 0.25 : 1} depthWrite={!glass} />
+      </mesh>
+    })}
+    <primitive object={mullionMesh} />
+  </>
+}
+
 function Architecture() {
   const mode = useApp(s => s.mode)
-  const shadows = useApp(s => s.settings.shadows)
+  const { shadows, style, roofInDollhouse } = useApp(s => s.settings)
+  const showRoof = mode === 'walk' || roofInDollhouse
+  const finished = style === 'finished'
   return <>
-    {layers.map(([layer, geometry]) => (layer !== 'roof' || mode === 'walk') &&
+    {finished && <FinishedArchitecture walk={mode === 'walk'} showRoof={showRoof} />}
+    {layers.map(([layer, geometry]) => (finished
+      ? layer === 'ground' || layer === 'basin' || layer === 'water'
+      : layer !== 'roof' || mode === 'walk') &&
       <mesh key={layer} geometry={geometry} userData={{ pick: true, floor: floorLayers.has(layer) }}
         castShadow={layer === 'wall'} receiveShadow={layer !== 'glass'}>
         <meshStandardMaterial color={colors[layer]} roughness={0.95}
@@ -31,29 +68,44 @@ function Architecture() {
           depthWrite={layer !== 'glass'} />
       </mesh>
     )}
-    <lineSegments geometry={edgeLines}>
+    {finished && <mesh geometry={poolCoping} userData={{ pick: true, floor: true }} receiveShadow>
+      <meshStandardMaterial color={colors.covered} roughness={0.95} />
+    </mesh>}
+    {!finished && <lineSegments geometry={edgeLines}>
       <lineBasicMaterial color="#596964" transparent opacity={0.31} />
-    </lineSegments>
+    </lineSegments>}
+    {!finished && showRoof && <>
+      <mesh geometry={whiteEave} userData={{ pick: true }} receiveShadow>
+        <meshStandardMaterial color={colors.roof} roughness={0.95} />
+      </mesh>
+      <lineSegments geometry={whiteEaveLines}>
+        <lineBasicMaterial color="#596964" transparent opacity={0.31} />
+      </lineSegments>
+    </>}
   </>
 }
 
 function Lighting() {
-  const quality = useApp(s => s.settings.shadows)
+  const { shadows: quality, style, lighting, roofInDollhouse } = useApp(s => s.settings)
   const mode = useApp(s => s.mode)
-  const size = quality === 'high' && desktop ? 2048 : 512
-  const castShadow = quality !== 'off' && (desktop || quality === 'high')
+  const night = lighting === 'night'
+  const finished = style === 'finished'
+  const size = desktop && finished ? 1024 : desktop && quality === 'high' ? 2048 : 512
+  const castShadow = quality !== 'off' && (finished || desktop || quality === 'high')
   const light = useRef<THREE.DirectionalLight>(null)
   useEffect(() => {
     if (light.current) light.current.shadow.needsUpdate = castShadow
-  }, [castShadow, size])
+  }, [castShadow, size, style, mode, roofInDollhouse])
   return <>
-    <hemisphereLight args={['#ffffff', '#b1bab6', 2.12]} />
-    <directionalLight key={size} ref={light} position={[7, 20, 13]} intensity={1.7}
+    {night && <color attach="background" args={['#3b4f73']} />}
+    <hemisphereLight args={night ? ['#acc4f7', '#69728d', 0.8] : ['#ffffff', '#b1bab6', 2.12]} />
+    <directionalLight key={size} ref={light} position={[7, 20, 13]}
+      color={night ? '#b9ccff' : finished ? '#fff4e6' : '#ffffff'} intensity={night ? 0.35 : 1.7}
       castShadow={castShadow} shadow-autoUpdate={false}
       shadow-mapSize={[size, size]} shadow-camera-left={-32} shadow-camera-right={32}
       shadow-camera-top={22} shadow-camera-bottom={-22} shadow-camera-far={65}
       shadow-normalBias={0.035} shadow-bias={-0.00015} shadow-radius={3} />
-    {mode === 'walk' && <ambientLight intensity={0.28} />}
+    {mode === 'walk' && <ambientLight intensity={night ? 0.12 : 0.28} />}
   </>
 }
 
@@ -93,6 +145,7 @@ function Walker() {
   useFrame((_, elapsed) => {
     const state = useApp.getState()
     const { pose, target, joystick, panel, teleportVersion } = state
+    const walkCollision = state.settings.style === 'white' ? whiteCollision : collision
     const dt = Math.min(elapsed, 0.05)
     const { heading, pitch } = pose
     const front = Math.cos(heading)
@@ -105,7 +158,7 @@ function Walker() {
       const magnitude = Math.max(1, Math.hypot(forward, right))
       const speed = 2.75 * dt
       if (forward || right) {
-        position = collision.move(position, [(front * forward - side * right) * speed / magnitude, (side * forward + front * right) * speed / magnitude])
+        position = walkCollision.move(position, [(front * forward - side * right) * speed / magnitude, (side * forward + front * right) * speed / magnitude])
         if (target) useApp.setState({ target: null })
       } else if (target) {
         const dx = target[0] - position[0]
@@ -115,7 +168,7 @@ function Walker() {
         if (distance < 0.025) {
           useApp.setState({ target: null })
         } else if (step > 0) {
-          const next = collision.move(position, [dx * step / distance, dy * step / distance])
+          const next = walkCollision.move(position, [dx * step / distance, dy * step / distance])
           // Stop when the direct route is blocked.
           if (Math.hypot(next[0] - position[0] - dx * step / distance, next[1] - position[1] - dy * step / distance) > 1e-6) {
             useApp.setState({ target: null })
@@ -189,7 +242,7 @@ function Gestures() {
     const up = (event: PointerEvent) => {
       const last = gesture
       cancel(event)
-      const { measuring, mode, panel, addPoint } = useApp.getState()
+      const { measuring, mode, panel, addPoint, settings } = useApp.getState()
       if (panel || last?.id !== event.pointerId || last.drag || performance.now() - last.time > 500) return
       const bounds = canvas.getBoundingClientRect()
       ray.setFromCamera(new THREE.Vector2(
@@ -202,11 +255,12 @@ function Gestures() {
         addPoint(hit.point.toArray())
       } else if (hit.object.userData.floor) {
         const target: Point = [hit.point.x, hit.point.z]
-        if (mode === 'walk' && collision.isFree(target)) useApp.setState({ target })
+        const walkCollision = settings.style === 'white' ? whiteCollision : collision
+        if (mode === 'walk' && walkCollision.isFree(target)) useApp.setState({ target })
         if (mode === 'dollhouse' && hit.face && hit.face.normal.y > 0.5) {
           const room = house.rooms.find(zone => contains(zone, target))
           if (room) {
-            const { position, heading } = zonePose(room)
+            const { position, heading } = zonePose(room, walkCollision)
             useApp.getState().jump(position, heading)
           }
         }

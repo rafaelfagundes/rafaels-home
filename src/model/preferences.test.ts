@@ -38,20 +38,26 @@ describe('persisted settings', () => {
     return { getItem: () => value, setItem: (_key: string, next: string) => { value = next } }
   }
 
-  it('defaults to English and Imperial', () => {
-    expect(loadSettings(memoryStore())).toEqual({ ...defaults, language: 'en', units: 'imperial' })
+  it('defaults to English, Imperial, finished daylight, and a hidden dollhouse roof', () => {
+    expect(loadSettings(memoryStore())).toEqual({ language: 'en', units: 'imperial', labels: true, shadows: 'low', style: 'finished', lighting: 'day', roofInDollhouse: false })
   })
 
   it('round-trips all fields', () => {
     const storage = memoryStore()
-    const settings = { language: 'pt-BR', units: 'metric', labels: false, shadows: 'high' } as const
+    const settings = { language: 'pt-BR', units: 'metric', labels: false, shadows: 'high', style: 'white', lighting: 'night', roofInDollhouse: true } as const
     saveSettings(settings, storage)
     expect(loadSettings(storage)).toEqual(settings)
   })
 
+  it('preserves old preferences and supplies the new fields', () => {
+    expect(loadSettings(memoryStore('{"language":"pt-BR","units":"metric","labels":false,"shadows":"off"}'))).toEqual({
+      ...defaults, language: 'pt-BR', units: 'metric', labels: false, shadows: 'off',
+    })
+  })
+
   it('recovers from corrupt data and blocked storage', () => {
     expect(loadSettings(memoryStore('{invalid'))).toEqual(defaults)
-    expect(loadSettings(memoryStore('{"units":"other","shadows":42}'))).toEqual(defaults)
+    expect(loadSettings(memoryStore('{"units":"other","shadows":42,"style":"other","lighting":false,"roofInDollhouse":"true"}'))).toEqual(defaults)
     expect(loadSettings({ ...memoryStore(), getItem: () => { throw new Error('blocked') } })).toEqual(defaults)
   })
 })
