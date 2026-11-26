@@ -16,7 +16,6 @@ import { getTexture, patterns, type PatternName } from './textures'
 const maxDpr = THREE.MathUtils.clamp(window.devicePixelRatio, 1, 2)
 const initialDpr = touch ? Math.min(1.5, maxDpr) : maxDpr
 const rendererOptions = { toneMapping: THREE.ACESFilmicToneMapping, outputColorSpace: THREE.SRGBColorSpace }
-const showStats = new URLSearchParams(window.location.search).has('stats')
 const performanceBounds = (refresh: number): [number, number] => refresh > 90 ? [50, 85] : [35, 55]
 
 const colors = {
@@ -321,24 +320,20 @@ function RenderStats({ output, language }: { output: RefObject<HTMLDivElement | 
   return null
 }
 
-export default function Scene() {
+export default function Scene({ stats }: { stats?: RefObject<HTMLDivElement | null> }) {
   const mode = useApp(s => s.mode)
   const language = useApp(s => s.settings.language)
   const [dpr, setDpr] = useState(initialDpr)
-  const stats = useRef<HTMLDivElement>(null)
-  return <>
-    <Canvas dpr={dpr} gl={rendererOptions} shadows camera={{ fov: 55, near: 0.035, far: 180 }}
-      fallback={<p className="loading">{dictionary[language].unavailable}</p>}>
-      {maxDpr > 1 && <PerformanceMonitor bounds={performanceBounds}
-        onIncline={() => setDpr(value => Math.min(maxDpr, value + 0.25))}
-        onDecline={() => setDpr(value => Math.max(1, value - 0.25))} />}
-      {showStats && <RenderStats output={stats} language={language} />}
-      <Lighting />
-      <Architecture />
-      {mode === 'walk' ? <Walker /> : <Orbit />}
-      <Gestures />
-      <Annotations />
-    </Canvas>
-    {showStats && <div className="render-stats" ref={stats} />}
-  </>
+  return <Canvas dpr={dpr} gl={rendererOptions} shadows camera={{ fov: 55, near: 0.035, far: 180 }}
+    fallback={<p className="loading">{dictionary[language].unavailable}</p>}>
+    {maxDpr > 1 && <PerformanceMonitor bounds={performanceBounds}
+      onIncline={() => setDpr(value => Math.min(maxDpr, value + 0.25))}
+      onDecline={() => setDpr(value => Math.max(1, value - 0.25))} />}
+    {stats && <RenderStats output={stats} language={language} />}
+    <Lighting />
+    <Architecture />
+    {mode === 'walk' ? <Walker /> : <Orbit />}
+    <Gestures />
+    <Annotations />
+  </Canvas>
 }

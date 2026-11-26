@@ -13,6 +13,7 @@ const landscapeFills: Record<string, string> = {
   pool_deck: '#d7cfc1', fire_lounge: '#aba79f', wood_deck: '#ac987e', side_path: '#ac987e',
 }
 
+const showStats = new URLSearchParams(window.location.search).has('stats')
 const Scene = lazy(() => import('./view/Scene'))
 
 const icons = {
@@ -183,6 +184,7 @@ function App() {
   const lightingAction = night ? t.switchToDay : t.switchToNight
   const points = useApp(s => s.points)
   const map = useRef<HTMLDivElement>(null)
+  const stats = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     document.documentElement.lang = language
@@ -203,7 +205,7 @@ function App() {
 
   return <main className="app">
     <div className="viewport" data-style={style} data-lighting={night ? 'night' : 'day'}>
-      <Suspense fallback={<p className="loading">{t.loading}</p>}><Scene /></Suspense>
+      <Suspense fallback={<p className="loading">{t.loading}</p>}><Scene stats={showStats ? stats : undefined} /></Suspense>
     </div>
     <header className="topbar surface">
       <div className="brand"><span className="brand-icon"><Icon name="house" /></span><h1>Rafael’s Home</h1></div>
@@ -215,6 +217,7 @@ function App() {
         onClick={() => changeSettings({ lighting: night ? 'day' : 'night' })}><Icon name={night ? 'moon' : 'sun'} /></button>
       <button className="icon-button top-help" aria-label={t.help} title={t.help}
         onClick={() => setPanel('help')}><Icon name="help" /></button>
+      {showStats && <div className="render-stats" ref={stats} />}
     </header>
     <div className="map surface" ref={map}>
       <button className="icon-button map-show" onClick={() => togglePlan(false)} aria-label={t.showPlan}

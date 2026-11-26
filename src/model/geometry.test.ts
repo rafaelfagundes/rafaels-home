@@ -72,6 +72,19 @@ describe('walking collision', () => {
     for (const zone of zones) expect(collision.isFree(zonePose(zone).position), zone.key).toBe(true)
   })
 
+  it.each(['fire_lounge', 'pool_deck', 'pool', 'terrace', 'garden', 'wood_deck', 'veranda', 'gourmet'])(
+    'faces the indoor centroid from the %s destination',
+    key => {
+      const zone = zones.find(zone => zone.key === key)!
+      // Area-weighted centroid of the indoor floor polygons in the blueprint.
+      const center = [10.22217493154, 7.33087264455]
+      for (const walkCollision of [collision, whiteCollision]) {
+        const { position: [x, y], heading } = zonePose(zone, walkCollision)
+        expect(heading).toBeCloseTo(Math.atan2(center[1] - y, center[0] - x), 8)
+      }
+    },
+  )
+
   it('faces at least four metres of clear space from the living room destination', () => {
     const living = house.rooms.find(zone => zone.key === 'living')!
     const { position: [x, y], heading } = zonePose(living)

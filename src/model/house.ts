@@ -85,26 +85,50 @@ export function safePosition(point: Point, zone?: Zone, walkCollision = collisio
   }
 }
 
-export function zonePose(zone: Zone, walkCollision = collision) {
-  const [x, y] = zone.label
-  const position = zone.kind === 'pool'
-    ? safePosition([Math.max(...zone.polygon.map(point => point[0])) + 0.48, y], undefined, walkCollision)!
-    : safePosition(zone.label, zone, walkCollision) ?? safePosition(zone.label, undefined, walkCollision) ?? zone.label
-  if (!zone.indoor && Math.hypot(x - position[0], y - position[1]) > 0.01) {
-    return { position, heading: Math.atan2(y - position[1], x - position[0]) }
-  }
-
+function centroid(polygon: Ring, fallback: Point): Point {
   let areaTwice = 0
   let centroidX = 0
   let centroidY = 0
-  for (const [[ax, ay], [bx, by]] of segments(zone.polygon)) {
+  for (const [[ax, ay], [bx, by]] of segments(polygon)) {
     const cross = ax * by - bx * ay
     areaTwice += cross
     centroidX += (ax + bx) * cross
     centroidY += (ay + by) * cross
   }
-  const inwardX = (areaTwice ? centroidX / (3 * areaTwice) : x) - position[0]
-  const inwardY = (areaTwice ? centroidY / (3 * areaTwice) : y) - position[1]
+  return areaTwice ? [centroidX / (3 * areaTwice), centroidY / (3 * areaTwice)] : fallback
+}
+
+const indoorCentroid: Point = (() => {
+  let area = 0
+  let x = 0
+  let y = 0
+  for (const room of house.rooms.filter(room => room.indoor)) {
+    const weight = polygonArea(room)
+    const [cx, cy] = centroid(room.polygon, room.label)
+    area += weight
+    x += cx * weight
+    y += cy * weight
+  }
+  return [x / area, y / area]
+})()
+
+const houseFacingZones = new Set(['fire_lounge', 'pool_deck', 'pool', 'terrace', 'garden', 'wood_deck', 'veranda', 'gourmet'])
+
+export function zonePose(zone: Zone, walkCollision = collision) {
+  const [x, y] = zone.label
+  const position = zone.kind === 'pool'
+    ? safePosition([Math.max(...zone.polygon.map(point => point[0])) + 0.48, y], undefined, walkCollision)!
+    : safePosition(zone.label, zone, walkCollision) ?? safePosition(zone.label, undefined, walkCollision) ?? zone.label
+  if (houseFacingZones.has(zone.key)) {
+    return { position, heading: Math.atan2(indoorCentroid[1] - position[1], indoorCentroid[0] - position[0]) }
+  }
+  if (!zone.indoor && Math.hypot(x - position[0], y - position[1]) > 0.01) {
+    return { position, heading: Math.atan2(y - position[1], x - position[0]) }
+  }
+
+  const [cx, cy] = centroid(zone.polygon, zone.label)
+  const inwardX = cx - position[0]
+  const inwardY = cy - position[1]
 
   let heading = 0
   let reach = -1
