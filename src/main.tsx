@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, type PointerEvent, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, type PointerEvent, type ReactNode } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { createRoot } from 'react-dom/client'
 import { house, outdoorFeatures, safePosition, walkCollisionFor, zonePose, zones } from './model/house'
@@ -164,16 +164,6 @@ function Settings() {
   </div>
 }
 
-function ControlsToggle() {
-  const hidden = useApp(s => s.controlsHidden)
-  const toggle = useApp(s => s.toggleControls)
-  const t = dictionary[useApp(s => s.settings.language)]
-  const label = hidden ? t.showControls : t.hideControls
-  return <button className="controls-toggle" aria-label={label} title={label} onClick={toggle}>
-    <Icon name={hidden ? 'eyeOff' : 'eye'} />
-  </button>
-}
-
 function Sheet({ panel, title, children }: { panel: Panel; title: string; children: ReactNode }) {
   const dialog = useRef<HTMLDialogElement>(null)
   const close = useApp(s => s.setPanel)
@@ -191,14 +181,22 @@ function Sheet({ panel, title, children }: { panel: Panel; title: string; childr
       </header>
       <div className="sheet-body">{children}</div>
     </div>
-    <ControlsToggle />
   </dialog>
+}
+
+function toggleControls() {
+  const state = useApp.getState()
+  if (state.panel) state.setPanel(null)
+  state.toggleControls()
 }
 
 function App() {
   const { mode, panel, setMode, setPanel, measuring, toggleMeasure } = useApp(useShallow(s => ({ mode: s.mode, panel: s.panel, setMode: s.setMode, setPanel: s.setPanel, measuring: s.measuring, toggleMeasure: s.toggleMeasure })))
   const language = useApp(s => s.settings.language)
   const controlsHidden = useApp(s => s.controlsHidden)
+  const controlsButton = useRef<HTMLButtonElement>(null)
+  const restoreButton = useRef<HTMLButtonElement>(null)
+  const wasHidden = useRef(controlsHidden)
   const t = dictionary[language]
   const night = useApp(s => s.settings.lighting === 'night')
   const style = useApp(s => s.settings.style)
@@ -207,6 +205,13 @@ function App() {
   const points = useApp(s => s.points)
   const map = useRef<HTMLDivElement>(null)
   const stats = useRef<HTMLDivElement>(null)
+
+  useLayoutEffect(() => {
+    if (controlsHidden === wasHidden.current) return
+    wasHidden.current = controlsHidden
+    const button = controlsHidden ? restoreButton : controlsButton
+    button.current?.focus()
+  }, [controlsHidden])
 
   useEffect(() => {
     document.documentElement.lang = language
@@ -218,7 +223,7 @@ function App() {
     const toggleOnKey = (event: KeyboardEvent) => {
       if (event.key.toLowerCase() !== 'h' || event.repeat || event.metaKey || event.ctrlKey || event.altKey) return
       if (event.target instanceof HTMLElement && (event.target.isContentEditable || event.target.closest('input, textarea, select'))) return
-      useApp.getState().toggleControls()
+      toggleControls()
     }
     document.addEventListener('gesturestart', preventZoom, { passive: false })
     document.addEventListener('keydown', toggleOnKey)
@@ -239,18 +244,21 @@ function App() {
     <div className="viewport" data-style={style} data-lighting={night ? 'night' : 'day'}>
       <Suspense fallback={<p className="loading">{t.loading}</p>}><Scene stats={showStats ? stats : undefined} /></Suspense>
     </div>
-    {(!panel || controlsHidden) && <ControlsToggle />}
+    {controlsHidden && <button ref={restoreButton} className="icon-button controls-restore"
+      aria-label={t.showControls} title={t.showControls} onClick={toggleControls}><Icon name="eyeOff" /></button>}
     <div hidden={controlsHidden}>
       <header className="topbar surface">
         <div className="brand"><span className="brand-icon"><Icon name="house" /></span><h1>{t.appName}</h1></div>
+        <button className="icon-button" aria-label={lightingAction} title={lightingAction}
+          onClick={() => changeSettings({ lighting: night ? 'day' : 'night' })}><Icon name={night ? 'moon' : 'sun'} /></button>
+        <button className="icon-button" aria-label={t.help} title={t.help}
+          onClick={() => setPanel('help')}><Icon name="help" /></button>
+        <button ref={controlsButton} className="icon-button" aria-label={t.hideControls} title={t.hideControls}
+          onClick={toggleControls}><Icon name="eye" /></button>
         <div className="modes">
           {(['walk', 'dollhouse'] as const).map(value => <button key={value} aria-pressed={mode === value}
             onClick={() => setMode(value)}><Icon name={value} />{t[value]}</button>)}
         </div>
-        <button className="icon-button" aria-label={lightingAction} title={lightingAction}
-          onClick={() => changeSettings({ lighting: night ? 'day' : 'night' })}><Icon name={night ? 'moon' : 'sun'} /></button>
-        <button className="icon-button top-help" aria-label={t.help} title={t.help}
-          onClick={() => setPanel('help')}><Icon name="help" /></button>
         {showStats && <div className="render-stats" ref={stats} />}
       </header>
       <div className="map surface" ref={map}>

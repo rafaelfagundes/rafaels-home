@@ -124,7 +124,7 @@ The reference photos set the look; anything they and the blueprint don't settle 
 
 ## v4 changes
 
-The viewer starts in Dollhouse by default. Settings can switch the next startup to Walk. Drag the 1.70 m mannequin to set where Walk begins. The first-person camera sits 1.58 m above the floor. The eye button or **H** hides and restores the controls. The furniture tables below reflect the v4 placements, and the site uses the supplied favicon and app icons.
+The viewer starts in Dollhouse by default. Settings can switch the next startup to Walk. Drag the 1.70 m mannequin to set where Walk begins. The first-person camera sits 1.58 m above the floor. The top-bar eye button or **H** hides the controls. Use the top-right eye button or **H** to restore them. The furniture tables below reflect the v4 placements, and the site uses the supplied favicon and app icons.
 
 ## v3 furniture, appliances and vehicles – assumptions (updated for v4)
 
@@ -132,29 +132,29 @@ The tables use implemented placements, including small offsets for fit. Centres 
 
 ### Semi-suite 1
 
-The queen mattress measures 1.58 × 1.98 m. The headboard is on the south wall and the wardrobe is on the east wall.
+The queen mattress measures 1.58 × 1.98 m. The headboard, pillows and nightstands are at the south end, with the wardrobe on the east wall and desk in the northwest corner.
 
 | Item | Centre(s) | Size | Facing | Lift |
 | --- | --- | --- | --- | --- |
-| Queen bed | (5.40, 4.437) | 1.70 × 2.12 × 1.05 | 270° | — |
-| Nightstand | (4.25, 5.307)<br>(6.55, 5.307) | 0.45 × 0.38 × 0.50 | 270° | — |
+| Queen bed | (5.531, 4.437) | 1.70 × 2.12 × 1.05 | 270° | — |
+| Nightstand | (4.381, 5.307)<br>(6.681, 5.307) | 0.45 × 0.38 × 0.50 | 270° | — |
 | Wardrobe | (7.578, 2.95) | 1.60 × 0.60 × 2.40 | 180° | — |
-| Desk | (4.165, 2.73) | 1.20 × 0.55 × 0.75 | 0° | — |
-| Desk chair | (4.74, 2.73) | 0.46 × 0.50 × 0.82 | 180° | — |
-| Rug | (5.40, 3.90) | 1.60 × 2.40 × 0.01 | 270° | — |
+| Desk | (4.134, 2.65) | 1.00 × 0.50 × 0.75 | 0° | — |
+| Desk chair | (4.62, 2.65) | 0.46 × 0.50 × 0.82 | 180° | — |
+| Rug | (5.531, 3.96) | 1.60 × 2.40 × 0.01 | 0° | — |
 
 ### Semi-suite 2
 
-The queen mattress measures 1.58 × 1.98 m. The headboard is on the south wall and the wardrobe is on the west wall.
+The queen mattress measures 1.58 × 1.98 m. Every furnishing matches semi-suite 1, with its centre shifted exactly 6.24 m east.
 
 | Item | Centre(s) | Size | Facing | Lift |
 | --- | --- | --- | --- | --- |
-| Queen bed | (11.90, 4.437) | 1.70 × 2.12 × 1.05 | 270° | — |
-| Nightstand | (10.75, 5.307)<br>(13.05, 5.307) | 0.45 × 0.38 × 0.50 | 270° | — |
-| Wardrobe | (10.422, 2.95) | 1.60 × 0.60 × 2.40 | 0° | — |
-| Desk | (13.836, 2.73) | 1.20 × 0.55 × 0.75 | 180° | — |
-| Desk chair | (13.26, 2.73) | 0.46 × 0.50 × 0.82 | 0° | — |
-| Rug | (11.90, 3.90) | 1.60 × 2.40 × 0.01 | 270° | — |
+| Queen bed | (11.771, 4.437) | 1.70 × 2.12 × 1.05 | 270° | — |
+| Nightstand | (10.621, 5.307)<br>(12.921, 5.307) | 0.45 × 0.38 × 0.50 | 270° | — |
+| Wardrobe | (13.818, 2.95) | 1.60 × 0.60 × 2.40 | 180° | — |
+| Desk | (10.374, 2.65) | 1.00 × 0.50 × 0.75 | 0° | — |
+| Desk chair | (10.86, 2.65) | 0.46 × 0.50 × 0.82 | 180° | — |
+| Rug | (11.771, 3.96) | 1.60 × 2.40 × 0.01 | 0° | — |
 
 ### Shared bathroom
 
@@ -181,17 +181,17 @@ The king mattress measures 1.93 × 2.03 m. The headboard is on the west wall and
 | Nightstand | (14.443, 2.60)<br>(14.443, 5.30) | 0.50 × 0.40 × 0.50 | 0° | — |
 | Bench | (16.65, 3.95) | 1.40 × 0.42 × 0.45 | 0° | — |
 | Rug | (15.70, 3.95) | 2.60 × 1.90 × 0.01 | 0° | — |
-| Plant | (15.45, 6.317) | 0.60 × 0.60 × 1.34 | 270° | — |
+| Plant | (15.43, 6.317) | 0.60 × 0.60 × 1.34 | 270° | — |
 
 ### Closet
 
-The built-in joinery wraps around three sides, with full-height wardrobes on the north and east walls and an open shelving return on the west.
+The built-in joinery wraps around three sides, with full-height wardrobes on the north and west walls and an open shelving return on the east.
 
 | Item | Centre(s) | Size | Facing | Lift |
 | --- | --- | --- | --- | --- |
 | Wardrobe | (18.458, 2.421) | 1.84 × 0.60 × 2.40 | 90° | — |
-| Wardrobe | (19.078, 3.136) | 0.83 × 0.60 × 2.40 | 180° | — |
-| Open shelving return | (17.715, 3.011) | 0.58 × 0.35 × 2.40 | 0° | — |
+| Wardrobe | (17.84, 3.141) | 0.83 × 0.60 × 2.40 | 0° | — |
+| Open shelving return | (19.201, 3.011) | 0.58 × 0.35 × 2.40 | 180° | — |
 
 ### Master bath
 
@@ -201,7 +201,7 @@ The vanity and rain head are on the west wall. Fixed glass screens the west part
 | --- | --- | --- | --- | --- |
 | Vanity | (17.913, 4.90) | 1.20 × 0.50 × 0.85 | 0° | — |
 | Mirror | (17.68, 4.90) | 0.90 × 0.03 × 0.80 | 0° | 1.05 |
-| Toilet | (19.038, 5.10) | 0.37 × 0.68 × 0.80 | 180° | — |
+| Toilet | (19.038, 5.12) | 0.37 × 0.68 × 0.80 | 180° | — |
 | Shower tray | (18.523, 6.182) | 1.72 × 0.87 × 0.05 | 270° | — |
 | Shower glass | (18.183, 5.75) | 1.04 × 0.05 × 2.00 | 270° | — |
 | Shower head | (17.85, 6.185) | 0.24 × 0.36 × 0.08 | 0° | 2.10 |
@@ -212,15 +212,15 @@ The three-seat sofa faces the coffee table and wall-mounted 65-inch TV. The west
 
 | Item | Centre(s) | Size | Facing | Lift |
 | --- | --- | --- | --- | --- |
-| Sofa | (5.90, 8.75) | 2.40 × 0.95 × 0.80 | 270° | — |
-| Coffee table | (5.90, 7.60) | 1.10 × 0.60 × 0.38 | 270° | — |
-| Media console | (5.70, 5.85) | 2.00 × 0.45 × 0.50 | 90° | — |
-| TV | (5.60, 5.655) | 1.45 × 0.05 × 0.84 | 90° | 0.95 |
-| Armchair | (4.65, 7.05) | 0.82 × 0.99 × 1.02 | 0° | — |
-| Lounge chair | (7.507, 6.60) | 1.01 × 1.19 × 1.17 | 135° | — |
-| Rug | (5.90, 7.60) | 2.80 × 2.00 × 0.01 | 270° | — |
-| Floor lamp | (4.40, 8.95) | 0.35 × 0.35 × 1.60 | 0° | — |
-| Plant | (4.40, 5.98) | 0.60 × 0.60 × 1.34 | 0° | — |
+| Sofa | (6.30, 8.75) | 2.40 × 0.95 × 0.80 | 270° | — |
+| Coffee table | (6.10, 7.60) | 1.10 × 0.60 × 0.38 | 270° | — |
+| Media console | (5.975, 5.85) | 2.00 × 0.45 × 0.50 | 90° | — |
+| TV | (5.975, 5.655) | 1.45 × 0.05 × 0.84 | 90° | 0.95 |
+| Armchair | (4.55, 8.56) | 0.82 × 0.99 × 1.02 | 0° | — |
+| Lounge chair | (7.40, 7.60) | 1.01 × 1.19 × 1.17 | 180° | — |
+| Rug | (6.10, 7.60) | 2.80 × 2.00 × 0.01 | 270° | — |
+| Floor lamp | (4.35, 9.30) | 0.35 × 0.35 × 1.60 | 0° | — |
+| Plant | (4.40, 9.90) | 0.60 × 0.60 × 1.34 | 0° | — |
 | Entry console | (4.185, 10.80) | 1.20 × 0.35 × 0.80 | 0° | — |
 | ESTANTE divider | (6.20, 11.285) | 3.17 × 0.30 × 2.40 | 180° | — |
 
@@ -230,18 +230,18 @@ The table seats eight, with three chairs on each long side and one at each end. 
 
 | Item | Centre(s) | Size | Facing | Lift |
 | --- | --- | --- | --- | --- |
-| Dining table | (10.30, 7.60) | 2.20 × 1.00 × 0.75 | 90° | — |
-| Dining chair | (9.55, 6.80)<br>(10.30, 6.80)<br>(11.05, 6.80) | 0.48 × 0.52 × 0.80 | 90° | — |
-| Dining chair | (9.55, 8.40)<br>(10.30, 8.40)<br>(11.05, 8.40) | 0.48 × 0.52 × 0.80 | 270° | — |
-| Dining chair | (8.88, 7.60) | 0.48 × 0.52 × 0.80 | 0° | — |
-| Dining chair | (11.72, 7.60) | 0.48 × 0.52 × 0.80 | 180° | — |
+| Dining table | (10.05, 7.60) | 2.20 × 1.00 × 0.75 | 90° | — |
+| Dining chair | (9.30, 6.80)<br>(10.05, 6.80)<br>(10.80, 6.80) | 0.48 × 0.52 × 0.80 | 90° | — |
+| Dining chair | (9.30, 8.40)<br>(10.05, 8.40)<br>(10.80, 8.40) | 0.48 × 0.52 × 0.80 | 270° | — |
+| Dining chair | (8.63, 7.60) | 0.48 × 0.52 × 0.80 | 0° | — |
+| Dining chair | (11.47, 7.60) | 0.48 × 0.52 × 0.80 | 180° | — |
 | Sideboard | (10.00, 5.85) | 2.60 × 0.45 × 0.75 | 90° | — |
-| Linear pendant | (10.30, 7.60) | 1.35 × 0.10 × 0.12 | 90° | 2.10 |
-| Bar stool | (8.60, 9.55)<br>(9.25, 9.55)<br>(9.90, 9.55) | 0.42 × 0.42 × 0.75 | 90° | — |
+| Linear pendant | (10.05, 7.60) | 1.35 × 0.10 × 0.12 | 90° | 2.10 |
+| Bar stool | (8.60, 9.55)<br>(9.25, 9.55)<br>(9.90, 9.55) | 0.42 × 0.42 × 0.65 | 90° | — |
 
 ### Kitchen
 
-The south run has white-oak fronts, a white quartz top, an undermount sink and tall faucet at x = 7.73 m, and a 0.60 m integrated dishwasher centred at x = 7.15 m. The tall column has a black-glass oven from 0.85 to 1.45 m and a combi microwave above it. The stainless fridge is east of P11. The island has a 0.60 × 0.52 m black induction cooktop at x = 8.27 m and an oak breakfast bar to the north. The stainless hood is above the cooktop and its duct runs from 2.32 to 3.00 m above the floor. Two small black pendants hang above the bar.
+The south run has white-oak fronts, a white quartz top, an undermount sink and tall faucet at x = 7.73 m, and a 0.60 m integrated dishwasher centred at x = 7.15 m. The tall column has a black-glass oven from 0.85 to 1.45 m and a combi microwave above it. The stainless fridge is east of P11. The island has a 0.60 × 0.52 m black induction cooktop at x = 8.27 m and an oak breakfast bar flush with its 0.90 m top to the north. The counter stools have 0.65 m seats. The stainless hood is above the cooktop and its duct runs from 2.32 to 3.00 m above the floor. Two small black pendants hang above the bar.
 
 | Item | Centre(s) | Size | Facing | Lift |
 | --- | --- | --- | --- | --- |
@@ -249,20 +249,20 @@ The south run has white-oak fronts, a white quartz top, an undermount sink and t
 | Oven column | (8.70, 12.57) | 0.60 × 0.60 × 2.30 | 270° | — |
 | Fridge | (10.805, 12.495) | 0.91 × 0.75 × 1.85 | 270° | — |
 | Island | (9.11, 10.668) | 2.50 × 0.90 × 0.90 | 90° | — |
-| Breakfast bar | (9.11, 10.043) | 2.71 × 0.35 × 1.05 | 270° | — |
+| Breakfast bar | (9.11, 10.043) | 2.71 × 0.35 × 0.90 | 270° | — |
 | Hood | (8.27, 10.668) | 0.90 × 0.50 × 0.12 | 90° | 2.20 |
 | Pendant | (9.30, 10.043)<br>(10.20, 10.043) | 0.16 × 0.16 × 0.20 | 90° | 2.10 |
 
 ### Laundry
 
-The plan’s ARMÁRIO is a tall cabinet beside a white laundry basin on a cabinet with a tap. The dryer is stacked 0.85 m above the washer.
+The plan’s ARMÁRIO is a tall cabinet across from a white laundry basin on a cabinet with a tap. The dryer is stacked 0.85 m above the washer.
 
 | Item | Centre(s) | Size | Facing | Lift |
 | --- | --- | --- | --- | --- |
-| Laundry cabinet | (10.773, 13.575) | 0.95 × 0.45 × 2.20 | 180° | — |
-| Laundry tank | (10.698, 14.575) | 0.65 × 0.60 × 0.90 | 180° | — |
-| Washer | (10.688, 15.26) | 0.60 × 0.62 × 0.85 | 180° | — |
-| Dryer | (10.688, 15.26) | 0.60 × 0.62 × 0.85 | 180° | 0.85 |
+| Laundry cabinet | (10.65, 13.575) | 0.95 × 0.45 × 2.20 | 180° | — |
+| Laundry tank | (9.305, 14.50) | 0.65 × 0.60 × 0.90 | 0° | — |
+| Washer | (10.688, 14.885) | 0.60 × 0.62 × 0.85 | 180° | — |
+| Dryer | (10.688, 14.885) | 0.60 × 0.62 × 0.85 | 180° | 0.85 |
 
 ### Powder room
 
@@ -294,8 +294,8 @@ The outdoor sofa and two armchairs face across the coffee table.
 
 | Item | Centre(s) | Size | Facing | Lift |
 | --- | --- | --- | --- | --- |
-| Outdoor sofa | (13.15, 9.50) | 2.20 × 0.90 × 0.75 | 0° | — |
-| Coffee table | (14.25, 9.50) | 1.00 × 0.60 × 0.38 | 0° | — |
+| Outdoor sofa | (15.20, 9.50) | 2.20 × 0.90 × 0.75 | 180° | — |
+| Coffee table | (14.10, 9.50) | 1.00 × 0.60 × 0.38 | 0° | — |
 | Outdoor armchair | (14.25, 8.35) | 0.75 × 0.80 × 0.75 | 90° | — |
 | Outdoor armchair | (14.25, 10.65) | 0.75 × 0.80 × 0.75 | 270° | — |
 
@@ -314,17 +314,17 @@ The cars park nose-in toward +x. The motorcycle sits crosswise beyond the Golf�
 
 | Item | Centre(s) | Size | Facing | Lift |
 | --- | --- | --- | --- | --- |
-| BMW X5 stand-in | (5.79, 14.90) | 2.10 × 4.92 × 1.75 | 0° | — |
-| VW Golf R stand-in | (5.475, 17.52) | 1.86 × 4.29 × 1.46 | 0° | — |
+| BMW X5 stand-in | (5.79, 15.05) | 2.10 × 4.92 × 1.75 | 0° | — |
+| VW Golf R stand-in | (5.475, 17.56) | 1.86 × 4.29 × 1.46 | 0° | — |
 | Suzuki Hayabusa stand-in | (8.20, 17.40) | 0.74 × 2.18 × 1.17 | 270° | — |
 
 Clearances computed by garageFit().
 
 | Clearance | Metres |
 | --- | ---: |
-| North walkway | 0.85 |
-| X5 to Golf side gap | 0.64 |
-| Golf to south wall | 0.25 |
+| North walkway | 1.00 |
+| X5 to Golf side gap | 0.53 |
+| Golf to south wall | 0.21 |
 | X5 front to back wall | 0.63 |
 | Golf front to motorcycle | 0.21 |
 | Motorcycle to east wall | 0.31 |
@@ -332,6 +332,8 @@ Clearances computed by garageFit().
 | Roof clearance above the tallest vehicle | 1.25 |
 
 ### Rendering, collision and settings
+
+- **Layout tests.** Vitest checks the 0.8 m zone on each side of doors, passages and full-height glazing, including outdoor furniture and vehicles. It also checks same-room footprint overlaps with a small allowlist, 0.6 m routes from P01 and P02, 0.6 m desk pull-out zones with 0.2 m bed clearance, semi-suite translation, and counter and stool heights.
 
 - **Collision.** Furniture and vehicles use rotated rectangular footprints. Shower glass counts as a collider (0.04 m thick in the shared bath and 0.05 m in the master bath). The dining table adds 0.35 m per side, and the gourmet table adds 0.15 m per side. Dining and gourmet chairs, bar stools, rugs, shower trays and fittings, mirrors, the TV, the hood, pendants and the stacked dryer are visual only. The island and breakfast bar each have a footprint, and the washer provides the footprint for the stack.
 - **Procedural and GLB models.** Beds, seating other than the two living-room chairs, cabinetry, tables, rugs, lighting fixtures, built-in kitchen and gourmet equipment, and bathroom fittings other than toilets are original procedural geometry. The fridge, washer, dryer, three toilets, living-room armchair and lounge chair, and two plants come from furniture.glb. The three vehicles come from vehicles.glb. Procedural pieces use merged geometry and instancing. GLB nodes with a lower-detail version switch to it at 7 m.

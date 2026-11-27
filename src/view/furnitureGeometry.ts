@@ -102,7 +102,7 @@ function bed(p: Piece) {
   p.box('linen', w - 0.06, h - 0.20, 0.12, 0, (h + 0.20) / 2, -d / 2 + 0.06, 0.05)
   p.box('bedding', width, 0.22, depth, 0, 0.42, 0.05, 0.05)
   p.box('bedding', width + 0.03, 0.075, depth * 0.71, 0, 0.54, depth * 0.19, 0.035)
-  p.box('linen', width + 0.045, 0.09, 0.48, 0, 0.57, d / 2 - 0.26, 0.038)
+  p.box('linen', width + 0.04, 0.026, 0.44, 0, 0.582, d / 2 - 0.26, 0.012)
   for (const x of [-width * 0.24, width * 0.24]) {
     p.box('bedding', width * 0.43, 0.15, 0.43, x, 0.59, -d / 2 + 0.37, 0.065, 0.18)
   }
@@ -379,7 +379,8 @@ const builders: Record<ProceduralKind, (p: Piece) => void> = {
     cooktop(p, 'inductionCooktop')
   },
   breakfastBar: p => {
-    p.box('oak', p.w, 0.065, p.d, 0, p.h - 0.0325, 0, 0.012)
+    // Leave a 2 mm seam between the flush oak and quartz tops.
+    p.box('oak', p.w, 0.065, p.d - 0.004, 0, p.h - 0.0325, 0, 0.012)
     for (const x of [-p.w * 0.43, p.w * 0.43]) p.box('oak', 0.06, p.h - 0.06, 0.10, x, (p.h - 0.06) / 2, p.d * 0.30, 0.008)
   },
   barStool: p => {

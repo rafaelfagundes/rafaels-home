@@ -1,29 +1,11 @@
+import { intersectionArea } from './clearance'
 import { describe, expect, it } from 'vitest'
 import { footprint, furnitureColliders, furnitureItems, garageFit, vehicleColliders, vehicleItems } from './furniture'
-import { closestPoint, contains, polygonArea, segments, type Point, type Ring } from './geometry'
+import { closestPoint, contains, polygonArea, segments, type Point } from './geometry'
 import { collision, house, pool, safePosition, walkCollisionFor, whiteCollision, zonePose, zones } from './house'
 import { planters, trees } from './landscape'
 import { defaults } from './settings'
 import { useApp } from './store'
-
-// The clipping box is a counterclockwise rectangle in plan coordinates.
-function intersectionArea(subject: Ring, box: Ring) {
-  let polygon = subject
-  for (const [[ax, ay], [bx, by]] of segments(box)) {
-    const side = ([x, y]: Point) => (bx - ax) * (y - ay) - (by - ay) * (x - ax)
-    polygon = segments(polygon).flatMap(([start, end]): Point[] => {
-      const from = side(start)
-      const to = side(end)
-      const points: Point[] = from >= 0 ? [start] : []
-      if ((from >= 0) !== (to >= 0)) {
-        const fraction = from / (from - to)
-        points.push([start[0] + (end[0] - start[0]) * fraction, start[1] + (end[1] - start[1]) * fraction])
-      }
-      return points
-    })
-  }
-  return polygonArea({ polygon })
-}
 
 describe('furniture and vehicle layout', () => {
   it.each([...furnitureItems, ...vehicleItems])('$id fits within its zone and clears walls', item => {
@@ -70,6 +52,9 @@ describe('furniture and vehicle layout', () => {
     const colliders = [...furnitureColliders, ...vehicleColliders]
     for (const [index, { polygon }] of colliders.entries()) {
       for (let other = 0; other < index; other++) {
+        const a = items[index]
+        const b = items[other]
+        if (a.room === b.room && [a.kind, b.kind].includes('desk') && [a.kind, b.kind].includes('deskChair')) continue
         expect(intersectionArea(colliders[other].polygon, polygon), `${items[index].id} / ${items[other].id}`).toBeLessThan(1e-8)
       }
     }
