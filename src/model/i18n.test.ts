@@ -13,3 +13,18 @@ test.each(['index.html', 'public/manifest.webmanifest'])('uses the new app name 
   expect(contents).toContain("Rafael's House")
   expect(contents).not.toMatch(/Rafael['’]s Home/i)
 })
+
+test('redirects the old Vercel host to the Open Graph URL host', () => {
+  const config = JSON.parse(readFileSync(resolve(process.cwd(), 'vercel.json'), 'utf8'))
+  expect(config.redirects).toEqual([
+    {
+      source: '/:path*',
+      has: [{ type: 'host', value: 'rafaels-home.vercel.app' }],
+      destination: 'https://rafaels-house.vercel.app/:path*',
+      permanent: true,
+    },
+  ])
+
+  const html = readFileSync(resolve(process.cwd(), 'index.html'), 'utf8')
+  expect(html).toContain('<meta property="og:url" content="https://rafaels-house.vercel.app/">')
+})
