@@ -1,6 +1,8 @@
-# Rafael's Home
+# Rafael's House
 
-A mobile-first 3D walkthrough and dollhouse view of Rafael’s single-storey home, built from the extracted AutoCAD blueprint. The model uses metres internally and supports English and Brazilian Portuguese, with Imperial or metric display units.
+A mobile-first 3D walkthrough and dollhouse view of Rafael’s single-storey house, built from the extracted AutoCAD blueprint. The model uses metres internally and supports English and Brazilian Portuguese, with Imperial or metric display units.
+
+The display name is Rafael's House in English and Casa do Rafael in Brazilian Portuguese. The repository, package, and Vercel project and URL intentionally keep the `rafaels-home` slug. The `rafaels-home:*` localStorage keys also keep that slug so saved settings carry over.
 
 ## Run locally
 

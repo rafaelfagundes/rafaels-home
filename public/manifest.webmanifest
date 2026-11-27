@@ -1,6 +1,8 @@
 {
-  "name": "Rafael's Home",
-  "short_name": "Rafael's Home",
+  "name": "Rafael's House",
+  "short_name": "Rafael's House",
+  "description": "A 3D walkthrough and dollhouse view of Rafael's house, built from the architectural blueprint.",
+  "lang": "en",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#edf0f0",

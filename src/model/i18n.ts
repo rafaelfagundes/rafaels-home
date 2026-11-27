@@ -1,4 +1,5 @@
 export const en = {
+  appName: 'Rafael’s House',
   walk: 'Walk', dollhouse: 'Dollhouse', rooms: 'Rooms', measure: 'Measure',
   settings: 'Settings', help: 'Help', close: 'Close', language: 'Language',
   style: 'Style', finished: 'Finished', white: 'White model', lighting: 'Lighting', day: 'Day', night: 'Night',
@@ -8,7 +9,7 @@ export const en = {
   shadows: 'Shadows', off: 'Off', low: 'Low', high: 'High', clear: 'Clear',
   plan: 'Floor plan', expand: 'Expand plan', collapse: 'Hide plan', showPlan: 'Show plan',
   inside: 'Interior', outside: 'Outdoor', move: 'Movement joystick',
-  helpTitle: "Explore Rafael’s Home",
+  helpTitle: 'Explore Rafael’s House',
   helpWalk: 'Drag to look around. Use the joystick, WASD, or arrow keys to move. Tap a floor to walk there.',
   helpOrbit: 'In Dollhouse, drag to orbit, pinch or scroll to zoom, and use two fingers or right-drag to pan.',
   helpRooms: 'Choose a room to jump there, or use Measure to pick two points on the model.',
@@ -19,6 +20,7 @@ export const en = {
 }
 
 export const pt: Record<keyof typeof en, string> = {
+  appName: 'Casa do Rafael',
   walk: 'Caminhar', dollhouse: 'Maquete', rooms: 'Ambientes', measure: 'Medir',
   settings: 'Configurações', help: 'Ajuda', close: 'Fechar', language: 'Idioma',
   style: 'Estilo', finished: 'Acabado', white: 'Maquete branca', lighting: 'Iluminação', day: 'Dia', night: 'Noite',
@@ -28,7 +30,7 @@ export const pt: Record<keyof typeof en, string> = {
   shadows: 'Sombras', off: 'Desligadas', low: 'Baixa', high: 'Alta', clear: 'Limpar',
   plan: 'Planta baixa', expand: 'Ampliar planta', collapse: 'Ocultar planta', showPlan: 'Mostrar planta',
   inside: 'Interior', outside: 'Área externa', move: 'Controle de movimento',
-  helpTitle: 'Explore a casa do Rafael',
+  helpTitle: 'Explore a Casa do Rafael',
   helpWalk: 'Arraste para olhar ao redor. Use o controle, as teclas WASD ou as setas para se mover. Toque no piso para ir até lá.',
   helpOrbit: 'Na Maquete, arraste para girar, use a pinça ou a roda para aproximar e use dois dedos ou o botão direito para deslocar.',
   helpRooms: 'Escolha um ambiente para ir até ele ou use Medir para selecionar dois pontos na maquete.',

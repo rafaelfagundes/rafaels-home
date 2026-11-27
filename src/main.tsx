@@ -188,7 +188,8 @@ function App() {
 
   useEffect(() => {
     document.documentElement.lang = language
-  }, [language])
+    document.title = t.appName
+  }, [language, t.appName])
 
   useEffect(() => {
     const preventZoom = (event: Event) => event.preventDefault()
@@ -208,7 +209,7 @@ function App() {
       <Suspense fallback={<p className="loading">{t.loading}</p>}><Scene stats={showStats ? stats : undefined} /></Suspense>
     </div>
     <header className="topbar surface">
-      <div className="brand"><span className="brand-icon"><Icon name="house" /></span><h1>Rafael’s Home</h1></div>
+      <div className="brand"><span className="brand-icon"><Icon name="house" /></span><h1>{t.appName}</h1></div>
       <div className="modes">
         {(['walk', 'dollhouse'] as const).map(value => <button key={value} aria-pressed={mode === value}
           onClick={() => setMode(value)}><Icon name={value} />{t[value]}</button>)}
