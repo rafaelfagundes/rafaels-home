@@ -1,6 +1,6 @@
 import { rectangle, type Footprint, type Ring } from './geometry'
 
-type Kind =
+export type Kind =
   | 'bedQueen' | 'bedKing' | 'nightstand' | 'wardrobe' | 'desk' | 'deskChair' | 'rug'
   | 'toilet' | 'showerTray' | 'showerGlass' | 'showerHead' | 'showerMixer' | 'vanity' | 'mirror'
   | 'bench' | 'plant' | 'openShelving' | 'ottoman' | 'sofa' | 'coffeeTable' | 'mediaConsole' | 'tv'
@@ -209,7 +209,7 @@ export function footprint({ center: [x, y], size: [width, depth], facing }: Furn
     [x + side * dy + front * dx, y - side * dx + front * dy])
 }
 
-function colliders(items: FurnitureItem[]): Footprint[] {
+export function colliders(items: FurnitureItem[]): Footprint[] {
   return items.filter(item => item.collider !== false).map(item => {
     const margin = item.kind === 'diningTable' ? 0.35 : item.kind === 'outdoorTable' ? 0.15 : 0
     const [width, depth, height] = item.size

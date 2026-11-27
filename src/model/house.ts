@@ -2,7 +2,9 @@ import raw from '../data/house.json'
 import { EYE_HEIGHT } from './person'
 import { createOutdoorFeatures, planters, trees } from './landscape'
 import { createCollision } from './collision'
-import { furnitureColliders, vehicleColliders } from './furniture'
+import { colliders } from './furniture'
+import { effectiveLayout, type LayoutChanges } from './layout'
+import { useLayout } from './layoutStore'
 import type { Settings } from './settings'
 import { contains, polygonArea, rectangle, segments, type Floor, type Footprint, type Point, type Ring } from './geometry'
 
@@ -77,16 +79,22 @@ const finishedObstacles = [
   ...obstacles,
   { polygon: rectangle([p10.rect[0], p10.rect[1], p10.rect[2], p10FixedEnd]) },
 ]
-const walkCollisions = new Map<number, ReturnType<typeof createCollision>>()
+const collisionCache = new WeakMap<LayoutChanges, Map<number, ReturnType<typeof createCollision>>>()
 
-export function walkCollisionFor({ style, furniture, vehicles }: Pick<Settings, 'style' | 'furniture' | 'vehicles'>) {
+export function walkCollisionFor({ style, furniture, vehicles }: Pick<Settings, 'style' | 'furniture' | 'vehicles'>, changes = useLayout.getState().changes) {
+  let walkCollisions = collisionCache.get(changes)
+  if (!walkCollisions) {
+    walkCollisions = new Map()
+    collisionCache.set(changes, walkCollisions)
+  }
   const key = (style === 'white' ? 4 : 0) + (furniture ? 2 : 0) + (vehicles ? 1 : 0)
   const cached = walkCollisions.get(key)
   if (cached) return cached
+  const layout = effectiveLayout(changes)
   const walkCollision = createCollision(house.lot, [
     ...(style === 'white' ? obstacles : finishedObstacles),
-    ...(furniture ? furnitureColliders : []),
-    ...(vehicles ? vehicleColliders : []),
+    ...(furniture ? colliders(layout.furniture) : []),
+    ...(vehicles ? colliders(layout.vehicles) : []),
   ])
   walkCollisions.set(key, walkCollision)
   return walkCollision

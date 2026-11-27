@@ -12,6 +12,11 @@ import { createFloorOcclusion, edgeLines, layers } from './model'
 import { finishedLayers, mullions, whiteEave, whiteEaveLines } from './finishedModel'
 import Landscape from './Landscape'
 import PersonFigure from './Person'
+import EditorOutline from './EditorOutline'
+import { createEditorGesture } from './editorGesture'
+import { editorEnabled, visiblePieces } from '../model/editorActions'
+import { pickPiece } from '../model/editing'
+import { useLayout } from '../model/layoutStore'
 import { desktop, Lighting, touch } from './Lighting'
 import { getTexture, patterns, type PatternName } from './textures'
 
@@ -211,85 +216,65 @@ function Gestures() {
     const screen = new THREE.Vector2()
     const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0))
     const hitPoint = new THREE.Vector3()
-    const orbit = controls && 'enabled' in controls ? controls : null
+    const orbit = controls && 'enabled' in controls && typeof controls.enabled === 'boolean'
+      ? { get enabled() { return Boolean(controls.enabled) }, set enabled(value: boolean) { controls.enabled = value } }
+      : null
     const cursor = canvas.style.cursor
-    let personDrag: { id: number; offset: Point; start: Point; moved: boolean } | undefined
-
     function aim(event: PointerEvent) {
       const bounds = canvas.getBoundingClientRect()
       screen.set((event.clientX - bounds.left) / bounds.width * 2 - 1,
         1 - (event.clientY - bounds.top) / bounds.height * 2)
       ray.setFromCamera(screen, camera)
     }
-    function pick(event: PointerEvent) {
+    function intersections(event: PointerEvent) {
       aim(event)
-      return ray.intersectObjects(scene.children, true).find(hit => hit.object.userData.pick || hit.object.userData.person)
+      return ray.intersectObjects(scene.children, true)
     }
-    function project(position: Point) {
-      plane.constant = -floorElevation(position, walkingFloors)
-      return ray.ray.intersectPlane(plane, hitPoint)
+    function pick(event: PointerEvent) {
+      return intersections(event).find(hit => hit.object.userData.pick || hit.object.userData.person)
     }
-    function endDrag() {
-      if (!personDrag) return
-      const { id } = personDrag
-      personDrag = undefined
-      if (canvas.hasPointerCapture(id)) canvas.releasePointerCapture(id)
-      if (orbit) orbit.enabled = true
-      canvas.style.cursor = cursor
+    function editorPick(event: PointerEvent) {
+      const hits = intersections(event)
+      const first = hits.find(hit => hit.object.userData.pick || hit.object.userData.person)
+      const hit = hits.find(hit => hit.object.userData.floor && hit.face && hit.face.normal.y > 0.5)
+      const floor: Point | undefined = hit && [hit.point.x, hit.point.z]
+      return { person: !!first?.object.userData.person, floor }
     }
+    const editor = createEditorGesture(canvas, orbit, editorPick, (event, center) => {
+      aim(event)
+      plane.constant = -floorElevation(center, walkingFloors)
+      const point = ray.ray.intersectPlane(plane, hitPoint)
+      return point && point.distanceToSquared(ray.ray.origin) <= 180 ** 2 ? [point.x, point.z] : undefined
+    })
 
     let gesture: { id: number; x: number; y: number; lastX: number; lastY: number; time: number; drag: boolean } | undefined
     const down = (event: PointerEvent) => {
-      if (personDrag) {
-        event.stopImmediatePropagation()
-        return
-      }
-      const { mode, panel, controlsHidden, person } = useApp.getState()
-      if (mode === 'dollhouse' && (!panel || controlsHidden) && !pointers.size && event.button === 0 &&
-        pick(event)?.object.userData.person) {
-        event.stopImmediatePropagation()
-        const point = project(person.position)
-        if (!point) return
-        personDrag = {
-          id: event.pointerId, offset: [person.position[0] - point.x, person.position[1] - point.z],
-          start: [event.clientX, event.clientY], moved: false,
-        }
-        if (orbit) orbit.enabled = false
-        canvas.style.cursor = 'grabbing'
-        canvas.setPointerCapture(event.pointerId)
-        return
-      }
       pointers.add(event.pointerId)
+      if (editor.active()) {
+        event.stopImmediatePropagation()
+        return
+      }
       if (pointers.size !== 1 || event.button !== 0) {
+        editor.clearPending()
         gesture = undefined
         return
       }
+      const { mode } = useApp.getState()
+      editor.down(event)
       gesture = { id: event.pointerId, x: event.clientX, y: event.clientY, lastX: event.clientX, lastY: event.clientY, time: performance.now(), drag: false }
       if (mode === 'walk') canvas.setPointerCapture(event.pointerId)
     }
     const move = (event: PointerEvent) => {
-      const { mode, panel, controlsHidden, person, pose, setPose, movePerson } = useApp.getState()
-      if (personDrag?.id === event.pointerId) {
-        if (mode !== 'dollhouse' || (panel && !controlsHidden)) {
-          endDrag()
-          return
-        }
-        const [startX, startY] = personDrag.start
-        if (!personDrag.moved && Math.hypot(event.clientX - startX, event.clientY - startY) < 3) return
-        personDrag.moved = true
-        aim(event)
-        const point = project(person.position)
-        if (point && point.distanceToSquared(ray.ray.origin) <= 180 ** 2) {
-          movePerson([point.x + personDrag.offset[0], point.z + personDrag.offset[1]])
-        }
-        return
-      }
+      const { mode, panel, controlsHidden, pose, setPose } = useApp.getState()
+      if (editor.move(event)) return
       if (!pointers.size && event.pointerType === 'mouse') {
-        canvas.style.cursor = mode === 'dollhouse' && (!panel || controlsHidden) &&
-          pick(event)?.object.userData.person ? 'grab' : cursor
+        canvas.style.cursor = editorEnabled() && pick(event)?.object.userData.person ? 'grab' : cursor
       }
       if (gesture?.id !== event.pointerId) return
-      if (Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) > 7) gesture.drag = true
+      if (Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) > (mode === 'dollhouse' ? 8 : 7)) {
+        gesture.drag = true
+        editor.clearPending()
+      }
       if (mode === 'walk' && (!panel || controlsHidden) && gesture.drag) {
         setPose({
           ...pose,
@@ -301,15 +286,27 @@ function Gestures() {
       gesture.lastY = event.clientY
     }
     const cancel = (event: PointerEvent) => {
-      if (personDrag?.id === event.pointerId) endDrag()
+      if (editor.owns(event.pointerId)) editor.finish()
+      if (gesture?.id === event.pointerId) editor.clearPending()
       pointers.delete(event.pointerId)
       if (gesture?.id === event.pointerId) gesture = undefined
     }
     const up = (event: PointerEvent) => {
       const last = gesture
+      const wasEditing = editor.owns(event.pointerId)
+      if (wasEditing) {
+        editor.move(event)
+        editor.finish(true)
+      }
       cancel(event)
+      if (wasEditing) return
       const { measuring, mode, panel, controlsHidden, addPoint, settings } = useApp.getState()
       if ((panel && !controlsHidden) || last?.id !== event.pointerId || last.drag || performance.now() - last.time > 500) return
+      if (editorEnabled() && useLayout.getState().selection) {
+        const { floor, person } = editorPick(event)
+        if (floor && !person && !pickPiece(visiblePieces(), floor)) useLayout.getState().select(null)
+        return
+      }
       const hit = pick(event)
       if (!hit || hit.object.userData.person) return
       if (measuring && !controlsHidden) {
@@ -330,26 +327,53 @@ function Gestures() {
         }
       }
     }
-    const leave = () => { if (!personDrag) canvas.style.cursor = cursor }
+    const leave = () => {
+      if (editor.active()) return
+      editor.clearPending()
+      canvas.style.cursor = cursor
+    }
+    const blur = () => {
+      gesture = undefined
+      pointers.clear()
+      editor.finish()
+    }
+    const contextMenu = (event: MouseEvent) => {
+      if (editor.active() || editor.pending()) event.preventDefault()
+    }
     const unsubscribe = useApp.subscribe(state => {
-      if (state.mode !== 'dollhouse' || (state.panel && !state.controlsHidden)) endDrag()
+      if (!editorEnabled()) {
+        if (editor.active()) gesture = undefined
+        editor.finish()
+        if (state.mode !== 'dollhouse') useLayout.getState().select(null)
+      }
     })
+    const unsubscribeLayout = useLayout.subscribe((state, previous) => {
+      if (state.selection !== previous.selection && !state.selection && editor.active()) {
+        gesture = undefined
+        editor.finish()
+      }
+    })
+    canvas.addEventListener('contextmenu', contextMenu)
     canvas.addEventListener('pointerdown', down, true)
     canvas.addEventListener('pointerleave', leave)
     canvas.addEventListener('lostpointercapture', cancel)
     canvas.addEventListener('pointermove', move)
-    window.addEventListener('pointerup', up)
+    window.addEventListener('pointerup', up, true)
     window.addEventListener('pointercancel', cancel)
+    window.addEventListener('blur', blur)
     return () => {
       unsubscribe()
-      endDrag()
+      unsubscribeLayout()
+      editor.finish()
       canvas.style.cursor = cursor
+      canvas.removeEventListener('contextmenu', contextMenu)
       canvas.removeEventListener('pointerdown', down, true)
       canvas.removeEventListener('pointerleave', leave)
       canvas.removeEventListener('lostpointercapture', cancel)
       canvas.removeEventListener('pointermove', move)
-      window.removeEventListener('pointerup', up)
+      window.removeEventListener('pointerup', up, true)
       window.removeEventListener('pointercancel', cancel)
+      window.removeEventListener('blur', blur)
     }
   }, [camera, controls, gl, scene])
   return null
@@ -476,7 +500,7 @@ export default function Scene({ labelsPortal, stats }: {
     <Lighting />
     <Architecture />
     <Furnishings />
-    {mode === 'walk' ? <Walker /> : <><Orbit /><PersonFigure /></>}
+    {mode === 'walk' ? <Walker /> : <><Orbit /><PersonFigure /><EditorOutline /></>}
     <Gestures />
     <Annotations portal={labelsPortal} />
   </Canvas>
