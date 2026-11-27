@@ -32,11 +32,11 @@ canvas { display: block; touch-action: none; }
 .render-stats:empty { display: none; }
 .loading { position: absolute; inset: 45% 0 auto; margin: 0; text-align: center; }
 .surface { background: #f9fbf8f0; border-radius: 14px; box-shadow: var(--shadow); }
-.topbar { position: absolute; z-index: 2; top: var(--top); left: var(--left); right: calc(var(--right) + 44px); display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px; }
+.topbar { position: absolute; z-index: 2; top: var(--top); left: var(--left); right: var(--right); display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px; }
 .brand { display: flex; min-width: 0; flex: 1; align-items: center; gap: 8px; padding: 0 4px; }
 .brand-icon { display: grid; place-items: center; width: 34px; height: 34px; flex: none; border-radius: 9px; color: white; background: var(--accent); }
 .brand h1 { margin: 0; font-weight: 670; font-size: 15px; letter-spacing: -.025em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.modes { order: 1; display: flex; width: 100%; padding: 3px; border-radius: 10px; background: #e9efea; }
+.modes { display: flex; width: 100%; padding: 3px; border-radius: 10px; background: #e9efea; }
 .modes button { flex: 1; border-radius: 8px; }
 .modes button, .toolbar button { display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 13px; font-weight: 650; padding: 0 9px; }
 .icon-button { display: grid; place-items: center; border-radius: 8px; padding: 0; }
@@ -88,7 +88,7 @@ canvas { display: block; touch-action: none; }
   .topbar { flex-wrap: nowrap; padding: 7px; }
   .brand { padding: 0 8px; }
   .brand h1 { font-size: 17px; }
-  .modes { order: initial; width: auto; }
+  .modes { width: auto; }
   .modes button { padding: 0 13px; }
   .map { top: calc(var(--top) + 76px); width: 190px; }
   .map-actions .icon-button { min-width: 38px; }
@@ -110,19 +110,12 @@ canvas { display: block; touch-action: none; }
   .measure-status + .joystick { bottom: calc(var(--bottom) + 120px); }
 }
 
-.controls-toggle {
+.controls-restore {
   position: fixed;
   z-index: 3;
-  top: calc(var(--top) + 10px);
+  top: var(--top);
   right: var(--right);
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  min-height: 36px;
-  padding: 0;
   border-radius: 50%;
-  background: #f9fbf8db;
+  background: #f9fbf8f0;
   box-shadow: var(--shadow);
 }
