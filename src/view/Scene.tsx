@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Html, Line, OrbitControls, PerformanceMonitor } from '@react-three/drei'
-import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import * as THREE from 'three'
 import { contains, floorElevation, planToWorld, type Point } from '../model/geometry'
 import { house, safePosition, walkCollisionFor, walkingFloors, zonePose, zones } from '../model/house'
@@ -12,6 +12,9 @@ import { finishedLayers, mullions, whiteEave, whiteEaveLines } from './finishedM
 import Landscape from './Landscape'
 import { desktop, Lighting, touch } from './Lighting'
 import { getTexture, patterns, type PatternName } from './textures'
+
+const Furniture = lazy(() => import('./Furniture'))
+const Vehicles = lazy(() => import('./Vehicles'))
 
 const maxDpr = THREE.MathUtils.clamp(window.devicePixelRatio, 1, 2)
 const initialDpr = touch ? Math.min(1.5, maxDpr) : maxDpr
@@ -323,6 +326,29 @@ function RenderStats({ output, language }: { output: RefObject<HTMLDivElement | 
   return null
 }
 
+function Furnishings() {
+  const furniture = useApp(s => s.settings.furniture)
+  const vehicles = useApp(s => s.settings.vehicles)
+  const [ready, setReady] = useState(false)
+  const frame = useRef<number | null>(null)
+
+  useFrame(() => {
+    if (!ready && frame.current === null) {
+      // useFrame runs before the render. Wait for the next animation frame.
+      frame.current = requestAnimationFrame(() => setReady(true))
+    }
+  })
+  useEffect(() => () => {
+    if (frame.current !== null) cancelAnimationFrame(frame.current)
+    frame.current = null
+  }, [])
+
+  return <>
+    {ready && furniture && <Suspense fallback={null}><Furniture /></Suspense>}
+    {ready && vehicles && <Suspense fallback={null}><Vehicles /></Suspense>}
+  </>
+}
+
 export default function Scene({ stats }: { stats?: RefObject<HTMLDivElement | null> }) {
   const mode = useApp(s => s.mode)
   const language = useApp(s => s.settings.language)
@@ -335,6 +361,7 @@ export default function Scene({ stats }: { stats?: RefObject<HTMLDivElement | nu
     {stats && <RenderStats output={stats} language={language} />}
     <Lighting />
     <Architecture />
+    <Furnishings />
     {mode === 'walk' ? <Walker /> : <Orbit />}
     <Gestures />
     <Annotations />

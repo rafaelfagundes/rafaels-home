@@ -121,3 +121,233 @@ The reference photos set the look; anything they and the blueprint don't settle 
 - Textures are tiny procedural canvas textures (128–256 px, tiled, generated at load), so there are no image files to download or compress; they stay deliberately subtle.
 - Adaptive DPR (1 → 2, starting at 1.5 on touch devices). Add `?stats` to the URL to see FPS, draw calls, triangles and DPR.
 - The white model is still available (Settings → Style → White model) and looks the same as v1 by day.
+
+## v3 furniture, appliances and vehicles – assumptions
+
+The tables use implemented placements, including small offsets for fit. Centres are plan coordinates (x, y) in metres. Sizes are width × depth × height in metres, with depth along the facing direction. Facing gives the direction of the front (0° = +x, 90° = +y, 180° = −x, 270° = −y). Lift is measured from the local floor. The layout uses the existing floor elevations, including 0.47 m indoors, 0.28 m in the garage and 0.02 m above the yard on the pool deck.
+
+### Semi-suite 1
+
+The queen mattress measures 1.58 × 1.98 m. The headboard is on the south wall and the wardrobe is on the east wall.
+
+| Item | Centre(s) | Size | Facing | Lift |
+| --- | --- | --- | --- | --- |
+| Queen bed | (5.40, 4.437) | 1.70 × 2.12 × 1.05 | 270° | — |
+| Nightstand | (4.25, 5.307)<br>(6.55, 5.307) | 0.45 × 0.38 × 0.50 | 270° | — |
+| Wardrobe | (7.578, 2.95) | 1.60 × 0.60 × 2.40 | 180° | — |
+| Desk | (5.88, 2.40) | 1.20 × 0.55 × 0.75 | 90° | — |
+| Desk chair | (5.88, 2.95) | 0.46 × 0.50 × 0.82 | 270° | — |
+| Rug | (5.40, 3.90) | 1.60 × 2.40 × 0.01 | 270° | — |
+
+### Semi-suite 2
+
+The queen mattress measures 1.58 × 1.98 m. The headboard is on the south wall and the wardrobe is on the west wall.
+
+| Item | Centre(s) | Size | Facing | Lift |
+| --- | --- | --- | --- | --- |
+| Queen bed | (11.90, 4.437) | 1.70 × 2.12 × 1.05 | 270° | — |
+| Nightstand | (10.75, 5.307)<br>(13.05, 5.307) | 0.45 × 0.38 × 0.50 | 270° | — |
+| Wardrobe | (10.422, 2.95) | 1.60 × 0.60 × 2.40 | 0° | — |
+| Desk | (12.12, 2.40) | 1.20 × 0.55 × 0.75 | 90° | — |
+| Desk chair | (12.12, 2.95) | 0.46 × 0.50 × 0.82 | 270° | — |
+| Rug | (11.90, 3.90) | 1.60 × 2.40 × 0.01 | 270° | — |
+
+### Shared bathroom
+
+The shower has fixed west and south glass panels. The south panel ends at x = 9.57 m, leaving about 0.43 m to the east wall. The rain head and mixer are on the north wall. The wall-hung oak vanity has a white quartz top, integrated sink and faucet.
+
+| Item | Centre(s) | Size | Facing | Lift |
+| --- | --- | --- | --- | --- |
+| Toilet | (8.50, 2.47) | 0.37 × 0.68 × 0.80 | 90° | — |
+| Shower tray | (9.524, 2.761) | 1.28 × 0.95 × 0.05 | 180° | — |
+| Shower glass | (9.05, 2.76) | 1.28 × 0.04 × 2.00 | 0° | — |
+| Shower glass | (9.32, 3.40) | 0.50 × 0.04 × 2.00 | 270° | — |
+| Shower head | (9.525, 2.32) | 0.24 × 0.36 × 0.08 | 90° | 2.10 |
+| Shower mixer | (9.525, 2.16) | 0.16 × 0.07 × 0.12 | 90° | 1.05 |
+| Vanity | (8.95, 5.257) | 1.00 × 0.48 × 0.85 | 270° | — |
+| Mirror | (8.95, 5.48) | 0.90 × 0.03 × 0.80 | 270° | 1.05 |
+
+### Master suite
+
+The king mattress measures 1.93 × 2.03 m. The headboard is on the west wall and the bench sits at the foot.
+
+| Item | Centre(s) | Size | Facing | Lift |
+| --- | --- | --- | --- | --- |
+| King bed | (15.328, 3.95) | 2.05 × 2.17 × 1.10 | 0° | — |
+| Nightstand | (14.443, 2.60)<br>(14.443, 5.30) | 0.50 × 0.40 × 0.50 | 0° | — |
+| Bench | (16.65, 3.95) | 1.40 × 0.42 × 0.45 | 0° | — |
+| Rug | (15.70, 3.95) | 2.60 × 1.90 × 0.01 | 0° | — |
+| Plant | (15.45, 6.317) | 0.60 × 0.60 × 1.34 | 270° | — |
+
+### Closet
+
+The built-in joinery wraps around three sides, with full-height wardrobes on the north and east walls and an open shelving return on the west.
+
+| Item | Centre(s) | Size | Facing | Lift |
+| --- | --- | --- | --- | --- |
+| Wardrobe | (18.458, 2.421) | 1.84 × 0.60 × 2.40 | 90° | — |
+| Wardrobe | (19.078, 3.136) | 0.83 × 0.60 × 2.40 | 180° | — |
+| Open shelving return | (17.715, 3.011) | 0.58 × 0.35 × 2.40 | 0° | — |
+| Ottoman | (18.35, 3.526) | 0.75 × 0.45 × 0.45 | 90° | — |
+
+### Master bath
+
+The vanity and rain head are on the west wall. Fixed glass screens the west part of the shower entrance.
+
+| Item | Centre(s) | Size | Facing | Lift |
+| --- | --- | --- | --- | --- |
+| Vanity | (17.913, 4.90) | 1.20 × 0.50 × 0.85 | 0° | — |
+| Mirror | (17.68, 4.90) | 0.90 × 0.03 × 0.80 | 0° | 1.05 |
+| Toilet | (19.038, 5.10) | 0.37 × 0.68 × 0.80 | 180° | — |
+| Shower tray | (18.523, 6.182) | 1.72 × 0.87 × 0.05 | 270° | — |
+| Shower glass | (18.183, 5.75) | 1.04 × 0.05 × 2.00 | 270° | — |
+| Shower head | (17.85, 6.185) | 0.24 × 0.36 × 0.08 | 0° | 2.10 |
+
+### Living and entry
+
+The three-seat sofa faces the coffee table and wall-mounted 65-inch TV. The west entry console clears P01. The plan’s ESTANTE is a freestanding, double-sided oak divider with open shelves, 3.17 m along the plan y-axis and 2.40 m high.
+
+| Item | Centre(s) | Size | Facing | Lift |
+| --- | --- | --- | --- | --- |
+| Sofa | (5.90, 8.75) | 2.40 × 0.95 × 0.80 | 270° | — |
+| Coffee table | (5.90, 7.60) | 1.10 × 0.60 × 0.38 | 270° | — |
+| Media console | (5.70, 5.85) | 2.00 × 0.45 × 0.50 | 90° | — |
+| TV | (5.60, 5.655) | 1.45 × 0.05 × 0.84 | 90° | 0.95 |
+| Armchair | (4.65, 7.05) | 0.82 × 0.99 × 1.02 | 0° | — |
+| Lounge chair | (7.507, 6.60) | 1.01 × 1.19 × 1.17 | 225° | — |
+| Rug | (5.90, 7.60) | 2.80 × 2.00 × 0.01 | 270° | — |
+| Floor lamp | (4.40, 8.95) | 0.35 × 0.35 × 1.60 | 0° | — |
+| Plant | (4.40, 5.98) | 0.60 × 0.60 × 1.34 | 0° | — |
+| Entry console | (4.69, 10.80) | 1.20 × 0.35 × 0.80 | 0° | — |
+| ESTANTE divider | (6.20, 11.285) | 3.17 × 0.30 × 2.40 | 180° | — |
+
+### Dining
+
+The table seats eight, with three chairs on each long side and one at each end. The four kitchen bar stools sit on the dining side of the room boundary.
+
+| Item | Centre(s) | Size | Facing | Lift |
+| --- | --- | --- | --- | --- |
+| Dining table | (10.30, 7.60) | 2.20 × 1.00 × 0.75 | 90° | — |
+| Dining chair | (9.55, 6.80)<br>(10.30, 6.80)<br>(11.05, 6.80) | 0.48 × 0.52 × 0.80 | 90° | — |
+| Dining chair | (9.55, 8.40)<br>(10.30, 8.40)<br>(11.05, 8.40) | 0.48 × 0.52 × 0.80 | 270° | — |
+| Dining chair | (8.88, 7.60) | 0.48 × 0.52 × 0.80 | 0° | — |
+| Dining chair | (11.72, 7.60) | 0.48 × 0.52 × 0.80 | 180° | — |
+| Sideboard | (9.60, 5.85) | 1.80 × 0.45 × 0.75 | 90° | — |
+| Linear pendant | (10.30, 7.60) | 1.35 × 0.10 × 0.12 | 90° | 2.10 |
+| Bar stool | (8.60, 9.55)<br>(9.25, 9.55)<br>(9.90, 9.55)<br>(10.55, 9.55) | 0.42 × 0.42 × 0.75 | 90° | — |
+
+### Kitchen
+
+The south run has white-oak fronts, a white quartz top, an undermount sink and tall faucet at x = 7.73 m, and a 0.60 m integrated dishwasher centred at x = 7.15 m. The tall column has a black-glass oven from 0.85 to 1.45 m and a combi microwave above it. The stainless fridge is east of P11. The island has a 0.60 × 0.52 m black induction cooktop at x = 8.27 m and an oak breakfast bar to the north. The stainless hood is above the cooktop and its duct runs from 2.32 to 3.00 m above the floor. Two small black pendants hang above the bar.
+
+| Item | Centre(s) | Size | Facing | Lift |
+| --- | --- | --- | --- | --- |
+| Kitchen base | (7.40, 12.57) | 2.00 × 0.60 × 0.90 | 270° | — |
+| Oven column | (8.70, 12.57) | 0.60 × 0.60 × 2.30 | 270° | — |
+| Fridge | (10.805, 12.495) | 0.91 × 0.75 × 1.85 | 270° | — |
+| Island | (9.11, 10.668) | 2.50 × 0.90 × 0.90 | 90° | — |
+| Breakfast bar | (9.495, 10.043) | 2.71 × 0.35 × 1.05 | 270° | — |
+| Hood | (8.27, 10.668) | 0.90 × 0.50 × 0.12 | 90° | 2.20 |
+| Pendant | (9.30, 10.043)<br>(10.20, 10.043) | 0.16 × 0.16 × 0.20 | 90° | 2.10 |
+
+### Laundry
+
+The plan’s ARMÁRIO is a tall cabinet beside a white laundry basin on a cabinet with a tap. The dryer is stacked 0.85 m above the washer.
+
+| Item | Centre(s) | Size | Facing | Lift |
+| --- | --- | --- | --- | --- |
+| Laundry cabinet | (10.773, 13.575) | 0.95 × 0.45 × 2.20 | 180° | — |
+| Laundry tank | (10.698, 14.575) | 0.65 × 0.60 × 0.90 | 180° | — |
+| Washer | (10.688, 15.26) | 0.60 × 0.62 × 0.85 | 180° | — |
+| Dryer | (10.688, 15.26) | 0.60 × 0.62 × 0.85 | 180° | 0.85 |
+
+### Powder room
+
+The wall-hung round basin has a faucet and round mirror.
+
+| Item | Centre(s) | Size | Facing | Lift |
+| --- | --- | --- | --- | --- |
+| Basin | (12.322, 14.55) | 0.45 × 0.40 × 0.85 | 180° | — |
+| Round mirror | (12.50, 14.55) | 0.45 × 0.03 × 0.45 | 180° | 1.05 |
+| Toilet | (12.182, 15.45) | 0.37 × 0.68 × 0.80 | 180° | — |
+
+### Gourmet area
+
+The west counter has a stone top, sink at y = 13.55 m, cooktop at y = 14.25 m and a 0.75 m stainless gas-grill insert with lid and knobs at y = 14.75 m. The masonry pizza oven sits just south of it, with a 0.90 m base, 0.80 m dome, front opening and small chimney. The outdoor teak table seats six.
+
+| Item | Centre(s) | Size | Facing | Lift |
+| --- | --- | --- | --- | --- |
+| Gourmet counter | (12.989, 14.10) | 2.30 × 0.65 × 0.92 | 0° | — |
+| Pizza oven | (13.064, 15.68) | 0.86 × 0.80 × 1.75 | 0° | — |
+| Outdoor table | (14.60, 13.95) | 1.60 × 0.90 × 0.75 | 0° | — |
+| Outdoor chair | (14.00, 13.45)<br>(14.00, 14.45) | 0.48 × 0.52 × 0.80 | 0° | — |
+| Outdoor chair | (15.20, 13.45)<br>(15.20, 14.45) | 0.48 × 0.52 × 0.80 | 180° | — |
+| Outdoor chair | (14.60, 13.13) | 0.48 × 0.52 × 0.80 | 90° | — |
+| Outdoor chair | (14.60, 15.00) | 0.48 × 0.52 × 0.80 | 270° | — |
+
+### Veranda
+
+The outdoor sofa and two armchairs face across the coffee table.
+
+| Item | Centre(s) | Size | Facing | Lift |
+| --- | --- | --- | --- | --- |
+| Outdoor sofa | (13.15, 9.50) | 2.20 × 0.90 × 0.75 | 0° | — |
+| Coffee table | (14.25, 9.50) | 1.00 × 0.60 × 0.38 | 0° | — |
+| Outdoor armchair | (15.10, 8.55)<br>(15.10, 10.45) | 0.75 × 0.80 × 0.75 | 180° | — |
+
+### Pool deck
+
+Three teak loungers with white cushions sit parallel to the pool’s north edge. Their backrests are raised at the west ends and reach 0.85 m.
+
+| Item | Centre(s) | Size | Facing | Lift |
+| --- | --- | --- | --- | --- |
+| Sun lounger | (19.90, 10.95)<br>(22.10, 10.95)<br>(24.30, 10.95) | 0.70 × 1.95 × 0.40 | 0° | — |
+
+### Garage
+
+The cars park nose-in toward +x. The motorcycle sits crosswise beyond the Golf’s nose. The cars’ placement widths include mirrors. The north walkway runs from the west opening to laundry door O20 along the X5 driver’s side. Fit uses the x = 3.08–8.88 m, y = 13.00–18.70 m parking envelope and a ceiling 3.00 m above the garage floor.
+
+| Item | Centre(s) | Size | Facing | Lift |
+| --- | --- | --- | --- | --- |
+| BMW X5 stand-in | (5.79, 14.90) | 2.10 × 4.92 × 1.75 | 0° | — |
+| VW Golf R stand-in | (5.475, 17.52) | 1.86 × 4.29 × 1.46 | 0° | — |
+| Suzuki Hayabusa stand-in | (8.20, 17.40) | 0.74 × 2.18 × 1.17 | 270° | — |
+
+Clearances computed by garageFit().
+
+| Clearance | Metres |
+| --- | ---: |
+| North walkway | 0.85 |
+| X5 to Golf side gap | 0.64 |
+| Golf to south wall | 0.25 |
+| X5 front to back wall | 0.63 |
+| Golf front to motorcycle | 0.21 |
+| Motorcycle to east wall | 0.31 |
+| Rear bumpers to garage opening line | 0.25 |
+| Roof clearance above the tallest vehicle | 1.25 |
+
+### Rendering, collision and settings
+
+- **Collision.** Furniture and vehicles use rotated rectangular footprints. Shower glass counts as a collider (0.04 m thick in the shared bath and 0.05 m in the master bath). The dining table adds 0.35 m per side, and the gourmet table adds 0.15 m per side. Dining and gourmet chairs, bar stools, rugs, shower trays and fittings, mirrors, the TV, the hood, pendants and the stacked dryer are visual only. The island and breakfast bar each have a footprint, and the washer provides the footprint for the stack.
+- **Procedural and GLB models.** Beds, seating other than the two living-room chairs, cabinetry, tables, rugs, lighting fixtures, built-in kitchen and gourmet equipment, and bathroom fittings other than toilets are original procedural geometry. The fridge, washer, dryer, three toilets, living-room armchair and lounge chair, and two plants come from furniture.glb. The three vehicles come from vehicles.glb. Procedural pieces use merged geometry and instancing. GLB nodes with a lower-detail version switch to it at 7 m.
+- **Vehicle stand-ins.** No licensed exact BMW X5, VW Golf R or Suzuki Hayabusa model was downloadable without a login, so generic CC0 and CC BY models were recoloured dark red, blue and black respectively and scaled to the real vehicles’ dimensions. The credits give the body dimensions, and the garage placement table uses mirror-inclusive car widths.
+- **Settings.** “Furniture & appliances” (“Móveis e eletrodomésticos”) and “Vehicles” (“Veículos”) are separate toggles. Both default on, including for older saved settings. Each group’s render chunk and GLB load on demand after the house first renders, only when its toggle is on. The toggles control visibility and walk collision. Both groups appear in Walk and Dollhouse and allow floor taps and Measure to pass through.
+- **White model.** Furniture, appliances and vehicles share one texture-free matte off-white material (#f4f3ee, roughness 0.9).
+- **Performance.** Measured numbers are in the PR.
+
+## Credits
+
+| Model | Used as | Author | Source | Licence |
+|---|---|---|---|---|
+| SUV | BMW X5 stand-in (recoloured dark red, scaled to 4.92×2.00×1.75 m) | Quaternius | https://poly.pizza/m/xsMtZhBkxL | CC0 1.0 |
+| Car | VW Golf R stand-in (recoloured blue, scaled to 4.29×1.79×1.46 m) | Quaternius | https://poly.pizza/m/unqqkULtRU | CC0 1.0 |
+| Motorcycle | Suzuki Hayabusa stand-in (recoloured black, scaled to 2.18×0.74×1.17 m) | Poly by Google | https://poly.pizza/m/dse64pqMKAR | CC BY 3.0 |
+| Kitchen Fridge | Fridge (recoloured stainless) | Quaternius | https://poly.pizza/m/8sjRm8fnHh | CC0 1.0 |
+| Washing Machine | Washer | Quaternius | https://poly.pizza/m/UFxsKNSl8W | CC0 1.0 |
+| Clothes dryer | Dryer | Poly by Google | https://poly.pizza/m/bTbe1CRWC1T | CC BY 3.0 |
+| Toilet | Toilets (3) | Pat Siefring | https://poly.pizza/m/23BWsguAdkf | CC BY 3.0 |
+| Modern Arm Chair 01 | Living-room armchair | Vibrant Nordic (Poly Haven) | https://polyhaven.com/a/modern_arm_chair_01 | CC0 1.0 |
+| Mid Century Lounge Chair | Living-room lounge chair | Kuutti Siitonen (Poly Haven) | https://polyhaven.com/a/mid_century_lounge_chair | CC0 1.0 |
+| Potted Plant 01 | Indoor plants (2) | Rico Cilliers (Poly Haven) | https://polyhaven.com/a/potted_plant_01 | CC0 1.0 |
+
+See [CREDITS.md](CREDITS.md) for licence links and asset processing notes.
