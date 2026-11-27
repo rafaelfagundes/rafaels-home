@@ -10,6 +10,7 @@ import { formatLength } from '../model/units'
 import { createFloorOcclusion, edgeLines, layers } from './model'
 import { finishedLayers, mullions, whiteEave, whiteEaveLines } from './finishedModel'
 import Landscape from './Landscape'
+import PersonFigure from './Person'
 import { desktop, Lighting, touch } from './Lighting'
 import { getTexture, patterns, type PatternName } from './textures'
 
@@ -107,7 +108,8 @@ function Walker() {
   useEffect(() => {
     const held = keys.current
     const down = (event: KeyboardEvent) => {
-      if (useApp.getState().panel || event.metaKey || event.ctrlKey || event.altKey) return
+      const { panel, controlsHidden } = useApp.getState()
+      if ((panel && !controlsHidden) || event.metaKey || event.ctrlKey || event.altKey) return
       if (event.target instanceof HTMLElement && event.target.closest('input, select, textarea')) return
       const key = event.key.toLowerCase()
       if (!movementKeys.has(key)) return
@@ -117,7 +119,7 @@ function Walker() {
     const up = (event: KeyboardEvent) => { held.delete(event.key.toLowerCase()) }
     const reset = () => held.clear()
     const unsubscribe = useApp.subscribe((state, previous) => {
-      if (state.panel !== previous.panel) reset()
+      if (state.panel !== previous.panel || state.controlsHidden !== previous.controlsHidden) reset()
     })
     window.addEventListener('keydown', down)
     window.addEventListener('keyup', up)
@@ -132,14 +134,14 @@ function Walker() {
 
   useFrame((_, elapsed) => {
     const state = useApp.getState()
-    const { pose, target, joystick, panel, teleportVersion } = state
+    const { pose, target, joystick, panel, controlsHidden, teleportVersion } = state
     const walkCollision = walkCollisionFor(state.settings)
     const dt = Math.min(elapsed, 0.05)
     const { heading, pitch } = pose
     const front = Math.cos(heading)
     const side = Math.sin(heading)
     let position = pose.position
-    if (!panel) {
+    if (!panel || controlsHidden) {
       const held = keys.current
       const forward = joystick[1] + Number(held.has('w') || held.has('arrowup')) - Number(held.has('s') || held.has('arrowdown'))
       const right = joystick[0] + Number(held.has('d') || held.has('arrowright')) - Number(held.has('a') || held.has('arrowleft'))
@@ -166,7 +168,7 @@ function Walker() {
       }
     }
     if (position[0] !== pose.position[0] || position[1] !== pose.position[1]) {
-      useApp.setState({ pose: { ...pose, position } })
+      state.setPose({ ...pose, position })
     }
     const sample = floorSample.current
     if (position[0] !== sample.x || position[1] !== sample.z) {
@@ -199,53 +201,117 @@ function Orbit() {
 }
 
 function Gestures() {
-  const { gl, scene, camera } = useThree()
+  const { gl, scene, camera, controls } = useThree()
 
   useEffect(() => {
     const canvas = gl.domElement
     const pointers = new Set<number>()
     const ray = new THREE.Raycaster()
+    const screen = new THREE.Vector2()
+    const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0))
+    const hitPoint = new THREE.Vector3()
+    const orbit = controls && 'enabled' in controls ? controls : null
+    const cursor = canvas.style.cursor
+    let personDrag: { id: number; offset: Point; start: Point; moved: boolean } | undefined
+
+    function aim(event: PointerEvent) {
+      const bounds = canvas.getBoundingClientRect()
+      screen.set((event.clientX - bounds.left) / bounds.width * 2 - 1,
+        1 - (event.clientY - bounds.top) / bounds.height * 2)
+      ray.setFromCamera(screen, camera)
+    }
+    function pick(event: PointerEvent) {
+      aim(event)
+      return ray.intersectObjects(scene.children, true).find(hit => hit.object.userData.pick || hit.object.userData.person)
+    }
+    function project(position: Point) {
+      plane.constant = -floorElevation(position, walkingFloors)
+      return ray.ray.intersectPlane(plane, hitPoint)
+    }
+    function endDrag() {
+      if (!personDrag) return
+      const { id } = personDrag
+      personDrag = undefined
+      if (canvas.hasPointerCapture(id)) canvas.releasePointerCapture(id)
+      if (orbit) orbit.enabled = true
+      canvas.style.cursor = cursor
+    }
+
     let gesture: { id: number; x: number; y: number; lastX: number; lastY: number; time: number; drag: boolean } | undefined
     const down = (event: PointerEvent) => {
+      if (personDrag) {
+        event.stopImmediatePropagation()
+        return
+      }
+      const { mode, panel, controlsHidden, person } = useApp.getState()
+      if (mode === 'dollhouse' && (!panel || controlsHidden) && !pointers.size && event.button === 0 &&
+        pick(event)?.object.userData.person) {
+        event.stopImmediatePropagation()
+        const point = project(person.position)
+        if (!point) return
+        personDrag = {
+          id: event.pointerId, offset: [person.position[0] - point.x, person.position[1] - point.z],
+          start: [event.clientX, event.clientY], moved: false,
+        }
+        if (orbit) orbit.enabled = false
+        canvas.style.cursor = 'grabbing'
+        canvas.setPointerCapture(event.pointerId)
+        return
+      }
       pointers.add(event.pointerId)
       if (pointers.size !== 1 || event.button !== 0) {
         gesture = undefined
         return
       }
       gesture = { id: event.pointerId, x: event.clientX, y: event.clientY, lastX: event.clientX, lastY: event.clientY, time: performance.now(), drag: false }
-      if (useApp.getState().mode === 'walk') canvas.setPointerCapture(event.pointerId)
+      if (mode === 'walk') canvas.setPointerCapture(event.pointerId)
     }
     const move = (event: PointerEvent) => {
+      const { mode, panel, controlsHidden, person, pose, setPose, movePerson } = useApp.getState()
+      if (personDrag?.id === event.pointerId) {
+        if (mode !== 'dollhouse' || (panel && !controlsHidden)) {
+          endDrag()
+          return
+        }
+        const [startX, startY] = personDrag.start
+        if (!personDrag.moved && Math.hypot(event.clientX - startX, event.clientY - startY) < 3) return
+        personDrag.moved = true
+        aim(event)
+        const point = project(person.position)
+        if (point && point.distanceToSquared(ray.ray.origin) <= 180 ** 2) {
+          movePerson([point.x + personDrag.offset[0], point.z + personDrag.offset[1]])
+        }
+        return
+      }
+      if (!pointers.size && event.pointerType === 'mouse') {
+        canvas.style.cursor = mode === 'dollhouse' && (!panel || controlsHidden) &&
+          pick(event)?.object.userData.person ? 'grab' : cursor
+      }
       if (gesture?.id !== event.pointerId) return
       if (Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) > 7) gesture.drag = true
-      const { mode, panel, pose } = useApp.getState()
-      if (mode === 'walk' && !panel && gesture.drag) {
-        useApp.setState({ pose: {
+      if (mode === 'walk' && (!panel || controlsHidden) && gesture.drag) {
+        setPose({
           ...pose,
           heading: pose.heading - (event.clientX - gesture.lastX) * 0.004,
           pitch: THREE.MathUtils.clamp(pose.pitch + (event.clientY - gesture.lastY) * 0.004, -1.38, 1.38),
-        } })
+        })
       }
       gesture.lastX = event.clientX
       gesture.lastY = event.clientY
     }
     const cancel = (event: PointerEvent) => {
+      if (personDrag?.id === event.pointerId) endDrag()
       pointers.delete(event.pointerId)
       if (gesture?.id === event.pointerId) gesture = undefined
     }
     const up = (event: PointerEvent) => {
       const last = gesture
       cancel(event)
-      const { measuring, mode, panel, addPoint, settings } = useApp.getState()
-      if (panel || last?.id !== event.pointerId || last.drag || performance.now() - last.time > 500) return
-      const bounds = canvas.getBoundingClientRect()
-      ray.setFromCamera(new THREE.Vector2(
-        (event.clientX - bounds.left) / bounds.width * 2 - 1,
-        1 - (event.clientY - bounds.top) / bounds.height * 2,
-      ), camera)
-      const hit = ray.intersectObjects(scene.children, true).find(hit => hit.object.userData.pick)
-      if (!hit) return
-      if (measuring) {
+      const { measuring, mode, panel, controlsHidden, addPoint, settings } = useApp.getState()
+      if ((panel && !controlsHidden) || last?.id !== event.pointerId || last.drag || performance.now() - last.time > 500) return
+      const hit = pick(event)
+      if (!hit || hit.object.userData.person) return
+      if (measuring && !controlsHidden) {
         addPoint(hit.point.toArray())
       } else if (hit.object.userData.floor) {
         const target: Point = [hit.point.x, hit.point.z]
@@ -263,17 +329,28 @@ function Gestures() {
         }
       }
     }
-    canvas.addEventListener('pointerdown', down)
+    const leave = () => { if (!personDrag) canvas.style.cursor = cursor }
+    const unsubscribe = useApp.subscribe(state => {
+      if (state.mode !== 'dollhouse' || (state.panel && !state.controlsHidden)) endDrag()
+    })
+    canvas.addEventListener('pointerdown', down, true)
+    canvas.addEventListener('pointerleave', leave)
+    canvas.addEventListener('lostpointercapture', cancel)
     canvas.addEventListener('pointermove', move)
     window.addEventListener('pointerup', up)
     window.addEventListener('pointercancel', cancel)
     return () => {
-      canvas.removeEventListener('pointerdown', down)
+      unsubscribe()
+      endDrag()
+      canvas.style.cursor = cursor
+      canvas.removeEventListener('pointerdown', down, true)
+      canvas.removeEventListener('pointerleave', leave)
+      canvas.removeEventListener('lostpointercapture', cancel)
       canvas.removeEventListener('pointermove', move)
       window.removeEventListener('pointerup', up)
       window.removeEventListener('pointercancel', cancel)
     }
-  }, [camera, gl, scene])
+  }, [camera, controls, gl, scene])
   return null
 }
 
@@ -282,9 +359,10 @@ function Annotations() {
   const mode = useApp(s => s.mode)
   const points = useApp(s => s.points)
   const target = useApp(s => s.target)
-  const [a, b] = points
+  const controlsHidden = useApp(s => s.controlsHidden)
+  const [a, b] = controlsHidden ? [] : points
   return <>
-    {target && mode === 'walk' && <mesh position={planToWorld(target, floorElevation(target, walkingFloors) + 0.022)} rotation={[-Math.PI / 2, 0, 0]}>
+    {!controlsHidden && target && mode === 'walk' && <mesh position={planToWorld(target, floorElevation(target, walkingFloors) + 0.022)} rotation={[-Math.PI / 2, 0, 0]}>
       <ringGeometry args={[0.18, 0.225, 32]} />
       <meshBasicMaterial color="#32635a" side={THREE.DoubleSide} />
     </mesh>}
@@ -294,7 +372,7 @@ function Annotations() {
         <span className="model-label">{roomName(zone, language)}</span>
       </Html>
     ))}
-    {points.map((point, index) => <mesh key={index} position={point} renderOrder={10}>
+    {!controlsHidden && points.map((point, index) => <mesh key={index} position={point} renderOrder={10}>
       <sphereGeometry args={[0.057, 12, 8]} />
       <meshBasicMaterial color="#285e52" depthTest={false} />
     </mesh>)}
@@ -362,7 +440,7 @@ export default function Scene({ stats }: { stats?: RefObject<HTMLDivElement | nu
     <Lighting />
     <Architecture />
     <Furnishings />
-    {mode === 'walk' ? <Walker /> : <Orbit />}
+    {mode === 'walk' ? <Walker /> : <><Orbit /><PersonFigure /></>}
     <Gestures />
     <Annotations />
   </Canvas>

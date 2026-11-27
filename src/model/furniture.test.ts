@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { footprint, furnitureColliders, furnitureItems, garageFit, vehicleColliders, vehicleItems } from './furniture'
 import { closestPoint, contains, polygonArea, segments, type Point, type Ring } from './geometry'
-import { collision, house, walkCollisionFor, whiteCollision, zonePose, zones } from './house'
+import { collision, house, pool, safePosition, walkCollisionFor, whiteCollision, zonePose, zones } from './house'
 import { planters, trees } from './landscape'
 import { defaults } from './settings'
 import { useApp } from './store'
@@ -54,6 +54,17 @@ describe('furniture and vehicle layout', () => {
     }
   })
 
+  it('keeps two west loungers facing the pool and an east lounger along the pool edge', () => {
+    const loungers = furnitureItems.filter(item => item.kind === 'sunLounger')
+    const xs = pool.polygon.map(([x]) => x)
+    const west = loungers.filter(item => footprint(item).every(([x]) => x < Math.min(...xs)))
+    const east = loungers.filter(item => footprint(item).every(([x]) => x > Math.max(...xs)))
+    expect(loungers).toHaveLength(3)
+    expect(west.map(item => item.facing)).toEqual([0, 0])
+    expect(east.map(item => item.facing)).toEqual([90])
+    expect(loungers.every(item => item.components?.some(part => part.kind === 'backrest' && part.height === 0.85))).toBe(true)
+  })
+
   it('keeps collider footprints clear of one another', () => {
     const items = [...furnitureItems, ...vehicleItems].filter(item => item.collider !== false)
     const colliders = [...furnitureColliders, ...vehicleColliders]
@@ -99,6 +110,22 @@ describe('walking collision', () => {
     }
   })
 
+  it('sweeps a dragged position against the pool, furniture and vehicles', () => {
+    const walk = walkCollisionFor(defaults)
+    const west: Point = [18.2, 12]
+    const east: Point = [25.4, 12]
+    expect(walk.isFree(west)).toBe(true)
+    expect(walk.isFree(east)).toBe(true)
+    const acrossPool = safePosition(east, west, walk)!
+    expect(acrossPool[0]).toBeLessThan(18.737)
+    expect(walk.isFree(acrossPool)).toBe(true)
+    for (const item of [...furnitureItems.filter(item => item.kind === 'bedQueen'), ...vehicleItems]) {
+      const start = safePosition(item.center, undefined, walk)!
+      const resolved = safePosition(item.center, start, walk)!
+      expect(walk.isFree(resolved)).toBe(true)
+    }
+  })
+
   it('keeps the routes to the laundry and between dining chairs and stools open', () => {
     const walk = walkCollisionFor(defaults)
     expect(walk.move([3, 13.425], [6.4, 0])[0]).toBeCloseTo(9.4)
@@ -113,6 +140,7 @@ describe('walking collision', () => {
     try {
       useApp.setState({
         settings: { ...defaults, [setting]: false },
+        mode: 'walk',
         pose: { position: item.center, heading: 1, pitch: 0.2 },
         target: item.center,
       })

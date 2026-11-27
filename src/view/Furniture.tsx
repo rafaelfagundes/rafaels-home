@@ -2,10 +2,10 @@ import { useLayoutEffect, useMemo, useRef } from 'react'
 import { MeshStandardMaterial, type BufferGeometry, type InstancedMesh, type Matrix4 } from 'three'
 import { furnitureItems } from '../model/furniture'
 import { useApp } from '../model/store'
-import FurnishingModels, { whiteFurnishing } from './FurnishingModels'
+import FurnishingModels from './FurnishingModels'
 import { buildFurnitureBatches, type BatchFinish } from './furnitureBatches'
 import { isProcedural, palette } from './furnitureGeometry'
-import { useFurnishingShadows } from './furnishingPlacement'
+import { useFurnishingShadows, whiteFurnishing } from './furnishingPlacement'
 
 const models = furnitureItems.filter(item => !isProcedural(item))
 const materials = new Map<BatchFinish, MeshStandardMaterial>(Object.entries(palette).map(([finish, values]) =>

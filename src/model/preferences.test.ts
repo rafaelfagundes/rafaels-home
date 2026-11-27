@@ -38,13 +38,13 @@ describe('persisted settings', () => {
     return { getItem: () => value, setItem: (_key: string, next: string) => { value = next } }
   }
 
-  it('defaults to English, Imperial, finished daylight, a hidden dollhouse roof, and enabled furniture and vehicles', () => {
-    expect(loadSettings(memoryStore())).toEqual({ language: 'en', units: 'imperial', labels: true, shadows: 'low', style: 'finished', lighting: 'day', roofInDollhouse: false, furniture: true, vehicles: true })
+  it('defaults to Dollhouse, English, Imperial, finished daylight, a hidden dollhouse roof, and enabled furniture and vehicles', () => {
+    expect(loadSettings(memoryStore())).toEqual({ startView: 'dollhouse', language: 'en', units: 'imperial', labels: true, shadows: 'low', style: 'finished', lighting: 'day', roofInDollhouse: false, furniture: true, vehicles: true })
   })
 
   it('round-trips all fields', () => {
     const storage = memoryStore()
-    const settings = { language: 'pt-BR', units: 'metric', labels: false, shadows: 'high', style: 'white', lighting: 'night', roofInDollhouse: true, furniture: false, vehicles: false } as const
+    const settings = { startView: 'walk', language: 'pt-BR', units: 'metric', labels: false, shadows: 'high', style: 'white', lighting: 'night', roofInDollhouse: true, furniture: false, vehicles: false } as const
     saveSettings(settings, storage)
     expect(loadSettings(storage)).toEqual(settings)
   })
@@ -58,7 +58,7 @@ describe('persisted settings', () => {
 
   it('recovers from corrupt data and blocked storage', () => {
     expect(loadSettings(memoryStore('{invalid'))).toEqual(defaults)
-    expect(loadSettings(memoryStore('{"units":"other","shadows":42,"style":"other","lighting":false,"roofInDollhouse":"true","furniture":0,"vehicles":null}'))).toEqual(defaults)
+    expect(loadSettings(memoryStore('{"startView":false,"units":"other","shadows":42,"style":"other","lighting":false,"roofInDollhouse":"true","furniture":0,"vehicles":null}'))).toEqual(defaults)
     expect(loadSettings({ ...memoryStore(), getItem: () => { throw new Error('blocked') } })).toEqual(defaults)
   })
 })

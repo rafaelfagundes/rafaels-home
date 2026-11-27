@@ -304,11 +304,12 @@ const builders: Record<ProceduralKind, (p: Piece) => void> = {
   },
   showerHead: p => {
     p.cylinder('steel', p.w / 2, p.w / 2, 0.019, 0, 0.012, p.d / 2 - p.w / 2)
-    p.cylinder('steel', 0.012, 0.012, p.d - 0.08, 0, 0.063, -0.04, Math.PI / 2)
+    const mountDepth = p.item.room === 'bathroom' ? 0.06 : 0
+    p.cylinder('steel', 0.012, 0.012, p.d - 0.08 + mountDepth, 0, 0.063, -0.04 - mountDepth / 2, Math.PI / 2)
     p.cylinder('steel', 0.012, 0.012, 0.057, 0, 0.044, p.d / 2 - p.w / 2)
   },
   showerMixer: p => {
-    p.cylinder('steel', 0.054, 0.054, 0.04, 0, p.h / 2, 0, Math.PI / 2)
+    p.cylinder('steel', 0.054, 0.054, p.d - 0.015, 0, p.h / 2, -0.0075, Math.PI / 2)
     p.box('steel', 0.064, 0.013, 0.025, 0.039, p.h / 2, 0.023, 0.004)
   },
   vanity: p => { cabinet(p, 2, 2, 0.27, p.h - 0.14); insetSink(p, 0, 0.45, 0.27, 'quartz') },

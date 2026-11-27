@@ -29,7 +29,7 @@ describe('walk startup', () => {
 
   async function startAt(search: string) {
     vi.resetModules()
-    vi.stubGlobal('window', { location: { search } })
+    vi.stubGlobal('window', { location: { search }, addEventListener: vi.fn() })
     vi.stubGlobal('localStorage', { getItem: () => null })
     const { useApp } = await import('./store')
     return useApp.getState()

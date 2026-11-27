@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs'
 import { expect, it } from 'vitest'
+import { Matrix4 } from 'three'
 import { furnitureItems, vehicleItems, type FurnitureItem } from '../model/furniture'
 import { buildFurnitureBatches } from './furnitureBatches'
+import { placement } from './furnishingPlacement'
 import { buildFurnitureGeometry, isProcedural } from './furnitureGeometry'
 
 it('builds every procedural piece within the triangle budget', () => {
@@ -65,4 +67,19 @@ it('keeps the furniture and vehicle draw-call budgets in both styles', () => {
   })
   expect(vehicles).toBeLessThanOrEqual(25)
   console.info(`Draw-call upper bounds: ${counts[0]} finished furniture, ${counts[1]} white furniture, ${vehicles} vehicles`)
+})
+
+it('mounts both shared bathroom fixtures on the east wall and extends them west over the tray', () => {
+  const fixtures = furnitureItems.filter(item =>
+    item.room === 'bathroom' && (item.kind === 'showerHead' || item.kind === 'showerMixer'))
+  expect(fixtures).toHaveLength(2)
+  for (const item of fixtures.filter(isProcedural)) {
+    const { position, yaw } = placement(item)
+    const transform = new Matrix4().makeRotationY(yaw).setPosition(...position)
+    const [{ geometry }] = buildFurnitureGeometry(item)
+    geometry.applyMatrix4(transform).computeBoundingBox()
+    expect(geometry.boundingBox!.max.x).toBeGreaterThanOrEqual(9.997 - 1e-6)
+    expect(geometry.boundingBox!.min.x).toBeLessThan(item.center[0])
+    geometry.dispose()
+  }
 })

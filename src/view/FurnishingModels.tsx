@@ -1,10 +1,8 @@
 import { Detailed, useGLTF } from '@react-three/drei'
 import { useMemo } from 'react'
-import { Box3, Mesh, MeshStandardMaterial, Vector3, type Object3D } from 'three'
+import { Box3, Mesh, Vector3, type Object3D } from 'three'
 import type { FurnitureItem } from '../model/furniture'
-import { placement, useFurnishingShadows } from './furnishingPlacement'
-
-export const whiteFurnishing = new MeshStandardMaterial({ color: '#f4f3ee', roughness: 0.9 })
+import { placement, useFurnishingShadows, whiteFurnishing } from './furnishingPlacement'
 
 const bounds = new WeakMap<Object3D, Vector3>()
 const lodDistances = [0, 7]
