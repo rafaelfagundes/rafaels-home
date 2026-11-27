@@ -28,6 +28,8 @@ const icons = {
   minus: 'M5 12h14', close: 'm6 6 12 12M18 6 6 18',
   sun: 'M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5',
   moon: 'M20.8 15A9 9 0 0 1 9 3.2 9 9 0 1 0 20.8 15Z',
+  eye: 'M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Zm13 0a3 3 0 1 0-6 0 3 3 0 0 0 6 0Z',
+  eyeOff: 'M3 3l18 18M10.5 6.1C17.8 5 22 12 22 12a14 14 0 0 1-3 3.2M15.2 17.5C7.1 20.2 2 12 2 12a14 14 0 0 1 4-3.9',
   chevron: 'm9 6 6 6-6 6',
 }
 
@@ -131,6 +133,10 @@ function Settings() {
   const change = useApp(s => s.changeSettings)
   const t = dictionary[settings.language]
   return <div className="settings-list">
+    <label>{t.startView}<select value={settings.startView}
+      onChange={event => change({ startView: event.target.value === 'walk' ? 'walk' : 'dollhouse' })}>
+      <option value="dollhouse">{t.startDollhouse}</option><option value="walk">{t.walk}</option>
+    </select></label>
     <label>{t.language}<select value={settings.language} onChange={event => change({ language: event.target.value === 'pt-BR' ? 'pt-BR' : 'en' })}>
       <option value="en" lang="en">English</option><option value="pt-BR" lang="pt-BR">Português (Brasil)</option>
     </select></label>
@@ -158,6 +164,16 @@ function Settings() {
   </div>
 }
 
+function ControlsToggle() {
+  const hidden = useApp(s => s.controlsHidden)
+  const toggle = useApp(s => s.toggleControls)
+  const t = dictionary[useApp(s => s.settings.language)]
+  const label = hidden ? t.showControls : t.hideControls
+  return <button className="controls-toggle" aria-label={label} title={label} onClick={toggle}>
+    <Icon name={hidden ? 'eyeOff' : 'eye'} />
+  </button>
+}
+
 function Sheet({ panel, title, children }: { panel: Panel; title: string; children: ReactNode }) {
   const dialog = useRef<HTMLDialogElement>(null)
   const close = useApp(s => s.setPanel)
@@ -175,12 +191,14 @@ function Sheet({ panel, title, children }: { panel: Panel; title: string; childr
       </header>
       <div className="sheet-body">{children}</div>
     </div>
+    <ControlsToggle />
   </dialog>
 }
 
 function App() {
   const { mode, panel, setMode, setPanel, measuring, toggleMeasure } = useApp(useShallow(s => ({ mode: s.mode, panel: s.panel, setMode: s.setMode, setPanel: s.setPanel, measuring: s.measuring, toggleMeasure: s.toggleMeasure })))
   const language = useApp(s => s.settings.language)
+  const controlsHidden = useApp(s => s.controlsHidden)
   const t = dictionary[language]
   const night = useApp(s => s.settings.lighting === 'night')
   const style = useApp(s => s.settings.style)
@@ -197,8 +215,17 @@ function App() {
 
   useEffect(() => {
     const preventZoom = (event: Event) => event.preventDefault()
+    const toggleOnKey = (event: KeyboardEvent) => {
+      if (event.key.toLowerCase() !== 'h' || event.repeat || event.metaKey || event.ctrlKey || event.altKey) return
+      if (event.target instanceof HTMLElement && (event.target.isContentEditable || event.target.closest('input, textarea, select'))) return
+      useApp.getState().toggleControls()
+    }
     document.addEventListener('gesturestart', preventZoom, { passive: false })
-    return () => document.removeEventListener('gesturestart', preventZoom)
+    document.addEventListener('keydown', toggleOnKey)
+    return () => {
+      document.removeEventListener('gesturestart', preventZoom)
+      document.removeEventListener('keydown', toggleOnKey)
+    }
   }, [])
 
   function togglePlan(hidden: boolean) {
@@ -212,44 +239,47 @@ function App() {
     <div className="viewport" data-style={style} data-lighting={night ? 'night' : 'day'}>
       <Suspense fallback={<p className="loading">{t.loading}</p>}><Scene stats={showStats ? stats : undefined} /></Suspense>
     </div>
-    <header className="topbar surface">
-      <div className="brand"><span className="brand-icon"><Icon name="house" /></span><h1>{t.appName}</h1></div>
-      <div className="modes">
-        {(['walk', 'dollhouse'] as const).map(value => <button key={value} aria-pressed={mode === value}
-          onClick={() => setMode(value)}><Icon name={value} />{t[value]}</button>)}
-      </div>
-      <button className="icon-button" aria-label={lightingAction} title={lightingAction}
-        onClick={() => changeSettings({ lighting: night ? 'day' : 'night' })}><Icon name={night ? 'moon' : 'sun'} /></button>
-      <button className="icon-button top-help" aria-label={t.help} title={t.help}
-        onClick={() => setPanel('help')}><Icon name="help" /></button>
-      {showStats && <div className="render-stats" ref={stats} />}
-    </header>
-    <div className="map surface" ref={map}>
-      <button className="icon-button map-show" onClick={() => togglePlan(false)} aria-label={t.showPlan}
-        title={t.showPlan}><Icon name="rooms" /></button>
-      <div className="map-content">
-        <div className="map-heading"><span>{t.plan}</span>
-          <div className="map-actions">
-            <button className="icon-button" aria-label={t.expand} title={t.expand}
-              onClick={() => setPanel('plan')}><Icon name="expand" /></button>
-            <button className="icon-button map-hide" aria-label={t.collapse} title={t.collapse}
-              onClick={() => togglePlan(true)}><Icon name="minus" /></button>
-          </div>
+    {(!panel || controlsHidden) && <ControlsToggle />}
+    <div hidden={controlsHidden}>
+      <header className="topbar surface">
+        <div className="brand"><span className="brand-icon"><Icon name="house" /></span><h1>{t.appName}</h1></div>
+        <div className="modes">
+          {(['walk', 'dollhouse'] as const).map(value => <button key={value} aria-pressed={mode === value}
+            onClick={() => setMode(value)}><Icon name={value} />{t[value]}</button>)}
         </div>
-        <div className="map-drawing"><Plan interactive /></div>
+        <button className="icon-button" aria-label={lightingAction} title={lightingAction}
+          onClick={() => changeSettings({ lighting: night ? 'day' : 'night' })}><Icon name={night ? 'moon' : 'sun'} /></button>
+        <button className="icon-button top-help" aria-label={t.help} title={t.help}
+          onClick={() => setPanel('help')}><Icon name="help" /></button>
+        {showStats && <div className="render-stats" ref={stats} />}
+      </header>
+      <div className="map surface" ref={map}>
+        <button className="icon-button map-show" onClick={() => togglePlan(false)} aria-label={t.showPlan}
+          title={t.showPlan}><Icon name="rooms" /></button>
+        <div className="map-content">
+          <div className="map-heading"><span>{t.plan}</span>
+            <div className="map-actions">
+              <button className="icon-button" aria-label={t.expand} title={t.expand}
+                onClick={() => setPanel('plan')}><Icon name="expand" /></button>
+              <button className="icon-button map-hide" aria-label={t.collapse} title={t.collapse}
+                onClick={() => togglePlan(true)}><Icon name="minus" /></button>
+            </div>
+          </div>
+          <div className="map-drawing"><Plan interactive /></div>
+        </div>
+      </div>
+      {measuring && <div className="measure-status surface">
+        <span role="status">{points.length === 0 ? t.measureFirst : points.length === 1 ? t.measureSecond : t.measureAgain}</span>
+        <button disabled={!points.length} onClick={() => useApp.setState({ points: [] })}>{t.clear}</button>
+      </div>}
+      {mode === 'walk' && !panel && <Joystick />}
+      <div className="toolbar surface">
+        <button onClick={() => setPanel('rooms')}><Icon name="rooms" />{t.rooms}</button>
+        <button onClick={toggleMeasure} aria-pressed={measuring}><Icon name="measure" />{t.measure}</button>
+        <button onClick={() => setPanel('settings')}><Icon name="settings" />{t.settings}</button>
       </div>
     </div>
-    {measuring && <div className="measure-status surface">
-      <span role="status">{points.length === 0 ? t.measureFirst : points.length === 1 ? t.measureSecond : t.measureAgain}</span>
-      <button disabled={!points.length} onClick={() => useApp.setState({ points: [] })}>{t.clear}</button>
-    </div>}
-    {mode === 'walk' && !panel && <Joystick />}
-    <div className="toolbar surface">
-      <button onClick={() => setPanel('rooms')}><Icon name="rooms" />{t.rooms}</button>
-      <button onClick={toggleMeasure} aria-pressed={measuring}><Icon name="measure" />{t.measure}</button>
-      <button onClick={() => setPanel('settings')}><Icon name="settings" />{t.settings}</button>
-    </div>
-    {panel && <Sheet key={panel} panel={panel} title={panel === 'help' ? t.helpTitle : t[panel]}>
+    {panel && !controlsHidden && <Sheet key={panel} panel={panel} title={panel === 'help' ? t.helpTitle : t[panel]}>
       {panel === 'rooms' && <Rooms />}
       {panel === 'settings' && <Settings />}
       {panel === 'plan' && <Plan interactive />}
@@ -257,6 +287,7 @@ function App() {
         <ul className="help-list">
           <li><Icon name="walk" /><p>{t.helpWalk}</p></li>
           <li><Icon name="dollhouse" /><p>{t.helpOrbit}</p></li>
+          <li><Icon name="dollhouse" /><p>{t.dragPerson}</p></li>
           <li><Icon name="measure" /><p>{t.helpRooms}</p></li>
         </ul>
         <button className="primary" onClick={() => setPanel(null)}>{t.start}</button>

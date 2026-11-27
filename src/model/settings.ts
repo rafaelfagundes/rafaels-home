@@ -1,7 +1,10 @@
 import type { Language } from './i18n'
 import type { Units } from './units'
 
+export type Mode = 'walk' | 'dollhouse'
+
 export interface Settings {
+  startView: Mode
   style: 'finished' | 'white'
   lighting: 'day' | 'night'
   roofInDollhouse: boolean
@@ -15,12 +18,13 @@ export interface Settings {
 type Storage = Pick<globalThis.Storage, 'getItem' | 'setItem'>
 export const SETTINGS_KEY = 'rafaels-home:settings'
 const HELP_KEY = 'rafaels-home:help-seen'
-export const defaults: Settings = { language: 'en', units: 'imperial', labels: true, shadows: 'low', style: 'finished', lighting: 'day', roofInDollhouse: false, furniture: true, vehicles: true }
+export const defaults: Settings = { startView: 'dollhouse', language: 'en', units: 'imperial', labels: true, shadows: 'low', style: 'finished', lighting: 'day', roofInDollhouse: false, furniture: true, vehicles: true }
 
 export function loadSettings(storage?: Storage): Settings {
   try {
     const saved = JSON.parse((storage ?? localStorage).getItem(SETTINGS_KEY) ?? '{}') as Partial<Settings> | null
     return {
+      startView: saved?.startView === 'walk' ? 'walk' : defaults.startView,
       style: saved?.style === 'white' ? 'white' : defaults.style,
       lighting: saved?.lighting === 'night' ? 'night' : defaults.lighting,
       roofInDollhouse: typeof saved?.roofInDollhouse === 'boolean' ? saved.roofInDollhouse : defaults.roofInDollhouse,

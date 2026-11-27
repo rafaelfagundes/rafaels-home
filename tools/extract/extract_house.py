@@ -428,7 +428,7 @@ house = dict(
               coordinateSystem='x along the 31.50 m side (street at x=0), y along the 19.00 m side; three.js (x, elevation, y)',
               levels=dict(street=0.0, garage=0.28, entry=0.45, interior=INTERIOR_FLOOR, yard=0.28),
               frontSetbackLabeled=3.80, frontSetbackMeasured=r3(min(g.bounds[0] for g in WALL_POLYS if g.bounds[1] < 3)),
-              eyeHeight=1.6, extractedBy='tools/extract/extract_house.py'),
+              eyeHeight=1.58, extractedBy='tools/extract/extract_house.py'),
     lot=dict(width=r3(LOT_W), depth=r3(LOT_D), polygon=[[0, 0], [r3(LOT_W), 0], [r3(LOT_W), r3(LOT_D)], [0, r3(LOT_D)]]),
     walls=walls, openings=openings, rooms=rooms, outdoor=outdoor, perimeterWalls=perimeter, roof=roof,
     dimensionsFound=dims,

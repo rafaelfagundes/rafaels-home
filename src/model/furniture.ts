@@ -49,14 +49,16 @@ const queenMattress = { components: [{ kind: 'mattress', width: 1.58, depth: 1.9
 const visual = { collider: false } as const
 const raised = (elevation: number) => ({ ...visual, elevation })
 
+const loungerBackrest = { components: [{ kind: 'backrest', height: 0.85 }] }
+
 export const furnitureItems: FurnitureItem[] = [
   ...inRoom('semi_suite_1', [
     ['bedQueen', [5.40, 4.437], [1.70, 2.12, 1.05], 270, queenMattress],
     ['nightstand', [4.25, 5.307], [0.45, 0.38, 0.50], 270],
     ['nightstand', [6.55, 5.307], [0.45, 0.38, 0.50], 270],
     ['wardrobe', [7.578, 2.95], [1.60, 0.60, 2.40], 180],
-    ['desk', [5.88, 2.40], [1.20, 0.55, 0.75], 90],
-    ['deskChair', [5.88, 2.95], [0.46, 0.50, 0.82], 270],
+    ['desk', [4.165, 2.73], [1.20, 0.55, 0.75], 0],
+    ['deskChair', [4.74, 2.73], [0.46, 0.50, 0.82], 180],
     ['rug', [5.40, 3.90], [1.60, 2.40, 0.01], 270, visual],
   ]),
   ...inRoom('semi_suite_2', [
@@ -64,8 +66,8 @@ export const furnitureItems: FurnitureItem[] = [
     ['nightstand', [10.75, 5.307], [0.45, 0.38, 0.50], 270],
     ['nightstand', [13.05, 5.307], [0.45, 0.38, 0.50], 270],
     ['wardrobe', [10.422, 2.95], [1.60, 0.60, 2.40], 0],
-    ['desk', [12.12, 2.40], [1.20, 0.55, 0.75], 90],
-    ['deskChair', [12.12, 2.95], [0.46, 0.50, 0.82], 270],
+    ['desk', [13.836, 2.73], [1.20, 0.55, 0.75], 180],
+    ['deskChair', [13.26, 2.73], [0.46, 0.50, 0.82], 0],
     ['rug', [11.90, 3.90], [1.60, 2.40, 0.01], 270, visual],
   ]),
   ...inRoom('bathroom', [
@@ -73,8 +75,8 @@ export const furnitureItems: FurnitureItem[] = [
     ['showerTray', [9.524, 2.761], [1.28, 0.95, 0.05], 180, visual],
     ['showerGlass', [9.05, 2.76], [1.28, 0.04, 2.0], 0],
     ['showerGlass', [9.32, 3.40], [0.50, 0.04, 2.0], 270],
-    ['showerHead', [9.525, 2.32], [0.24, 0.36, 0.08], 90, raised(2.1)],
-    ['showerMixer', [9.525, 2.16], [0.16, 0.07, 0.12], 90, raised(1.05)],
+    ['showerHead', [9.797, 2.76], [0.24, 0.36, 0.08], 180, raised(2.1)],
+    ['showerMixer', [9.962, 2.76], [0.16, 0.07, 0.12], 180, raised(1.05)],
     ['vanity', [8.95, 5.257], [1.00, 0.48, 0.85], 270],
     ['mirror', [8.95, 5.48], [0.90, 0.03, 0.80], 270, raised(1.05)],
   ]),
@@ -92,7 +94,6 @@ export const furnitureItems: FurnitureItem[] = [
     ['wardrobe', [18.458, 2.421], [1.84, 0.60, 2.40], 90],
     ['wardrobe', [19.078, 3.136], [0.83, 0.60, 2.40], 180],
     ['openShelving', [17.715, 3.011], [0.58, 0.35, 2.40], 0],
-    ['ottoman', [18.35, 3.526], [0.75, 0.45, 0.45], 90],
   ]),
   ...inRoom('master_bath', [
     ['vanity', [17.913, 4.90], [1.20, 0.50, 0.85], 0],
@@ -108,11 +109,11 @@ export const furnitureItems: FurnitureItem[] = [
     ['mediaConsole', [5.70, 5.85], [2.00, 0.45, 0.50], 90],
     ['tv', [5.60, 5.655], [1.45, 0.05, 0.84], 90, raised(0.95)],
     ['armchair', [4.65, 7.05], [0.82, 0.99, 1.02], 0],
-    ['loungechair', [7.507, 6.60], [1.01, 1.19, 1.17], 225],
+    ['loungechair', [7.507, 6.60], [1.01, 1.19, 1.17], 135],
     ['rug', [5.90, 7.60], [2.80, 2.00, 0.01], 270, visual],
     ['floorLamp', [4.40, 8.95], [0.35, 0.35, 1.60], 0],
     ['plant', [4.40, 5.98], [0.60, 0.60, 1.34], 0],
-    ['entryConsole', [4.69, 10.80], [1.20, 0.35, 0.80], 0],
+    ['entryConsole', [4.185, 10.80], [1.20, 0.35, 0.80], 0],
     ['roomDivider', [6.20, 11.285], [3.17, 0.30, 2.40], 180],
   ]),
   ...inRoom('dining', [
@@ -123,10 +124,10 @@ export const furnitureItems: FurnitureItem[] = [
     ]),
     ['diningChair', [8.88, 7.60], [0.48, 0.52, 0.80], 0, visual],
     ['diningChair', [11.72, 7.60], [0.48, 0.52, 0.80], 180, visual],
-    ['sideboard', [9.60, 5.85], [1.80, 0.45, 0.75], 90],
+    ['sideboard', [10.00, 5.85], [2.60, 0.45, 0.75], 90],
     ['linearPendant', [10.30, 7.60], [1.35, 0.10, 0.12], 90, raised(2.10)],
     // The kitchen stools sit on the dining side of the room boundary.
-    ...[8.60, 9.25, 9.90, 10.55].map((x): Placement =>
+    ...[8.60, 9.25, 9.90].map((x): Placement =>
       ['barStool', [x, 9.55], [0.42, 0.42, 0.75], 90, visual]),
   ]),
   ...inRoom('kitchen', [
@@ -146,7 +147,7 @@ export const furnitureItems: FurnitureItem[] = [
     ['island', [9.11, 10.668], [2.50, 0.90, 0.90], 90, {
       components: [{ kind: 'inductionCooktop', x: 8.27, width: 0.60, depth: 0.52 }],
     }],
-    ['breakfastBar', [9.495, 10.043], [2.71, 0.35, 1.05], 270],
+    ['breakfastBar', [9.11, 10.043], [2.71, 0.35, 1.05], 270],
     ['hood', [8.27, 10.668], [0.90, 0.50, 0.12], 90, {
       ...raised(2.20), components: [{ kind: 'duct', elevation: 2.32, height: 0.68 }],
     }],
@@ -185,13 +186,14 @@ export const furnitureItems: FurnitureItem[] = [
   ...inRoom('veranda', [
     ['outdoorSofa', [13.15, 9.50], [2.20, 0.90, 0.75], 0],
     ['coffeeTable', [14.25, 9.50], [1.00, 0.60, 0.38], 0],
-    ['outdoorArmchair', [15.10, 8.55], [0.75, 0.80, 0.75], 180],
-    ['outdoorArmchair', [15.10, 10.45], [0.75, 0.80, 0.75], 180],
+    ['outdoorArmchair', [14.25, 8.35], [0.75, 0.80, 0.75], 90],
+    ['outdoorArmchair', [14.25, 10.65], [0.75, 0.80, 0.75], 270],
   ]),
-  ...inRoom('pool_deck', [19.90, 22.10, 24.30].map((x): Placement =>
-    ['sunLounger', [x, 10.95], [0.70, 1.95, 0.40], 0, {
-      components: [{ kind: 'backrest', height: 0.85 }],
-    }])),
+  ...inRoom('pool_deck', [
+    ['sunLounger', [17.55, 14.55], [0.70, 1.95, 0.40], 0, loungerBackrest],
+    ['sunLounger', [17.55, 15.55], [0.70, 1.95, 0.40], 0, loungerBackrest],
+    ['sunLounger', [25.55, 13.40], [0.70, 1.95, 0.40], 90, loungerBackrest],
+  ]),
 ]
 
 export const vehicleItems = inRoom('garage', [

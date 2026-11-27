@@ -122,7 +122,11 @@ The reference photos set the look; anything they and the blueprint don't settle 
 - Adaptive DPR (1 → 2, starting at 1.5 on touch devices). Add `?stats` to the URL to see FPS, draw calls, triangles and DPR.
 - The white model is still available (Settings → Style → White model) and looks the same as v1 by day.
 
-## v3 furniture, appliances and vehicles – assumptions
+## v4 changes
+
+The viewer starts in Dollhouse by default. Settings can switch the next startup to Walk. Drag the 1.70 m mannequin to set where Walk begins. The first-person camera sits 1.58 m above the floor. The eye button or **H** hides and restores the controls. The furniture tables below reflect the v4 placements, and the site uses the supplied favicon and app icons.
+
+## v3 furniture, appliances and vehicles – assumptions (updated for v4)
 
 The tables use implemented placements, including small offsets for fit. Centres are plan coordinates (x, y) in metres. Sizes are width × depth × height in metres, with depth along the facing direction. Facing gives the direction of the front (0° = +x, 90° = +y, 180° = −x, 270° = −y). Lift is measured from the local floor. The layout uses the existing floor elevations, including 0.47 m indoors, 0.28 m in the garage and 0.02 m above the yard on the pool deck.
 
@@ -135,8 +139,8 @@ The queen mattress measures 1.58 × 1.98 m. The headboard is on the south wall a
 | Queen bed | (5.40, 4.437) | 1.70 × 2.12 × 1.05 | 270° | — |
 | Nightstand | (4.25, 5.307)<br>(6.55, 5.307) | 0.45 × 0.38 × 0.50 | 270° | — |
 | Wardrobe | (7.578, 2.95) | 1.60 × 0.60 × 2.40 | 180° | — |
-| Desk | (5.88, 2.40) | 1.20 × 0.55 × 0.75 | 90° | — |
-| Desk chair | (5.88, 2.95) | 0.46 × 0.50 × 0.82 | 270° | — |
+| Desk | (4.165, 2.73) | 1.20 × 0.55 × 0.75 | 0° | — |
+| Desk chair | (4.74, 2.73) | 0.46 × 0.50 × 0.82 | 180° | — |
 | Rug | (5.40, 3.90) | 1.60 × 2.40 × 0.01 | 270° | — |
 
 ### Semi-suite 2
@@ -148,13 +152,13 @@ The queen mattress measures 1.58 × 1.98 m. The headboard is on the south wall a
 | Queen bed | (11.90, 4.437) | 1.70 × 2.12 × 1.05 | 270° | — |
 | Nightstand | (10.75, 5.307)<br>(13.05, 5.307) | 0.45 × 0.38 × 0.50 | 270° | — |
 | Wardrobe | (10.422, 2.95) | 1.60 × 0.60 × 2.40 | 0° | — |
-| Desk | (12.12, 2.40) | 1.20 × 0.55 × 0.75 | 90° | — |
-| Desk chair | (12.12, 2.95) | 0.46 × 0.50 × 0.82 | 270° | — |
+| Desk | (13.836, 2.73) | 1.20 × 0.55 × 0.75 | 180° | — |
+| Desk chair | (13.26, 2.73) | 0.46 × 0.50 × 0.82 | 0° | — |
 | Rug | (11.90, 3.90) | 1.60 × 2.40 × 0.01 | 270° | — |
 
 ### Shared bathroom
 
-The shower has fixed west and south glass panels. The south panel ends at x = 9.57 m, leaving about 0.43 m to the east wall. The rain head and mixer are on the north wall. The wall-hung oak vanity has a white quartz top, integrated sink and faucet.
+The shower has fixed west and south glass panels. The south panel ends at x = 9.57 m, leaving about 0.43 m to the east wall. The rain head and mixer are centred over the tray on the east tiled wall. The wall-hung oak vanity has a white quartz top, integrated sink and faucet.
 
 | Item | Centre(s) | Size | Facing | Lift |
 | --- | --- | --- | --- | --- |
@@ -162,8 +166,8 @@ The shower has fixed west and south glass panels. The south panel ends at x = 9.
 | Shower tray | (9.524, 2.761) | 1.28 × 0.95 × 0.05 | 180° | — |
 | Shower glass | (9.05, 2.76) | 1.28 × 0.04 × 2.00 | 0° | — |
 | Shower glass | (9.32, 3.40) | 0.50 × 0.04 × 2.00 | 270° | — |
-| Shower head | (9.525, 2.32) | 0.24 × 0.36 × 0.08 | 90° | 2.10 |
-| Shower mixer | (9.525, 2.16) | 0.16 × 0.07 × 0.12 | 90° | 1.05 |
+| Shower head | (9.797, 2.76) | 0.24 × 0.36 × 0.08 | 180° | 2.10 |
+| Shower mixer | (9.962, 2.76) | 0.16 × 0.07 × 0.12 | 180° | 1.05 |
 | Vanity | (8.95, 5.257) | 1.00 × 0.48 × 0.85 | 270° | — |
 | Mirror | (8.95, 5.48) | 0.90 × 0.03 × 0.80 | 270° | 1.05 |
 
@@ -188,7 +192,6 @@ The built-in joinery wraps around three sides, with full-height wardrobes on the
 | Wardrobe | (18.458, 2.421) | 1.84 × 0.60 × 2.40 | 90° | — |
 | Wardrobe | (19.078, 3.136) | 0.83 × 0.60 × 2.40 | 180° | — |
 | Open shelving return | (17.715, 3.011) | 0.58 × 0.35 × 2.40 | 0° | — |
-| Ottoman | (18.35, 3.526) | 0.75 × 0.45 × 0.45 | 90° | — |
 
 ### Master bath
 
@@ -214,16 +217,16 @@ The three-seat sofa faces the coffee table and wall-mounted 65-inch TV. The west
 | Media console | (5.70, 5.85) | 2.00 × 0.45 × 0.50 | 90° | — |
 | TV | (5.60, 5.655) | 1.45 × 0.05 × 0.84 | 90° | 0.95 |
 | Armchair | (4.65, 7.05) | 0.82 × 0.99 × 1.02 | 0° | — |
-| Lounge chair | (7.507, 6.60) | 1.01 × 1.19 × 1.17 | 225° | — |
+| Lounge chair | (7.507, 6.60) | 1.01 × 1.19 × 1.17 | 135° | — |
 | Rug | (5.90, 7.60) | 2.80 × 2.00 × 0.01 | 270° | — |
 | Floor lamp | (4.40, 8.95) | 0.35 × 0.35 × 1.60 | 0° | — |
 | Plant | (4.40, 5.98) | 0.60 × 0.60 × 1.34 | 0° | — |
-| Entry console | (4.69, 10.80) | 1.20 × 0.35 × 0.80 | 0° | — |
+| Entry console | (4.185, 10.80) | 1.20 × 0.35 × 0.80 | 0° | — |
 | ESTANTE divider | (6.20, 11.285) | 3.17 × 0.30 × 2.40 | 180° | — |
 
 ### Dining
 
-The table seats eight, with three chairs on each long side and one at each end. The four kitchen bar stools sit on the dining side of the room boundary.
+The table seats eight, with three chairs on each long side and one at each end. The three kitchen bar stools sit on the dining side of the room boundary.
 
 | Item | Centre(s) | Size | Facing | Lift |
 | --- | --- | --- | --- | --- |
@@ -232,9 +235,9 @@ The table seats eight, with three chairs on each long side and one at each end. 
 | Dining chair | (9.55, 8.40)<br>(10.30, 8.40)<br>(11.05, 8.40) | 0.48 × 0.52 × 0.80 | 270° | — |
 | Dining chair | (8.88, 7.60) | 0.48 × 0.52 × 0.80 | 0° | — |
 | Dining chair | (11.72, 7.60) | 0.48 × 0.52 × 0.80 | 180° | — |
-| Sideboard | (9.60, 5.85) | 1.80 × 0.45 × 0.75 | 90° | — |
+| Sideboard | (10.00, 5.85) | 2.60 × 0.45 × 0.75 | 90° | — |
 | Linear pendant | (10.30, 7.60) | 1.35 × 0.10 × 0.12 | 90° | 2.10 |
-| Bar stool | (8.60, 9.55)<br>(9.25, 9.55)<br>(9.90, 9.55)<br>(10.55, 9.55) | 0.42 × 0.42 × 0.75 | 90° | — |
+| Bar stool | (8.60, 9.55)<br>(9.25, 9.55)<br>(9.90, 9.55) | 0.42 × 0.42 × 0.75 | 90° | — |
 
 ### Kitchen
 
@@ -246,7 +249,7 @@ The south run has white-oak fronts, a white quartz top, an undermount sink and t
 | Oven column | (8.70, 12.57) | 0.60 × 0.60 × 2.30 | 270° | — |
 | Fridge | (10.805, 12.495) | 0.91 × 0.75 × 1.85 | 270° | — |
 | Island | (9.11, 10.668) | 2.50 × 0.90 × 0.90 | 90° | — |
-| Breakfast bar | (9.495, 10.043) | 2.71 × 0.35 × 1.05 | 270° | — |
+| Breakfast bar | (9.11, 10.043) | 2.71 × 0.35 × 1.05 | 270° | — |
 | Hood | (8.27, 10.668) | 0.90 × 0.50 × 0.12 | 90° | 2.20 |
 | Pendant | (9.30, 10.043)<br>(10.20, 10.043) | 0.16 × 0.16 × 0.20 | 90° | 2.10 |
 
@@ -293,15 +296,17 @@ The outdoor sofa and two armchairs face across the coffee table.
 | --- | --- | --- | --- | --- |
 | Outdoor sofa | (13.15, 9.50) | 2.20 × 0.90 × 0.75 | 0° | — |
 | Coffee table | (14.25, 9.50) | 1.00 × 0.60 × 0.38 | 0° | — |
-| Outdoor armchair | (15.10, 8.55)<br>(15.10, 10.45) | 0.75 × 0.80 × 0.75 | 180° | — |
+| Outdoor armchair | (14.25, 8.35) | 0.75 × 0.80 × 0.75 | 90° | — |
+| Outdoor armchair | (14.25, 10.65) | 0.75 × 0.80 × 0.75 | 270° | — |
 
 ### Pool deck
 
-Three teak loungers with white cushions sit parallel to the pool’s north edge. Their backrests are raised at the west ends and reach 0.85 m.
+Two teak loungers sit west of the pool with their feet toward the water. A third runs north–south along the east edge. The white-cushioned backrests reach 0.85 m.
 
 | Item | Centre(s) | Size | Facing | Lift |
 | --- | --- | --- | --- | --- |
-| Sun lounger | (19.90, 10.95)<br>(22.10, 10.95)<br>(24.30, 10.95) | 0.70 × 1.95 × 0.40 | 0° | — |
+| Sun lounger | (17.55, 14.55)<br>(17.55, 15.55) | 0.70 × 1.95 × 0.40 | 0° | — |
+| Sun lounger | (25.55, 13.40) | 0.70 × 1.95 × 0.40 | 90° | — |
 
 ### Garage
 

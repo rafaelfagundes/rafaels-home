@@ -1,4 +1,5 @@
 import raw from '../data/house.json'
+import { EYE_HEIGHT } from './person'
 import { createOutdoorFeatures, planters, trees } from './landscape'
 import { createCollision } from './collision'
 import { furnitureColliders, vehicleColliders } from './furniture'
@@ -29,7 +30,7 @@ interface Opening {
   height: number
 }
 
-export const house = raw as unknown as {
+export const house = { ...raw, meta: { ...raw.meta, eyeHeight: EYE_HEIGHT } } as unknown as {
   meta: typeof raw.meta
   lot: Footprint & { width: number; depth: number }
   rooms: Zone[]
@@ -92,7 +93,11 @@ export function walkCollisionFor({ style, furniture, vehicles }: Pick<Settings, 
 export const whiteCollision = walkCollisionFor({ style: 'white', furniture: false, vehicles: false })
 export const collision = walkCollisionFor({ style: 'finished', furniture: false, vehicles: false })
 
-export function safePosition(point: Point, zone?: Zone, walkCollision = collision): Point | undefined {
+export function safePosition(point: Point, from?: Zone | Point, walkCollision = collision): Point | undefined {
+  if (from && !('polygon' in from)) {
+    return walkCollision.move(from, [point[0] - from[0], point[1] - from[1]])
+  }
+  const zone = from
   if (walkCollision.isFree(point) && (!zone || contains(zone, point))) return point
   for (let radius = 0.05; radius < 2; radius += 0.05) {
     for (let step = 0; step < 32; step++) {
