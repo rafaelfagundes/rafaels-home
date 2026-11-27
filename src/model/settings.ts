@@ -5,6 +5,8 @@ export interface Settings {
   style: 'finished' | 'white'
   lighting: 'day' | 'night'
   roofInDollhouse: boolean
+  furniture: boolean
+  vehicles: boolean
   language: Language
   units: Units
   labels: boolean
@@ -13,7 +15,7 @@ export interface Settings {
 type Storage = Pick<globalThis.Storage, 'getItem' | 'setItem'>
 export const SETTINGS_KEY = 'rafaels-home:settings'
 const HELP_KEY = 'rafaels-home:help-seen'
-export const defaults: Settings = { language: 'en', units: 'imperial', labels: true, shadows: 'low', style: 'finished', lighting: 'day', roofInDollhouse: false }
+export const defaults: Settings = { language: 'en', units: 'imperial', labels: true, shadows: 'low', style: 'finished', lighting: 'day', roofInDollhouse: false, furniture: true, vehicles: true }
 
 export function loadSettings(storage?: Storage): Settings {
   try {
@@ -22,6 +24,8 @@ export function loadSettings(storage?: Storage): Settings {
       style: saved?.style === 'white' ? 'white' : defaults.style,
       lighting: saved?.lighting === 'night' ? 'night' : defaults.lighting,
       roofInDollhouse: typeof saved?.roofInDollhouse === 'boolean' ? saved.roofInDollhouse : defaults.roofInDollhouse,
+      furniture: typeof saved?.furniture === 'boolean' ? saved.furniture : defaults.furniture,
+      vehicles: typeof saved?.vehicles === 'boolean' ? saved.vehicles : defaults.vehicles,
       language: saved?.language === 'pt-BR' ? 'pt-BR' : defaults.language,
       units: saved?.units === 'metric' ? 'metric' : defaults.units,
       labels: typeof saved?.labels === 'boolean' ? saved.labels : defaults.labels,

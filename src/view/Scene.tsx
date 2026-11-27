@@ -3,7 +3,7 @@ import { Html, Line, OrbitControls, PerformanceMonitor } from '@react-three/drei
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import * as THREE from 'three'
 import { contains, floorElevation, planToWorld, type Point } from '../model/geometry'
-import { collision, house, walkingFloors, whiteCollision, zonePose, zones } from '../model/house'
+import { house, safePosition, walkCollisionFor, walkingFloors, zonePose, zones } from '../model/house'
 import { dictionary, roomName } from '../model/i18n'
 import { useApp } from '../model/store'
 import { formatLength } from '../model/units'
@@ -130,7 +130,7 @@ function Walker() {
   useFrame((_, elapsed) => {
     const state = useApp.getState()
     const { pose, target, joystick, panel, teleportVersion } = state
-    const walkCollision = state.settings.style === 'white' ? whiteCollision : collision
+    const walkCollision = walkCollisionFor(state.settings)
     const dt = Math.min(elapsed, 0.05)
     const { heading, pitch } = pose
     const front = Math.cos(heading)
@@ -246,8 +246,11 @@ function Gestures() {
         addPoint(hit.point.toArray())
       } else if (hit.object.userData.floor) {
         const target: Point = [hit.point.x, hit.point.z]
-        const walkCollision = settings.style === 'white' ? whiteCollision : collision
-        if (mode === 'walk' && walkCollision.isFree(target)) useApp.setState({ target })
+        const walkCollision = walkCollisionFor(settings)
+        if (mode === 'walk') {
+          const position = safePosition(target, undefined, walkCollision)
+          if (position) useApp.setState({ target: position })
+        }
         if (mode === 'dollhouse' && hit.face && hit.face.normal.y > 0.5) {
           const room = house.rooms.find(zone => contains(zone, target))
           if (room) {

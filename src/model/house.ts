@@ -1,6 +1,8 @@
 import raw from '../data/house.json'
 import { createOutdoorFeatures, planters, trees } from './landscape'
 import { createCollision } from './collision'
+import { furnitureColliders, vehicleColliders } from './furniture'
+import type { Settings } from './settings'
 import { contains, polygonArea, rectangle, segments, type Floor, type Footprint, type Point, type Ring } from './geometry'
 
 export interface Zone extends Floor {
@@ -68,11 +70,27 @@ const obstacles = [
   ...house.walls, ...house.perimeterWalls, pool, ...bench, firePit, ...planters, ...trees,
   ...house.openings.filter(opening => opening.kind === 'window').map(opening => ({ polygon: rectangle(opening.rect) })),
 ]
-export const whiteCollision = createCollision(house.lot, obstacles)
-export const collision = createCollision(house.lot, [
+const finishedObstacles = [
   ...obstacles,
   { polygon: rectangle([p10.rect[0], p10.rect[1], p10.rect[2], p10FixedEnd]) },
-])
+]
+const walkCollisions = new Map<number, ReturnType<typeof createCollision>>()
+
+export function walkCollisionFor({ style, furniture, vehicles }: Pick<Settings, 'style' | 'furniture' | 'vehicles'>) {
+  const key = (style === 'white' ? 4 : 0) + (furniture ? 2 : 0) + (vehicles ? 1 : 0)
+  const cached = walkCollisions.get(key)
+  if (cached) return cached
+  const walkCollision = createCollision(house.lot, [
+    ...(style === 'white' ? obstacles : finishedObstacles),
+    ...(furniture ? furnitureColliders : []),
+    ...(vehicles ? vehicleColliders : []),
+  ])
+  walkCollisions.set(key, walkCollision)
+  return walkCollision
+}
+
+export const whiteCollision = walkCollisionFor({ style: 'white', furniture: false, vehicles: false })
+export const collision = walkCollisionFor({ style: 'finished', furniture: false, vehicles: false })
 
 export function safePosition(point: Point, zone?: Zone, walkCollision = collision): Point | undefined {
   if (walkCollision.isFree(point) && (!zone || contains(zone, point))) return point
