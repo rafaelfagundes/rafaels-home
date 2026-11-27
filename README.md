@@ -2,7 +2,9 @@
 
 A mobile-first 3D walkthrough and dollhouse view of Rafael’s single-storey house, built from the extracted AutoCAD blueprint. The model uses metres internally and supports English and Brazilian Portuguese, with Imperial or metric display units.
 
-The display name is Rafael's House in English and Casa do Rafael in Brazilian Portuguese. The repository, package, and Vercel project and URL intentionally keep the `rafaels-home` slug. The `rafaels-home:*` localStorage keys also keep that slug so saved settings carry over.
+Live: https://rafaels-house.vercel.app
+
+The display name is Rafael's House in English and Casa do Rafael in Brazilian Portuguese. The GitHub repository and package name keep the `rafaels-home` slug, and the Vercel project is now `rafaels-house`. The old https://rafaels-home.vercel.app address redirects (308) to the new one via `vercel.json`. The `rafaels-home:*` localStorage keys keep the old slug so saved settings carry over.
 
 ## Run locally
 
@@ -11,7 +13,7 @@ npm install
 npm run dev
 ```
 
-Run `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build` to check the project. Use `npm run preview` to serve the built site. For static hosting on Vercel, use the Vite preset with `npm run build` and output directory `dist`.
+Run `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build` to check the project. Use `npm run preview` to serve the built site. For static hosting on Vercel, use the Vite preset with `npm run build` and output directory `dist`. Include the root `vercel.json` in manual deploys.
 
 ## Controls
 
