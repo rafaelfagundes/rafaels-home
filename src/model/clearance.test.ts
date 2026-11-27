@@ -109,7 +109,7 @@ it('keeps a 0.6 m pull-out zone at every desk', () => {
 
 it.each([
   // Cross between the room divider and sofa, then turn north before the bar stools.
-  ['P01 to dining', [[4.05, 12.30], [5.01, 12.30], [5.01, 9.37], [8.09, 9.37], [8.09, 9.00], [8.69, 9.00]]],
+  ['P01 to dining', [[4.05, 12.30], [5.01, 12.30], [5.01, 9.40], [8.09, 9.40], [8.09, 9.00], [8.69, 9.00]]],
   ['P02 to dining', [[7.38, 5.15], [7.38, 6.74], [8.69, 6.74]]],
 ] satisfies [string, Point[]][])('keeps a 0.6 m route from %s', (_route, points) => {
   const walk = createCollision(house.lot, [

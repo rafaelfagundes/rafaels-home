@@ -369,7 +369,7 @@ function Annotations({ portal }: { portal: RefObject<HTMLDivElement | null> }) {
     {!controlsHidden && target && mode === 'walk' && <group position={planToWorld(target, floorElevation(target, walkingFloors) + 0.022)} rotation={[-Math.PI / 2, 0, 0]}>
       <mesh>
         <ringGeometry args={[0.156, 0.174, 32]} />
-        <meshBasicMaterial color={palette.cream} toneMapped={false} fog={false} />
+        <meshBasicMaterial color={palette.white} toneMapped={false} fog={false} />
       </mesh>
       <mesh>
         <ringGeometry args={[0.174, 0.192, 32]} />
@@ -393,7 +393,7 @@ function Annotations({ portal }: { portal: RefObject<HTMLDivElement | null> }) {
     {!controlsHidden && points.map((point, index) => <group key={index} position={point}>
       <mesh renderOrder={11}>
         <sphereGeometry args={[0.083, 12, 8]} />
-        <meshBasicMaterial color={palette.cream} depthTest={false} toneMapped={false} fog={false} />
+        <meshBasicMaterial color={palette.white} depthTest={false} toneMapped={false} fog={false} />
       </mesh>
       <mesh renderOrder={12}>
         <sphereGeometry args={[0.07, 12, 8]} />
@@ -405,7 +405,7 @@ function Annotations({ portal }: { portal: RefObject<HTMLDivElement | null> }) {
       </mesh>
     </group>)}
     {a && b && <>
-      <Line points={[a, b]} color={palette.cream} lineWidth={6.5} depthTest={false} toneMapped={false} fog={false} renderOrder={8} />
+      <Line points={[a, b]} color={palette.white} lineWidth={6.5} depthTest={false} toneMapped={false} fog={false} renderOrder={8} />
       <Line points={[a, b]} color={palette['near-black']} lineWidth={4.5} depthTest={false} toneMapped={false} fog={false} renderOrder={9} />
       <Line points={[a, b]} color={palette.orange} lineWidth={2.5} depthTest={false} toneMapped={false} fog={false} renderOrder={10} />
       <Html portal={htmlPortal} center position={new THREE.Vector3(...a).lerp(new THREE.Vector3(...b), 0.5)}
@@ -466,7 +466,7 @@ export default function Scene({ labelsPortal, stats }: {
   const whiteDay = useApp(s => s.settings.style === 'white' && s.settings.lighting === 'day')
   const [dpr, setDpr] = useState(initialDpr)
   // The white Walk scene has no sky mesh and uses its original horizon backdrop.
-  const background = mode === 'walk' && whiteDay ? 'linear-gradient(170deg, #dce5e7, #f5f6f1 70%)' : undefined
+  const background = mode === 'walk' && whiteDay ? '#dce5e7' : undefined
   return <Canvas style={{ background }} dpr={dpr} gl={rendererOptions} shadows camera={{ fov: 55, near: 0.035, far: 180 }}
     fallback={<p className="loading">{dictionary[language].unavailable}</p>}>
     {maxDpr > 1 && <PerformanceMonitor bounds={performanceBounds}

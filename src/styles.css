@@ -4,10 +4,10 @@
   --deep-teal: #0F3D3E;
   --teal: #2E6F73;
   --light-teal: #7FB3B8;
-  --cream: #EADCC8;
+  --white: #FFFFFF;
   --orange: #C6601F;
   color: var(--near-black);
-  background: var(--cream);
+  background: var(--white);
   font-synthesis: none;
   --shadow: 0 5px 22px #0A0F1438;
   --top: max(12px, env(safe-area-inset-top));
@@ -16,14 +16,14 @@
   --left: max(12px, env(safe-area-inset-left));
 }
 .app[data-lighting="day"] {
-  --surface: var(--cream);
+  --surface: var(--white);
   --foreground: var(--near-black);
   --secondary: var(--deep-teal);
   --hover: var(--light-teal);
   --active: var(--deep-teal);
-  --on-active: var(--cream);
+  --on-active: var(--white);
   --plan-land: var(--light-teal);
-  --plan-room: var(--cream);
+  --plan-room: var(--white);
   --plan-water: var(--light-teal);
   --plan-wall: var(--near-black);
   --plan-opening: var(--teal);
@@ -31,7 +31,7 @@
 }
 .app[data-lighting="night"] {
   --surface: var(--near-black);
-  --foreground: var(--cream);
+  --foreground: var(--white);
   --secondary: var(--light-teal);
   --hover: var(--deep-teal);
   --active: var(--light-teal);
@@ -39,7 +39,7 @@
   --plan-land: var(--deep-teal);
   --plan-room: var(--near-black);
   --plan-water: var(--teal);
-  --plan-wall: var(--cream);
+  --plan-wall: var(--white);
   --plan-opening: var(--deep-teal);
   color-scheme: dark;
 }
@@ -183,5 +183,5 @@ button:not(:disabled):active, .primary:not(:disabled):active, button[aria-presse
 
 .controls-restore:focus-visible, .map-show:focus-visible {
   outline-offset: 0;
-  box-shadow: 0 0 0 4px var(--near-black), 0 0 0 6px var(--cream), var(--shadow);
+  box-shadow: 0 0 0 4px var(--near-black), 0 0 0 6px var(--white), var(--shadow);
 }

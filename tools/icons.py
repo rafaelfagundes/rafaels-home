@@ -8,7 +8,7 @@ from PIL import Image
 
 PUBLIC = Path(__file__).resolve().parents[1] / "public"
 DEEP_TEAL = "#0F3D3E"
-CREAM = "#EADCC8"
+WHITE = "#FFFFFF"
 ORANGE = "#C6601F"
 
 
@@ -16,8 +16,8 @@ def svg(*, full_bleed=False):
     radius = 0 if full_bleed else 42
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
   <rect width="192" height="192" rx="{radius}" fill="{DEEP_TEAL}"/>
-  <path d="M42 89l54-46 54 46m-96-9v65h84V80" fill="none" stroke="{CREAM}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M78 145v-35q0-5 5-5h26q5 0 5 5v35Z" fill="{CREAM}"/>
+  <path d="M42 89l54-46 54 46m-96-9v65h84V80" fill="none" stroke="{WHITE}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M78 145v-35q0-5 5-5h26q5 0 5 5v35Z" fill="{WHITE}"/>
   <rect x="85" y="113" width="22" height="24" rx="2" fill="{ORANGE}"/>
 </svg>
 '''

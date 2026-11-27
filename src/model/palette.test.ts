@@ -28,14 +28,14 @@ const pairs: Pair[] = [
   ['Borders, control outlines, joystick rim and track', 'secondary', 'surface', 3],
   ['Active button and checkbox boundary, joystick knob', 'active', 'surface', 3],
   ['Focus ring', 'orange', 'surface', 3],
-  ['Restore focus and marker outline', 'cream', 'near-black', 3],
+  ['Restore focus and marker outline', 'white', 'near-black', 3],
   ['Marker fill and restore focus ring against its dark outer edge', 'orange', 'near-black', 3],
   ['Plan walls, openings and features against rooms', 'plan-wall', 'plan-room', 3],
   ['Plan boundaries and features against land', 'plan-wall', 'plan-land', 3],
   ['Pool edge', 'plan-wall', 'plan-water', 3],
   ['Window against wall and outline', 'plan-opening', 'plan-wall', 3],
-  ['House outline and door against badge', 'cream', 'deep-teal', 3],
-  ['House door accent against cream surround', 'orange', 'cream', 3],
+  ['House outline and door against badge', 'white', 'deep-teal', 3],
+  ['House door accent against white surround', 'orange', 'white', 3],
 ]
 
 const css = readFileSync(new URL('../styles.css', import.meta.url), 'utf8')
