@@ -20,9 +20,11 @@ export interface Zone extends Floor {
 }
 
 interface Wall extends Footprint { id: string; base: number; height: number; kind: 'wall' | 'pillar' }
-interface Opening {
+export interface Opening {
   id: string
   kind: 'door' | 'window' | 'passage'
+  operation?: 'sliding' | 'swing'
+  description?: string
   axis: 'x' | 'y'
   rect: readonly [number, number, number, number]
   center: Point

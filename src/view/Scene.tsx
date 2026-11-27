@@ -6,6 +6,7 @@ import { contains, floorElevation, planToWorld, type Point } from '../model/geom
 import { house, safePosition, walkCollisionFor, walkingFloors, zonePose, zones } from '../model/house'
 import { dictionary, roomName } from '../model/i18n'
 import { useApp } from '../model/store'
+import { palette } from '../model/palette'
 import { formatLength } from '../model/units'
 import { createFloorOcclusion, edgeLines, layers } from './model'
 import { finishedLayers, mullions, whiteEave, whiteEaveLines } from './finishedModel'
@@ -354,31 +355,60 @@ function Gestures() {
   return null
 }
 
-function Annotations() {
+function Annotations({ portal }: { portal: RefObject<HTMLDivElement | null> }) {
   const { language, units, labels } = useApp(s => s.settings)
   const mode = useApp(s => s.mode)
   const points = useApp(s => s.points)
   const target = useApp(s => s.target)
   const controlsHidden = useApp(s => s.controlsHidden)
   const [a, b] = controlsHidden ? [] : points
+  if (!portal.current) return null
+  // Keep the Html target stable while the canvas connects its event handlers.
+  const htmlPortal = { current: portal.current }
   return <>
-    {!controlsHidden && target && mode === 'walk' && <mesh position={planToWorld(target, floorElevation(target, walkingFloors) + 0.022)} rotation={[-Math.PI / 2, 0, 0]}>
-      <ringGeometry args={[0.18, 0.225, 32]} />
-      <meshBasicMaterial color="#32635a" side={THREE.DoubleSide} />
-    </mesh>}
+    {!controlsHidden && target && mode === 'walk' && <group position={planToWorld(target, floorElevation(target, walkingFloors) + 0.022)} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh>
+        <ringGeometry args={[0.156, 0.174, 32]} />
+        <meshBasicMaterial color={palette.cream} toneMapped={false} fog={false} />
+      </mesh>
+      <mesh>
+        <ringGeometry args={[0.174, 0.192, 32]} />
+        <meshBasicMaterial color={palette['near-black']} toneMapped={false} fog={false} />
+      </mesh>
+      <mesh>
+        <ringGeometry args={[0.192, 0.224, 32]} />
+        <meshBasicMaterial color={palette.orange} toneMapped={false} fog={false} />
+      </mesh>
+      <mesh>
+        <ringGeometry args={[0.224, 0.242, 32]} />
+        <meshBasicMaterial color={palette['near-black']} toneMapped={false} fog={false} />
+      </mesh>
+    </group>}
     {labels && mode === 'dollhouse' && zones.map(zone => (
-      <Html key={zone.id} center position={planToWorld(zone.label, zone.floor + (zone.indoor ? 1.5 : 0.35))}
+      <Html key={zone.id} portal={htmlPortal} center position={planToWorld(zone.label, zone.floor + (zone.indoor ? 1.5 : 0.35))}
         style={{ pointerEvents: 'none' }} occlude>
         <span className="model-label">{roomName(zone, language)}</span>
       </Html>
     ))}
-    {!controlsHidden && points.map((point, index) => <mesh key={index} position={point} renderOrder={10}>
-      <sphereGeometry args={[0.057, 12, 8]} />
-      <meshBasicMaterial color="#285e52" depthTest={false} />
-    </mesh>)}
+    {!controlsHidden && points.map((point, index) => <group key={index} position={point}>
+      <mesh renderOrder={11}>
+        <sphereGeometry args={[0.083, 12, 8]} />
+        <meshBasicMaterial color={palette.cream} depthTest={false} toneMapped={false} fog={false} />
+      </mesh>
+      <mesh renderOrder={12}>
+        <sphereGeometry args={[0.07, 12, 8]} />
+        <meshBasicMaterial color={palette['near-black']} depthTest={false} toneMapped={false} fog={false} />
+      </mesh>
+      <mesh renderOrder={13}>
+        <sphereGeometry args={[0.057, 12, 8]} />
+        <meshBasicMaterial color={palette.orange} depthTest={false} toneMapped={false} fog={false} />
+      </mesh>
+    </group>)}
     {a && b && <>
-      <Line points={[a, b]} color="#285e52" lineWidth={2.5} depthTest={false} renderOrder={9} />
-      <Html center position={new THREE.Vector3(...a).lerp(new THREE.Vector3(...b), 0.5)}
+      <Line points={[a, b]} color={palette.cream} lineWidth={6.5} depthTest={false} toneMapped={false} fog={false} renderOrder={8} />
+      <Line points={[a, b]} color={palette['near-black']} lineWidth={4.5} depthTest={false} toneMapped={false} fog={false} renderOrder={9} />
+      <Line points={[a, b]} color={palette.orange} lineWidth={2.5} depthTest={false} toneMapped={false} fog={false} renderOrder={10} />
+      <Html portal={htmlPortal} center position={new THREE.Vector3(...a).lerp(new THREE.Vector3(...b), 0.5)}
         style={{ pointerEvents: 'none' }}>
         <span className="distance-label">{formatLength(new THREE.Vector3(...a).distanceTo(new THREE.Vector3(...b)), units, language)}</span>
       </Html>
@@ -427,11 +457,17 @@ function Furnishings() {
   </>
 }
 
-export default function Scene({ stats }: { stats?: RefObject<HTMLDivElement | null> }) {
+export default function Scene({ labelsPortal, stats }: {
+  labelsPortal: RefObject<HTMLDivElement | null>
+  stats?: RefObject<HTMLDivElement | null>
+}) {
   const mode = useApp(s => s.mode)
   const language = useApp(s => s.settings.language)
+  const whiteDay = useApp(s => s.settings.style === 'white' && s.settings.lighting === 'day')
   const [dpr, setDpr] = useState(initialDpr)
-  return <Canvas dpr={dpr} gl={rendererOptions} shadows camera={{ fov: 55, near: 0.035, far: 180 }}
+  // The white Walk scene has no sky mesh and uses its original horizon backdrop.
+  const background = mode === 'walk' && whiteDay ? 'linear-gradient(170deg, #dce5e7, #f5f6f1 70%)' : undefined
+  return <Canvas style={{ background }} dpr={dpr} gl={rendererOptions} shadows camera={{ fov: 55, near: 0.035, far: 180 }}
     fallback={<p className="loading">{dictionary[language].unavailable}</p>}>
     {maxDpr > 1 && <PerformanceMonitor bounds={performanceBounds}
       onIncline={() => setDpr(value => Math.min(maxDpr, value + 0.25))}
@@ -442,6 +478,6 @@ export default function Scene({ stats }: { stats?: RefObject<HTMLDivElement | nu
     <Furnishings />
     {mode === 'walk' ? <Walker /> : <><Orbit /><PersonFigure /></>}
     <Gestures />
-    <Annotations />
+    <Annotations portal={labelsPortal} />
   </Canvas>
 }

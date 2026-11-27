@@ -48,7 +48,7 @@ The extractor also renders `tools/extract/plan_debug.png` for comparison. Plan c
 - `src/model/` contains geometry, collision, localization, settings, and their tests.
 - `src/view/` contains the Three.js mesh builder and interactive scene.
 - `src/main.tsx` and `src/styles.css` contain the viewer controls and overlays.
-- `public/` contains the web manifest and icon.
+- `public/` contains the web manifest, favicons, app icons and in-app house badge.
 - `tools/extract/` contains the source blueprint and extractor.
 
 ## Blueprint interpretation notes
@@ -120,13 +120,33 @@ The reference photos set the look; anything they and the blueprint don't settle 
 - Night (dusk): deep-blue gradient sky with a faint warm horizon, dim moon without shadows, warm emissive downlight discs (~1 per 3 m²) on ceilings and soffits, 2 warm interior point lights, 1 cyan pool light, 1 fire light, emissive step lights. At most 6 real lights at night.
 - Textures are tiny procedural canvas textures (128–256 px, tiled, generated at load), so there are no image files to download or compress; they stay deliberately subtle.
 - Adaptive DPR (1 → 2, starting at 1.5 on touch devices). Add `?stats` to the URL to see FPS, draw calls, triangles and DPR.
-- The white model is still available (Settings → Style → White model) and looks the same as v1 by day.
+- The white model is still available (Settings → Style → White model). By day, the white Dollhouse uses a flat cream backdrop and white Walk keeps its original horizon.
 
 ## v4 changes
 
-The viewer starts in Dollhouse by default. Settings can switch the next startup to Walk. Drag the 1.70 m mannequin to set where Walk begins. The first-person camera sits 1.58 m above the floor. The top-bar eye button or **H** hides the controls. Use the top-right eye button or **H** to restore them. The furniture tables below reflect the v4 placements, and the site uses the supplied favicon and app icons.
+The viewer starts in Dollhouse by default. Settings can switch the next startup to Walk. Drag the 1.70 m mannequin to set where Walk begins. The first-person camera sits 1.58 m above the floor. The top-bar eye button or **H** hides the controls. Use the top-right eye button or **H** to restore them.
 
-## v3 furniture, appliances and vehicles – assumptions (updated for v4)
+## v5 interface palette and app icons
+
+The Lighting setting applies the same day or night theme to the viewer chrome, sheets, plan and annotations.
+
+| Token | Day | Night | Use |
+| --- | --- | --- | --- |
+| `surface` | `#EADCC8` | `#0A0F14` | Chrome, plan frame, dialogs, joystick, loading and room labels |
+| `foreground` | `#0A0F14` | `#EADCC8` | Primary text and icons |
+| `secondary` | `#0F3D3E` | `#7FB3B8` | Secondary text, icons and control outlines |
+| `hover` | `#7FB3B8` | `#0F3D3E` | Inactive control hover |
+| `active` / `on-active` | `#0F3D3E` / `#EADCC8` | `#7FB3B8` / `#0A0F14` | Selected controls, primary buttons, distance labels and stats |
+| `plan-land` / `plan-water` | `#7FB3B8` / `#7FB3B8` | `#0F3D3E` / `#2E6F73` | Lot, garden and water fills |
+| `plan-room` / `plan-wall` | `#EADCC8` / `#0A0F14` | `#0A0F14` / `#EADCC8` | Room fills, wall lines and plan features |
+| `plan-opening` | `#2E6F73` | `#0F3D3E` | Window fills |
+| `orange` | `#C6601F` | `#C6601F` | Focus, plan marker, measurement graphics and house door accent |
+
+Vitest checks WCAG contrast for both themes. Cream on burnt orange is 3.06:1 and white is 4.12:1, so the accent is reserved for graphics. The startup manifest uses cream, and the browser theme color follows Lighting.
+
+Run `python3 tools/icons.py` with FFmpeg built with librsvg and Python Pillow to regenerate both SVGs, the 16/32/48 px ICO, the 180 px Apple touch icon, and the 192/512 px app icons. The Apple touch and maskable icons use opaque deep-teal backgrounds. The maskable icon keeps its cream house and orange door inside the central 80% circle.
+
+## Furniture, appliances and vehicles
 
 The tables use implemented placements, including small offsets for fit. Centres are plan coordinates (x, y) in metres. Sizes are width × depth × height in metres, with depth along the facing direction. Facing gives the direction of the front (0° = +x, 90° = +y, 180° = −x, 270° = −y). Lift is measured from the local floor. The layout uses the existing floor elevations, including 0.47 m indoors, 0.28 m in the garage and 0.02 m above the yard on the pool deck.
 
@@ -208,19 +228,18 @@ The vanity and rain head are on the west wall. Fixed glass screens the west part
 
 ### Living and entry
 
-The three-seat sofa faces the coffee table and wall-mounted 65-inch TV. The west entry console clears P01. The plan’s ESTANTE is a freestanding, double-sided oak divider with open shelves, 3.17 m along the plan y-axis and 2.40 m high.
+The three-seat sofa faces the coffee table and wall-mounted 65-inch TV. The swivel lounge chair faces east from the table’s west side with a 0.30 m gap. The lamp sits by the sofa’s west end, and the plant sits just south of J01. The west entry console clears P01. The plan’s ESTANTE is a freestanding, double-sided oak divider with open shelves, 3.17 m along the plan y-axis and 2.40 m high.
 
 | Item | Centre(s) | Size | Facing | Lift |
 | --- | --- | --- | --- | --- |
 | Sofa | (6.30, 8.75) | 2.40 × 0.95 × 0.80 | 270° | — |
-| Coffee table | (6.10, 7.60) | 1.10 × 0.60 × 0.38 | 270° | — |
+| Coffee table | (6.60, 7.60) | 1.10 × 0.60 × 0.38 | 0° | — |
 | Media console | (5.975, 5.85) | 2.00 × 0.45 × 0.50 | 90° | — |
 | TV | (5.975, 5.655) | 1.45 × 0.05 × 0.84 | 90° | 0.95 |
-| Armchair | (4.55, 8.56) | 0.82 × 0.99 × 1.02 | 0° | — |
-| Lounge chair | (7.40, 7.60) | 1.01 × 1.19 × 1.17 | 180° | — |
-| Rug | (6.10, 7.60) | 2.80 × 2.00 × 0.01 | 270° | — |
-| Floor lamp | (4.35, 9.30) | 0.35 × 0.35 × 1.60 | 0° | — |
-| Plant | (4.40, 9.90) | 0.60 × 0.60 × 1.34 | 0° | — |
+| Lounge chair | (5.40, 7.60) | 1.01 × 1.19 × 1.17 | 0° | — |
+| Rug | (6.40, 7.60) | 2.80 × 2.00 × 0.01 | 270° | — |
+| Floor lamp | (4.85, 8.80) | 0.35 × 0.35 × 1.60 | 0° | — |
+| Plant | (4.35, 8.55) | 0.60 × 0.60 × 1.34 | 0° | — |
 | Entry console | (4.185, 10.80) | 1.20 × 0.35 × 0.80 | 0° | — |
 | ESTANTE divider | (6.20, 11.285) | 3.17 × 0.30 × 2.40 | 180° | — |
 
@@ -290,14 +309,14 @@ The west counter has a stone top, sink at y = 13.55 m, cooktop at y = 14.25 m an
 
 ### Veranda
 
-The outdoor sofa and two armchairs face across the coffee table.
+The outdoor sofa sits 0.05 m off the west glass wall, facing east across the coffee table toward two side-by-side armchairs. The sofa spans y = 8.40–10.60 m, leaving about 1.66 m and 2.28 m clear at the ends of P10 on the veranda side.
 
 | Item | Centre(s) | Size | Facing | Lift |
 | --- | --- | --- | --- | --- |
-| Outdoor sofa | (15.20, 9.50) | 2.20 × 0.90 × 0.75 | 180° | — |
-| Coffee table | (14.10, 9.50) | 1.00 × 0.60 × 0.38 | 0° | — |
-| Outdoor armchair | (14.25, 8.35) | 0.75 × 0.80 × 0.75 | 90° | — |
-| Outdoor armchair | (14.25, 10.65) | 0.75 × 0.80 × 0.75 | 270° | — |
+| Outdoor sofa | (13.16, 9.50) | 2.20 × 0.90 × 0.75 | 0° | — |
+| Coffee table | (14.15, 9.50) | 1.00 × 0.60 × 0.38 | 0° | — |
+| Outdoor armchair | (15.00, 9.05) | 0.75 × 0.80 × 0.75 | 180° | — |
+| Outdoor armchair | (15.00, 9.95) | 0.75 × 0.80 × 0.75 | 180° | — |
 
 ### Pool deck
 
@@ -333,10 +352,10 @@ Clearances computed by garageFit().
 
 ### Rendering, collision and settings
 
-- **Layout tests.** Vitest checks the 0.8 m zone on each side of doors, passages and full-height glazing, including outdoor furniture and vehicles. It also checks same-room footprint overlaps with a small allowlist, 0.6 m routes from P01 and P02, 0.6 m desk pull-out zones with 0.2 m bed clearance, semi-suite translation, and counter and stool heights.
+- **Layout tests.** Vitest checks the full-width 0.8 m zone on each side of doors, passages and full-height glazing, including outdoor furniture and vehicles. Glass sliding doors wider than 3.0 m require a continuous clear section at least 1.2 m wide at the full 0.8 m depth on each side. The union of furniture and vehicle footprints projected along the opening may block at most 50% per side. A walk test also crosses the open end of P10 in the finished model. It also checks same-room footprint overlaps with a small allowlist, 0.6 m routes from P01 and P02, 0.6 m desk pull-out zones with 0.2 m bed clearance, semi-suite translation, and counter and stool heights.
 
 - **Collision.** Furniture and vehicles use rotated rectangular footprints. Shower glass counts as a collider (0.04 m thick in the shared bath and 0.05 m in the master bath). The dining table adds 0.35 m per side, and the gourmet table adds 0.15 m per side. Dining and gourmet chairs, bar stools, rugs, shower trays and fittings, mirrors, the TV, the hood, pendants and the stacked dryer are visual only. The island and breakfast bar each have a footprint, and the washer provides the footprint for the stack.
-- **Procedural and GLB models.** Beds, seating other than the two living-room chairs, cabinetry, tables, rugs, lighting fixtures, built-in kitchen and gourmet equipment, and bathroom fittings other than toilets are original procedural geometry. The fridge, washer, dryer, three toilets, living-room armchair and lounge chair, and two plants come from furniture.glb. The three vehicles come from vehicles.glb. Procedural pieces use merged geometry and instancing. GLB nodes with a lower-detail version switch to it at 7 m.
+- **Procedural and GLB models.** Beds, seating other than the living-room lounge chair, cabinetry, tables, rugs, lighting fixtures, built-in kitchen and gourmet equipment, and bathroom fittings other than toilets are original procedural geometry. The fridge, washer, dryer, three toilets, living-room lounge chair and two plants come from furniture.glb. The three vehicles come from vehicles.glb. Procedural pieces use merged geometry and instancing. GLB nodes with a lower-detail version switch to it at 7 m.
 - **Vehicle stand-ins.** No licensed exact BMW X5, VW Golf R or Suzuki Hayabusa model was downloadable without a login, so generic CC0 and CC BY models were recoloured dark red, blue and black respectively and scaled to the real vehicles’ dimensions. The credits give the body dimensions, and the garage placement table uses mirror-inclusive car widths.
 - **Settings.** “Furniture & appliances” (“Móveis e eletrodomésticos”) and “Vehicles” (“Veículos”) are separate toggles. Both default on, including for older saved settings. Each group’s render chunk and GLB load on demand after the house first renders, only when its toggle is on. The toggles control visibility and walk collision. Both groups appear in Walk and Dollhouse and allow floor taps and Measure to pass through.
 - **White model.** Furniture, appliances and vehicles share one texture-free matte off-white material (#f4f3ee, roughness 0.9).
@@ -353,7 +372,7 @@ Clearances computed by garageFit().
 | Washing Machine | Washer | Quaternius | https://poly.pizza/m/UFxsKNSl8W | CC0 1.0 |
 | Clothes dryer | Dryer | Poly by Google | https://poly.pizza/m/bTbe1CRWC1T | CC BY 3.0 |
 | Toilet | Toilets (3) | Pat Siefring | https://poly.pizza/m/23BWsguAdkf | CC BY 3.0 |
-| Modern Arm Chair 01 | Living-room armchair | Vibrant Nordic (Poly Haven) | https://polyhaven.com/a/modern_arm_chair_01 | CC0 1.0 |
+| Modern Arm Chair 01 | Bundled GLB asset | Vibrant Nordic (Poly Haven) | https://polyhaven.com/a/modern_arm_chair_01 | CC0 1.0 |
 | Mid Century Lounge Chair | Living-room lounge chair | Kuutti Siitonen (Poly Haven) | https://polyhaven.com/a/mid_century_lounge_chair | CC0 1.0 |
 | Potted Plant 01 | Indoor plants (2) | Rico Cilliers (Poly Haven) | https://polyhaven.com/a/potted_plant_01 | CC0 1.0 |
 
