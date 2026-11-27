@@ -6,6 +6,9 @@
   --light-teal: #7FB3B8;
   --white: #FFFFFF;
   --orange: #C6601F;
+  --warning-red: #D24B43;
+  --light-orange: #FFF0E5;
+  --pale-teal: #EAF4F4;
   color: var(--near-black);
   background: var(--white);
   font-synthesis: none;
@@ -22,6 +25,7 @@
   --hover: var(--light-teal);
   --active: var(--deep-teal);
   --on-active: var(--white);
+  --status-background: var(--pale-teal);
   --plan-land: var(--light-teal);
   --plan-room: var(--white);
   --plan-water: var(--light-teal);
@@ -36,6 +40,7 @@
   --hover: var(--deep-teal);
   --active: var(--light-teal);
   --on-active: var(--near-black);
+  --status-background: var(--deep-teal);
   --plan-land: var(--deep-teal);
   --plan-room: var(--near-black);
   --plan-water: var(--teal);
@@ -184,4 +189,51 @@ button:not(:disabled):active, .primary:not(:disabled):active, button[aria-presse
 .controls-restore:focus-visible, .map-show:focus-visible {
   outline-offset: 0;
   box-shadow: 0 0 0 4px var(--near-black), 0 0 0 6px var(--white), var(--shadow);
+}
+
+.editor-actions {
+  position: absolute; z-index: 2; left: 50%; transform: translateX(-50%);
+  bottom: calc(var(--bottom) + 62px); padding: 4px 6px; border-radius: 18px;
+  display: grid; justify-items: center; width: max-content; max-width: calc(100% - 16px);
+}
+.editor-selection { font-size: 12px; font-weight: 650; padding-top: 2px; }
+.editor-buttons { display: flex; }
+.editor-buttons button { width: 44px; min-width: 0; min-height: 44px; font-size: 13px; font-weight: 650; }
+.editor-buttons button:last-child { color: var(--foreground); box-shadow: inset 0 -2px var(--orange); }
+.editor-feedback:not(:empty) {
+  padding: 4px 8px; margin: 4px 0; border-radius: 6px; font-size: 12px;
+  color: var(--near-black); background: var(--light-orange);
+}
+.layouts-settings { grid-template-columns: 1fr 16px; border-top: 1px solid var(--sheet-divider); }
+.layouts-panel { display: grid; gap: 12px; font-size: 14px; }
+.layouts-panel p { margin: 0; overflow-wrap: anywhere; }
+.layouts-current { display: grid; gap: 4px; }
+.layouts-current strong { font-size: 16px; }
+.layouts-current span, .layouts-hint { color: var(--secondary); }
+.layouts-list { list-style: none; padding: 0; margin: 0; }
+.layouts-list li {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  gap: 6px 12px; padding: 8px 0; border-top: 1px solid var(--sheet-divider);
+}
+.layout-row-name { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.layout-row-name strong { min-width: 0; }
+.layout-row-name span { color: var(--secondary); font-size: 12px; font-weight: 650; }
+.layouts-list li:last-child { border-bottom: 1px solid var(--sheet-divider); }
+.layouts-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+.layouts-buttons button { padding: 0 10px; border-radius: 8px; font-weight: 650; }
+.layouts-buttons button:not(:disabled) { border: 1px solid var(--secondary); }
+.layouts-buttons button.layout-danger:not(:disabled) { border-color: var(--orange); }
+.layouts-list .layouts-buttons button { padding: 0 8px; font-size: 13px; }
+.layouts-main-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.layout-message { padding: 9px 12px; border-radius: 8px; line-height: 1.45; }
+.layout-error {
+  color: var(--near-black); background: var(--light-orange);
+  border-inline-start: 1px solid var(--orange);
+}
+.layout-status { color: var(--foreground); background: var(--status-background); }
+.layout-form { display: grid; gap: 8px; padding: 10px; border: 1px solid var(--sheet-divider); border-radius: 8px; }
+.layout-form label { display: grid; gap: 4px; }
+.layout-form input {
+  min-width: 0; min-height: 44px; padding: 0 8px; font-size: 16px;
+  color: var(--foreground); background: var(--surface); border: 1px solid var(--secondary); border-radius: 8px;
 }

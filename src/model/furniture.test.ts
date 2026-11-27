@@ -3,9 +3,15 @@ import { describe, expect, it } from 'vitest'
 import { footprint, furnitureColliders, furnitureItems, garageFit, vehicleColliders, vehicleItems } from './furniture'
 import { closestPoint, contains, polygonArea, segments, type Point } from './geometry'
 import { collision, house, pool, safePosition, walkCollisionFor, whiteCollision, zonePose, zones } from './house'
+import { kindNames } from './kindNames'
 import { planters, trees } from './landscape'
 import { defaults } from './settings'
 import { useApp } from './store'
+
+it.each(Object.entries(kindNames))('names %s in English and Brazilian Portuguese', (_kind, names) => {
+  expect(names.en.trim()).not.toBe('')
+  expect(names['pt-BR'].trim()).not.toBe('')
+})
 
 describe('furniture and vehicle layout', () => {
   it.each([...furnitureItems, ...vehicleItems])('$id fits within its zone and clears walls', item => {

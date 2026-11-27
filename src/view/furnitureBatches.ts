@@ -1,6 +1,6 @@
 import { BufferAttribute, Color, Matrix4, type BufferGeometry } from 'three'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
-import { furnitureItems } from '../model/furniture'
+import { furnitureItems, type FurnitureItem } from '../model/furniture'
 import { buildFurnitureGeometry, isProcedural, palette, type Finish, type ProceduralItem } from './furnitureGeometry'
 import { placement } from './furnishingPlacement'
 
@@ -38,9 +38,9 @@ function batchFinish(geometry: BufferGeometry, finish: Finish, white: boolean): 
   return 'matte'
 }
 
-export function buildFurnitureBatches(white: boolean): Batch[] {
+export function buildFurnitureBatches(white: boolean, items: FurnitureItem[] = furnitureItems): Batch[] {
   const groups = new Map<string, ProceduralItem[]>()
-  for (const item of furnitureItems.filter(isProcedural)) {
+  for (const item of items.filter(isProcedural)) {
     const key = item.kind === 'rug' ? 'rug' : JSON.stringify([item.kind, item.size, item.components,
       item.kind === 'coffeeTable' && item.room])
     const group = groups.get(key) ?? []

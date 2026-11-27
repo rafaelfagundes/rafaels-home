@@ -10,7 +10,7 @@ export interface Person {
   heading: number
 }
 
-export function loadPerson(isFree: (point: Point) => boolean, storage?: Pick<Storage, 'getItem'>): Person {
+export function loadPerson(isFree: (point: Point) => boolean, storage?: Pick<Storage, 'getItem'>, fallback: Person = { position: entryPosition, heading: 0 }): Person {
   try {
     const saved = JSON.parse((storage ?? localStorage).getItem(PERSON_KEY) ?? 'null')
     if (Array.isArray(saved?.position) && saved.position.length === 2 &&
@@ -20,7 +20,7 @@ export function loadPerson(isFree: (point: Point) => boolean, storage?: Pick<Sto
   } catch {
     // Storage may be unavailable or contain invalid JSON.
   }
-  return { position: entryPosition, heading: 0 }
+  return fallback
 }
 
 export function persistPerson(readPerson: () => Person) {

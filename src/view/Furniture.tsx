@@ -1,13 +1,15 @@
-import { useLayoutEffect, useMemo, useRef } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { MeshStandardMaterial, type BufferGeometry, type InstancedMesh, type Matrix4 } from 'three'
-import { furnitureItems } from '../model/furniture'
+import type { FurnitureItem } from '../model/furniture'
+import { effectiveLayout } from '../model/layout'
+import { useLayout } from '../model/layoutStore'
+import { useEditorPreview } from './editorPreview'
 import { useApp } from '../model/store'
 import FurnishingModels from './FurnishingModels'
 import { buildFurnitureBatches, type BatchFinish } from './furnitureBatches'
 import { isProcedural, palette } from './furnitureGeometry'
-import { useFurnishingShadows, whiteFurnishing } from './furnishingPlacement'
+import { placement, useFurnishingShadows, whiteFurnishing } from './furnishingPlacement'
 
-const models = furnitureItems.filter(item => !isProcedural(item))
 const materials = new Map<BatchFinish, MeshStandardMaterial>(Object.entries(palette).map(([finish, values]) =>
   [finish as BatchFinish, new MeshStandardMaterial({ roughness: 0.82, ...values })]))
 materials.set('matte', new MeshStandardMaterial({ roughness: 0.82, vertexColors: true }))
@@ -31,30 +33,45 @@ function Instances({ transforms, geometry, material, castShadow }: {
     castShadow={castShadow} receiveShadow raycast={ignoreRaycast} />
 }
 
-// These static batches are shared across toggle changes, like the architecture meshes.
-const batchCache = new Map<boolean, ReturnType<typeof buildFurnitureBatches>>()
+function FurnitureBatches({ items, white, preview = false }: { items: FurnitureItem[]; white: boolean; preview?: boolean }) {
+  const batches = useMemo(() => buildFurnitureBatches(white, items), [items, white])
+  useFurnishingShadows(batches)
+  useEffect(() => () => batches.forEach(batch => batch.geometry.dispose()), [batches])
+  return batches.map(({ key, geometry, finish, castShadow, transforms }) => {
+    const material = materials.get(finish)!
+    return transforms
+      ? <Instances key={key} transforms={transforms} geometry={geometry} material={material} castShadow={castShadow && !preview} />
+      : <mesh key={key} geometry={geometry} material={material} castShadow={castShadow && !preview} receiveShadow raycast={ignoreRaycast} />
+  })
+}
+
+function DraggedFurniture({ item, white }: { item: FurnitureItem; white: boolean }) {
+  const preview = useEditorPreview(s => s.item?.id === item.id ? s.item : item)
+  const [x, y, z] = placement(item).position
+  const [a, b, c] = placement(preview).position
+  const items = useMemo(() => [item], [item])
+  return <group position={[a - x, b - y, c - z]}>
+    {isProcedural(item) ? <FurnitureBatches items={items} white={white} preview /> :
+      <FurnishingModels file="furniture.glb" items={items} white={white} />}
+  </group>
+}
 
 export default function Furniture() {
   const white = useApp(s => s.settings.style === 'white')
   const night = useApp(s => s.settings.lighting === 'night')
-  const batches = useMemo(() => {
-    const cached = batchCache.get(white) ?? buildFurnitureBatches(white)
-    batchCache.set(white, cached)
-    return cached
-  }, [white])
-  useFurnishingShadows()
+  const changes = useLayout(s => s.changes)
+  const draggedId = useLayout(s => s.dragging ? s.selection : null)
+  const furniture = effectiveLayout(changes).furniture
+  const dragged = furniture.find(item => item.id === draggedId)
+  const items = useMemo(() => furniture.filter(item => item !== dragged), [furniture, dragged])
   useLayoutEffect(() => {
     materials.get('bulb')!.emissiveIntensity = night ? 0.8 : 0
     materials.get('indicator')!.emissiveIntensity = night ? 0.5 : 0
   }, [night])
 
   return <group name="Furniture">
-    {batches.map(({ key, geometry, finish, castShadow, transforms }) => {
-      const material = materials.get(finish)!
-      return transforms
-        ? <Instances key={key} transforms={transforms} geometry={geometry} material={material} castShadow={castShadow} />
-        : <mesh key={key} geometry={geometry} material={material} castShadow={castShadow} receiveShadow raycast={ignoreRaycast} />
-    })}
-    <FurnishingModels file="furniture.glb" items={models} white={white} />
+    <FurnitureBatches items={items} white={white} />
+    <FurnishingModels file="furniture.glb" items={items.filter(item => !isProcedural(item))} white={white} />
+    {dragged && <DraggedFurniture item={dragged} white={white} />}
   </group>
 }

@@ -1,11 +1,12 @@
-import { safePosition, walkCollisionFor } from './house'
+import { house, safePosition, walkCollisionFor } from './house'
+import { useLayout } from './layoutStore'
 import { create } from 'zustand'
 import type { Point, WorldPoint } from './geometry'
 import { entryPosition, loadPerson, persistPerson, type Person } from './person'
 import { parseWalkLink, type Pose } from './walkLink'
 import { helpSeen, loadSettings, rememberHelp, saveSettings, type Mode, type Settings } from './settings'
 
-export type Panel = 'rooms' | 'settings' | 'help' | 'plan'
+export type Panel = 'rooms' | 'settings' | 'help' | 'plan' | 'layouts'
 const CONTROLS_KEY = 'rafaels-home:controls-hidden'
 
 interface State {
@@ -39,11 +40,17 @@ function personFromPose({ position, heading }: Pose): Person {
   return { position, heading }
 }
 
+function fitPerson(person: Person, collision: ReturnType<typeof walkCollisionFor>): Person {
+  const position = safePosition(person.position, undefined, collision) ?? safePosition(entryPosition, undefined, collision) ??
+    house.rooms.map(room => room.label).find(collision.isFree) ?? entryPosition
+  return position === person.position ? person : { ...person, position }
+}
+
 const settings = loadSettings()
 const walkCollision = walkCollisionFor(settings)
 const linkedPose = parseWalkLink(typeof window === 'undefined' ? '' : window.location.search)
 const initialPose = linkedPose && walkCollision.isFree(linkedPose.position) ? linkedPose : undefined
-const person = initialPose ? personFromPose(initialPose) : loadPerson(walkCollision.isFree)
+const person = initialPose ? personFromPose(initialPose) : fitPerson(loadPerson(() => true, undefined, useLayout.getState().person), walkCollision)
 
 export const useApp = create<State>((set, get) => ({
   mode: initialPose ? 'walk' : settings.startView,
@@ -59,9 +66,10 @@ export const useApp = create<State>((set, get) => ({
   points: [],
   setMode: mode => set(state => {
     if (state.mode === mode) return state
+    const person = mode === 'walk' ? fitPerson(state.person, walkCollisionFor(state.settings)) : state.person
     return {
-      mode, target: null, joystick: [0, 0],
-      ...(mode === 'walk' && { pose: { ...state.person, pitch: 0 }, teleportVersion: state.teleportVersion + 1 }),
+      mode, person, target: null, joystick: [0, 0],
+      ...(mode === 'walk' && { pose: { ...person, pitch: 0 }, teleportVersion: state.teleportVersion + 1 }),
     }
   }),
   setPanel: panel => {
@@ -115,3 +123,11 @@ if (typeof window !== 'undefined') {
   })
   if (initialPose) scheduleSave()
 }
+
+useLayout.subscribe((state, previous) => {
+  if (state.activation === previous.activation) return
+  const app = useApp.getState()
+  const chosen = state.person ?? { position: entryPosition, heading: 0 }
+  const person = fitPerson(chosen, walkCollisionFor(app.settings))
+  useApp.setState({ person, pose: { ...person, pitch: 0 }, target: null, teleportVersion: app.teleportVersion + 1 })
+})

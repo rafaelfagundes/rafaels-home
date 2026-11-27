@@ -61,7 +61,7 @@ export default function FurnishingModels({ file, items, white, castShadow = fals
   castShadow?: boolean
 }) {
   const { nodes } = useGLTF(`${import.meta.env.BASE_URL}models/${file}`, false, true)
-  useFurnishingShadows()
+  useFurnishingShadows(items)
   return items.map(item => <Model key={item.id} item={item} high={nodes[item.kind]}
     low={nodes[`${item.kind}_lod1`]} white={white} castShadow={castShadow} />)
 }
