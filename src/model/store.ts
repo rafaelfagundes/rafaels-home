@@ -1,4 +1,4 @@
-import { collision, safePosition, whiteCollision } from './house'
+import { safePosition, walkCollisionFor } from './house'
 import { create } from 'zustand'
 import type { Point, WorldPoint } from './geometry'
 import { parseWalkLink, type Pose } from './walkLink'
@@ -26,15 +26,16 @@ interface State {
 }
 
 const settings = loadSettings()
-const walkCollision = settings.style === 'white' ? whiteCollision : collision
+const walkCollision = walkCollisionFor(settings)
 const linkedPose = parseWalkLink(typeof window === 'undefined' ? '' : window.location.search)
+const entryPosition: Point = [3.75, 12.3]
 const initialPose = linkedPose && walkCollision.isFree(linkedPose.position) ? linkedPose : undefined
 
 export const useApp = create<State>((set, get) => ({
   mode: 'walk',
   panel: initialPose || helpSeen() ? null : 'help',
   settings,
-  pose: initialPose ?? { position: [3.75, 12.3], heading: 0, pitch: 0 },
+  pose: initialPose ?? { position: entryPosition, heading: 0, pitch: 0 },
   teleportVersion: 0,
   target: null,
   joystick: [0, 0],
@@ -46,17 +47,16 @@ export const useApp = create<State>((set, get) => ({
     set({ panel, joystick: [0, 0] })
   },
   changeSettings: patch => {
-    const settings = { ...get().settings, ...patch }
+    const { pose, settings: previous, target, teleportVersion } = get()
+    const settings = { ...previous, ...patch }
+    const walkCollision = walkCollisionFor(settings)
     saveSettings(settings)
-    const { pose, settings: previous } = get()
-    if (previous.style === 'white' && settings.style === 'finished' && !collision.isFree(pose.position)) {
-      const position = safePosition(pose.position)
-      if (position) {
-        set({ settings, pose: { ...pose, position }, target: null })
-        return
-      }
+    if (walkCollision !== walkCollisionFor(previous) && !walkCollision.isFree(pose.position)) {
+      const position = safePosition(pose.position, undefined, walkCollision) ?? entryPosition
+      set({ settings, pose: { ...pose, position }, target: null, teleportVersion: teleportVersion + 1 })
+      return
     }
-    set({ settings })
+    set({ settings, target: target && walkCollision.isFree(target) ? target : null })
   },
   jump: (position, heading) => set(state => ({
     mode: 'walk', panel: null, target: null, joystick: [0, 0],

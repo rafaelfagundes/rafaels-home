@@ -1,9 +1,9 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Html, Line, OrbitControls, PerformanceMonitor } from '@react-three/drei'
-import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import * as THREE from 'three'
 import { contains, floorElevation, planToWorld, type Point } from '../model/geometry'
-import { collision, house, walkingFloors, whiteCollision, zonePose, zones } from '../model/house'
+import { house, safePosition, walkCollisionFor, walkingFloors, zonePose, zones } from '../model/house'
 import { dictionary, roomName } from '../model/i18n'
 import { useApp } from '../model/store'
 import { formatLength } from '../model/units'
@@ -12,6 +12,9 @@ import { finishedLayers, mullions, whiteEave, whiteEaveLines } from './finishedM
 import Landscape from './Landscape'
 import { desktop, Lighting, touch } from './Lighting'
 import { getTexture, patterns, type PatternName } from './textures'
+
+const Furniture = lazy(() => import('./Furniture'))
+const Vehicles = lazy(() => import('./Vehicles'))
 
 const maxDpr = THREE.MathUtils.clamp(window.devicePixelRatio, 1, 2)
 const initialDpr = touch ? Math.min(1.5, maxDpr) : maxDpr
@@ -130,7 +133,7 @@ function Walker() {
   useFrame((_, elapsed) => {
     const state = useApp.getState()
     const { pose, target, joystick, panel, teleportVersion } = state
-    const walkCollision = state.settings.style === 'white' ? whiteCollision : collision
+    const walkCollision = walkCollisionFor(state.settings)
     const dt = Math.min(elapsed, 0.05)
     const { heading, pitch } = pose
     const front = Math.cos(heading)
@@ -246,8 +249,11 @@ function Gestures() {
         addPoint(hit.point.toArray())
       } else if (hit.object.userData.floor) {
         const target: Point = [hit.point.x, hit.point.z]
-        const walkCollision = settings.style === 'white' ? whiteCollision : collision
-        if (mode === 'walk' && walkCollision.isFree(target)) useApp.setState({ target })
+        const walkCollision = walkCollisionFor(settings)
+        if (mode === 'walk') {
+          const position = safePosition(target, undefined, walkCollision)
+          if (position) useApp.setState({ target: position })
+        }
         if (mode === 'dollhouse' && hit.face && hit.face.normal.y > 0.5) {
           const room = house.rooms.find(zone => contains(zone, target))
           if (room) {
@@ -320,6 +326,29 @@ function RenderStats({ output, language }: { output: RefObject<HTMLDivElement | 
   return null
 }
 
+function Furnishings() {
+  const furniture = useApp(s => s.settings.furniture)
+  const vehicles = useApp(s => s.settings.vehicles)
+  const [ready, setReady] = useState(false)
+  const frame = useRef<number | null>(null)
+
+  useFrame(() => {
+    if (!ready && frame.current === null) {
+      // useFrame runs before the render. Wait for the next animation frame.
+      frame.current = requestAnimationFrame(() => setReady(true))
+    }
+  })
+  useEffect(() => () => {
+    if (frame.current !== null) cancelAnimationFrame(frame.current)
+    frame.current = null
+  }, [])
+
+  return <>
+    {ready && furniture && <Suspense fallback={null}><Furniture /></Suspense>}
+    {ready && vehicles && <Suspense fallback={null}><Vehicles /></Suspense>}
+  </>
+}
+
 export default function Scene({ stats }: { stats?: RefObject<HTMLDivElement | null> }) {
   const mode = useApp(s => s.mode)
   const language = useApp(s => s.settings.language)
@@ -332,6 +361,7 @@ export default function Scene({ stats }: { stats?: RefObject<HTMLDivElement | nu
     {stats && <RenderStats output={stats} language={language} />}
     <Lighting />
     <Architecture />
+    <Furnishings />
     {mode === 'walk' ? <Walker /> : <Orbit />}
     <Gestures />
     <Annotations />

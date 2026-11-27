@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, type PointerEvent, type ReactNode } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { createRoot } from 'react-dom/client'
-import { collision, house, outdoorFeatures, safePosition, whiteCollision, zonePose, zones } from './model/house'
+import { house, outdoorFeatures, safePosition, walkCollisionFor, zonePose, zones } from './model/house'
 import { dictionary, roomName } from './model/i18n'
 import { useApp, type Panel } from './model/store'
 import { formatArea } from './model/units'
@@ -49,7 +49,7 @@ function Plan({ interactive = false }: { interactive?: boolean }) {
     const matrix = event.currentTarget.getScreenCTM()
     if (!matrix) return
     const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse())
-    const position = safePosition([point.x, point.y], undefined, useApp.getState().settings.style === 'white' ? whiteCollision : collision)
+    const position = safePosition([point.x, point.y], undefined, walkCollisionFor(useApp.getState().settings))
     if (position) jump(position, pose.heading)
   }
   return <svg viewBox={`-0.2 -0.2 ${house.lot.width + 0.4} ${house.lot.depth + 0.4}`}
@@ -115,7 +115,7 @@ function Rooms() {
     <h3>{indoor ? t.inside : t.outside}</h3>
     <ul>{zones.filter(zone => zone.indoor === indoor).map(zone => <li key={zone.id}>
       <button className="room-row" onClick={() => {
-        const { position, heading } = zonePose(zone, useApp.getState().settings.style === 'white' ? whiteCollision : collision)
+        const { position, heading } = zonePose(zone, walkCollisionFor(useApp.getState().settings))
         jump(position, heading)
       }}>
         <span>{roomName(zone, language)}</span>
@@ -145,6 +145,10 @@ function Settings() {
     </select></label>
     <label>{t.roofInDollhouse}<input type="checkbox" checked={settings.roofInDollhouse}
       onChange={event => change({ roofInDollhouse: event.target.checked })} /></label>
+    <label>{t.furniture}<input type="checkbox" checked={settings.furniture}
+      onChange={event => change({ furniture: event.target.checked })} /></label>
+    <label>{t.vehicles}<input type="checkbox" checked={settings.vehicles}
+      onChange={event => change({ vehicles: event.target.checked })} /></label>
     <label>{t.labels}<input type="checkbox" checked={settings.labels}
       onChange={event => change({ labels: event.target.checked })} /></label>
     <label>{t.shadows}<select value={settings.shadows} onChange={event => {
