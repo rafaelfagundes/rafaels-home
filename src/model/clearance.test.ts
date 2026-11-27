@@ -1,25 +1,50 @@
 import { expect, it } from 'vitest'
-import { doorClearance, intersectionArea, overlapTolerance, polygonDistance } from './clearance'
+import { doorClearance, intersectionArea, overlapTolerance, polygonDistance, wideSliderClearance } from './clearance'
 import { footprint, furnitureItems, vehicleItems, type FurnitureItem } from './furniture'
 import { house } from './house'
 import { createCollision } from './collision'
-import type { Point } from './geometry'
+import { rectangle, type Point } from './geometry'
 
 const items = [...furnitureItems, ...vehicleItems]
 const elevatedOrFlat = (item: FurnitureItem) => item.kind === 'rug' || (item.elevation ?? 0) >= 1.9
 
-it('keeps furniture and vehicles out of every door clearance zone', () => {
+it('keeps the required door clearance around furniture and vehicles', () => {
+  const obstacles = items.filter(item => !elevatedOrFlat(item)).map(item => ({ id: item.id, polygon: footprint(item) }))
   const violations: string[] = []
   for (const opening of house.openings) {
+    const slider = wideSliderClearance(opening, obstacles.map(item => item.polygon))
+    if (slider) {
+      for (const [side, { longestClear, blockedFraction }] of slider.entries()) {
+        if (longestClear < 1.2 - 1e-8 || blockedFraction > 0.5 + 1e-8) {
+          violations.push(`${opening.id} side ${side + 1}: ${longestClear.toFixed(3)} m clear, ${(blockedFraction * 100).toFixed(1)}% blocked`)
+        }
+      }
+      continue
+    }
     const zone = doorClearance(opening)
     if (!zone) continue
-    for (const item of items) {
-      if (elevatedOrFlat(item)) continue
-      const area = intersectionArea(footprint(item), zone)
+    for (const item of obstacles) {
+      const area = intersectionArea(item.polygon, zone)
       if (area > overlapTolerance) violations.push(`${item.id} / ${opening.id}: ${area.toFixed(5)} m²`)
     }
   }
   expect(violations, violations.join('\n')).toEqual([])
+})
+
+it('merges overlapping obstructions and measures the longest clear section on each side', () => {
+  const opening = house.openings.find(opening => opening.id === 'P10')!
+  const [west, north, east] = opening.rect
+  const obstructions = [
+    rectangle([east, north + 1, east + 0.4, north + 3]),
+    rectangle([east + 0.4, north + 2, east + 1, north + 4]),
+    rectangle([west - 1, north + 2, west - 0.8, north + 4]),
+  ]
+  const [inside, outside] = wideSliderClearance(opening, obstructions)!
+  expect(inside).toEqual({ longestClear: opening.rect[3] - north, blockedFraction: 0 })
+  expect(outside.blockedFraction).toBeCloseTo(3 / (opening.rect[3] - north))
+  expect(outside.longestClear).toBeCloseTo(opening.rect[3] - north - 4)
+  expect(wideSliderClearance({ ...opening, operation: 'swing' }, obstructions)).toBeUndefined()
+  expect(wideSliderClearance({ ...opening, rect: [west, north, east, north + 3] }, obstructions)).toBeUndefined()
 })
 
 const intendedOverlaps: [FurnitureItem['kind'], FurnitureItem['kind'], string][] = [
@@ -83,7 +108,8 @@ it('keeps a 0.6 m pull-out zone at every desk', () => {
 })
 
 it.each([
-  ['P01 to living', [[4.05, 12.30], [5.01, 12.30], [5.01, 9.60]]],
+  // Cross between the room divider and sofa, then turn north before the bar stools.
+  ['P01 to dining', [[4.05, 12.30], [5.01, 12.30], [5.01, 9.37], [8.09, 9.37], [8.09, 9.00], [8.69, 9.00]]],
   ['P02 to dining', [[7.38, 5.15], [7.38, 6.74], [8.69, 6.74]]],
 ] satisfies [string, Point[]][])('keeps a 0.6 m route from %s', (_route, points) => {
   const walk = createCollision(house.lot, [

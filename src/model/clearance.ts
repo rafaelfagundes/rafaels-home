@@ -1,9 +1,9 @@
 import { closestPoint, polygonArea, rectangle, segments, type Point, type Ring } from './geometry'
-import type { house } from './house'
+import type { Opening } from './house'
 
 export const overlapTolerance = 1e-4
 
-export function doorClearance(opening: (typeof house.openings)[number]): Ring | undefined {
+export function doorClearance(opening: Opening): Ring | undefined {
   if (opening.kind === 'window' && (opening.sill > 0.05 || opening.height < 2)) return
   const [west, north, east, south] = opening.rect
   return rectangle(opening.axis === 'x'
@@ -12,7 +12,7 @@ export function doorClearance(opening: (typeof house.openings)[number]): Ring | 
 }
 
 // The clipping box is a counterclockwise convex polygon in plan coordinates.
-export function intersectionArea(subject: Ring, box: Ring) {
+function clipToBox(subject: Ring, box: Ring): Ring {
   let polygon = subject
   for (const [[ax, ay], [bx, by]] of segments(box)) {
     const side = ([x, y]: Point) => (bx - ax) * (y - ay) - (by - ay) * (x - ax)
@@ -27,7 +27,46 @@ export function intersectionArea(subject: Ring, box: Ring) {
       return points
     })
   }
-  return polygonArea({ polygon })
+  return polygon
+}
+
+export function intersectionArea(subject: Ring, box: Ring) {
+  return polygonArea({ polygon: clipToBox(subject, box) })
+}
+
+// Glass sliding doors wider than 3 m may be partly furnished. Each side
+// independently needs a continuous 1.2 m section clear for the full 0.8 m depth,
+// and the union of blocked intervals may occupy at most half the opening.
+export function wideSliderClearance(opening: Opening, footprints: Ring[]) {
+  const [west, north, east, south] = opening.rect
+  const alongX = opening.axis === 'x'
+  const start = alongX ? west : north
+  const end = alongX ? east : south
+  const length = end - start
+  if (opening.kind !== 'door' || opening.operation !== 'sliding' ||
+    !/\bglass\b/i.test(opening.description ?? '') || length <= 3 + 1e-8) return
+
+  const sides = alongX
+    ? [rectangle([west, north - 0.8, east, north]), rectangle([west, south, east, south + 0.8])]
+    : [rectangle([west - 0.8, north, west, south]), rectangle([east, north, east + 0.8, south])]
+  return sides.map(box => {
+    const intervals = footprints.flatMap(footprint => {
+      const polygon = clipToBox(footprint, box)
+      if (polygonArea({ polygon }) <= overlapTolerance) return []
+      const positions = polygon.map(point => point[alongX ? 0 : 1])
+      return [{ start: Math.min(...positions), end: Math.max(...positions) }]
+    }).sort((a, b) => a.start - b.start)
+
+    let cursor = start
+    let longestClear = 0
+    let blocked = 0
+    for (const interval of intervals) {
+      longestClear = Math.max(longestClear, interval.start - cursor)
+      blocked += Math.max(0, interval.end - Math.max(cursor, interval.start))
+      cursor = Math.max(cursor, interval.end)
+    }
+    return { longestClear: Math.max(longestClear, end - cursor), blockedFraction: blocked / length }
+  })
 }
 
 // For disjoint convex polygons the shortest gap joins a vertex to an edge.

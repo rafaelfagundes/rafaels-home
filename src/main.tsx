@@ -7,17 +7,13 @@ import { useApp, type Panel } from './model/store'
 import { formatArea } from './model/units'
 import { planters } from './model/landscape'
 import type { Footprint } from './model/geometry'
+import { palette, themes } from './model/palette'
 import './styles.css'
-
-const landscapeFills: Record<string, string> = {
-  pool_deck: '#d7cfc1', fire_lounge: '#aba79f', wood_deck: '#ac987e', side_path: '#ac987e',
-}
 
 const showStats = new URLSearchParams(window.location.search).has('stats')
 const Scene = lazy(() => import('./view/Scene'))
 
 const icons = {
-  house: 'M3 10.5 12 3l9 7.5M5.5 9v11h13V9M10 20v-6h4v6',
   walk: 'M12 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm-3 15 2-6-2-3 2-4 3 4 4 1m-7 2 4 2 1 4M6 13l2-4 3-1',
   dollhouse: 'm12 3 9 5v8l-9 5-9-5V8l9-5Zm0 18v-8M3 8l9 5 9-5',
   rooms: 'M4 4h16v16H4zM4 11h9m3 0h4m-8 0v9',
@@ -42,10 +38,11 @@ function pathFor({ polygon, holes = [] }: Footprint) {
   return [polygon, ...holes].map(ring => `M${ring.map(point => point.join(' ')).join('L')}Z`).join('')
 }
 
-function Plan({ interactive = false }: { interactive?: boolean }) {
+function Plan({ interactive = false, labels = false }: { interactive?: boolean; labels?: boolean }) {
   const pose = useApp(s => s.pose)
   const jump = useApp(s => s.jump)
-  const t = dictionary[useApp(s => s.settings.language)]
+  const language = useApp(s => s.settings.language)
+  const t = dictionary[language]
   const [x, y] = pose.position
   function navigate(event: React.MouseEvent<SVGSVGElement>) {
     const matrix = event.currentTarget.getScreenCTM()
@@ -57,26 +54,29 @@ function Plan({ interactive = false }: { interactive?: boolean }) {
   return <svg viewBox={`-0.2 -0.2 ${house.lot.width + 0.4} ${house.lot.depth + 0.4}`}
     className={interactive ? 'plan-svg interactive' : 'plan-svg'} role="img" aria-label={t.plan}
     onClick={interactive ? navigate : undefined}>
-    <path d={pathFor(house.lot)} fill="#e2e7dd" />
+    <path d={pathFor(house.lot)} fill="var(--plan-land)" stroke="var(--plan-wall)" strokeWidth=".06" />
     {zones.map(zone => <path key={zone.id} d={pathFor(zone)} fillRule="evenodd"
-      fill={landscapeFills[zone.key] ?? (zone.kind === 'garden' ? '#d9e4d5' : zone.kind === 'pool' ? '#a8cbd7' : zone.indoor ? '#f8f6ed' : '#e1e4df')}
-      stroke="#8f9f962e" strokeWidth=".07" />)}
-    {outdoorFeatures.loungeApron.map((slab, index) => <path key={index} d={pathFor(slab)} fill={landscapeFills.pool_deck} />)}
+      fill={zone.kind === 'pool' ? 'var(--plan-water)' : zone.kind === 'garden' ? 'var(--plan-land)' : 'var(--plan-room)'}
+      stroke="var(--plan-wall)" strokeWidth=".045" />)}
+    {outdoorFeatures.loungeApron.map((slab, index) => <path key={index} d={pathFor(slab)} fill="var(--plan-room)" />)}
     {outdoorFeatures.steps.map((step, index) => <path key={index} d={pathFor(step)}
-      fill="#c7c2b8" stroke="#96918a" strokeWidth=".06" />)}
-    {outdoorFeatures.bench.map((bench, index) => <path key={index} d={pathFor(bench)} fill="#ded9cd" />)}
-    <path d={pathFor(outdoorFeatures.firePit)} fill="#3b3935" />
-    {planters.map(planter => <path key={planter.point.join(',')} d={pathFor(planter)} fill="#41483e" />)}
+      fill="var(--plan-land)" stroke="var(--plan-wall)" strokeWidth=".06" />)}
+    {outdoorFeatures.bench.map((bench, index) => <path key={index} d={pathFor(bench)} fill="var(--plan-wall)" />)}
+    <path d={pathFor(outdoorFeatures.firePit)} fill="var(--plan-wall)" />
+    {planters.map(planter => <path key={planter.point.join(',')} d={pathFor(planter)} fill="var(--plan-wall)" />)}
     {[...house.walls, ...house.perimeterWalls].map(wall => <path key={wall.id} d={pathFor(wall)}
-      fillRule="evenodd" fill="#4b5b55" />)}
+      fillRule="evenodd" fill="var(--plan-wall)" />)}
     {house.openings.map((opening, i) => {
       const [x0, y0, x1, y1] = opening.rect
       return <rect key={i} x={x0} y={y0} width={x1 - x0} height={y1 - y0}
-        fill={opening.kind === 'window' ? '#81aaba' : '#b8a380'} />
+        fill={opening.kind === 'window' ? 'var(--plan-opening)' : 'var(--plan-room)'}
+        stroke="var(--plan-wall)" strokeWidth=".035" />
     })}
+    {labels && house.rooms.map(zone => <text key={zone.id} className="plan-label"
+      x={zone.label[0]} y={zone.label[1]} textAnchor="middle" dominantBaseline="central">{roomName(zone, language)}</text>)}
     <g transform={`translate(${x} ${y}) rotate(${pose.heading * 180 / Math.PI})`}>
-      <path d="M1.43 0-.45-.72-.16 0-.45.72Z" fill="#285b50" stroke="white" strokeWidth=".15" />
-      <circle r=".85" fill="none" stroke="#356a5860" strokeWidth=".16" />
+      <path d="M1.43 0-.45-.72-.16 0-.45.72Z" fill="none" stroke="var(--cream)" strokeWidth=".33" strokeLinejoin="round" />
+      <path d="M1.43 0-.45-.72-.16 0-.45.72Z" fill="var(--orange)" stroke="var(--near-black)" strokeWidth=".16" strokeLinejoin="round" />
     </g>
   </svg>
 }
@@ -199,12 +199,13 @@ function App() {
   const wasHidden = useRef(controlsHidden)
   const t = dictionary[language]
   const night = useApp(s => s.settings.lighting === 'night')
-  const style = useApp(s => s.settings.style)
+  const lighting = night ? 'night' : 'day'
   const changeSettings = useApp(s => s.changeSettings)
   const lightingAction = night ? t.switchToDay : t.switchToNight
   const points = useApp(s => s.points)
   const map = useRef<HTMLDivElement>(null)
   const stats = useRef<HTMLDivElement>(null)
+  const labelsPortal = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
     if (controlsHidden === wasHidden.current) return
@@ -217,6 +218,10 @@ function App() {
     document.documentElement.lang = language
     document.title = t.appName
   }, [language, t.appName])
+
+  useEffect(() => {
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', palette[themes[lighting].surface])
+  }, [lighting])
 
   useEffect(() => {
     const preventZoom = (event: Event) => event.preventDefault()
@@ -240,15 +245,18 @@ function App() {
     element.querySelector<HTMLButtonElement>(hidden ? '.map-show' : '.map-hide')?.focus()
   }
 
-  return <main className="app">
-    <div className="viewport" data-style={style} data-lighting={night ? 'night' : 'day'}>
-      <Suspense fallback={<p className="loading">{t.loading}</p>}><Scene stats={showStats ? stats : undefined} /></Suspense>
+  return <main className="app" data-lighting={lighting}>
+    <div className="viewport">
+      <div className="annotation-layer" ref={labelsPortal} />
+      <Suspense fallback={<p className="loading">{t.loading}</p>}>
+        <Scene labelsPortal={labelsPortal} stats={showStats ? stats : undefined} />
+      </Suspense>
     </div>
     {controlsHidden && <button ref={restoreButton} className="icon-button controls-restore"
       aria-label={t.showControls} title={t.showControls} onClick={toggleControls}><Icon name="eyeOff" /></button>}
     <div hidden={controlsHidden}>
       <header className="topbar surface">
-        <div className="brand"><span className="brand-icon"><Icon name="house" /></span><h1>{t.appName}</h1></div>
+        <div className="brand"><img className="brand-icon" src={`${import.meta.env.BASE_URL}house.svg`} alt="" /><h1>{t.appName}</h1></div>
         <button className="icon-button" aria-label={lightingAction} title={lightingAction}
           onClick={() => changeSettings({ lighting: night ? 'day' : 'night' })}><Icon name={night ? 'moon' : 'sun'} /></button>
         <button className="icon-button" aria-label={t.help} title={t.help}
@@ -290,7 +298,7 @@ function App() {
     {panel && !controlsHidden && <Sheet key={panel} panel={panel} title={panel === 'help' ? t.helpTitle : t[panel]}>
       {panel === 'rooms' && <Rooms />}
       {panel === 'settings' && <Settings />}
-      {panel === 'plan' && <Plan interactive />}
+      {panel === 'plan' && <Plan interactive labels />}
       {panel === 'help' && <>
         <ul className="help-list">
           <li><Icon name="walk" /><p>{t.helpWalk}</p></li>

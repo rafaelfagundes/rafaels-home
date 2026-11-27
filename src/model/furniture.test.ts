@@ -117,6 +117,15 @@ describe('walking collision', () => {
     expect(walk.move([8.55, 9], [3.25, 0])[0]).toBeCloseTo(11.8)
   })
 
+  it('keeps the open end of P10 walkable with the veranda sofa in place', () => {
+    const walk = walkCollisionFor({ ...defaults, style: 'finished', furniture: true })
+    const start: Point = [11.55, 11.45]
+    expect(walk.isFree(start)).toBe(true)
+    const end = walk.move(start, [2.2, 0])
+    expect(end[0]).toBeCloseTo(13.75)
+    expect(end[1]).toBeCloseTo(11.45)
+  })
+
   it.each([
     ['furniture', furnitureItems[0]],
     ['vehicles', vehicleItems[0]],
