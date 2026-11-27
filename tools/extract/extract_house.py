@@ -423,7 +423,7 @@ for t, cc in W:
     if t in ('372', '16', '400', '554'): dims.append(dict(text=t, at=[r3(cc[0]), r3(cc[1])]))
 
 house = dict(
-    meta=dict(name="Rafael's Home", source='blueprint.pdf (AutoCAD 2022, A0, page rotated 270°)', scale='1:50',
+    meta=dict(name="Rafael's House", source='blueprint.pdf (AutoCAD 2022, A0, page rotated 270°)', scale='1:50',
               metersPerPt=M_PER_PT, units='m', storeys=1,
               coordinateSystem='x along the 31.50 m side (street at x=0), y along the 19.00 m side; three.js (x, elevation, y)',
               levels=dict(street=0.0, garage=0.28, entry=0.45, interior=INTERIOR_FLOOR, yard=0.28),
