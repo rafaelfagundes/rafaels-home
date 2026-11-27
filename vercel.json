@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
-    { "source": "/:path*", "has": [{ "type": "host", "value": "rafaels-home.vercel.app" }], "destination": "https://rafaels-house.vercel.app/:path*", "permanent": true }
+    { "source": "/(.*)", "has": [{ "type": "host", "value": "rafaels-home.vercel.app" }], "destination": "https://rafaels-house.vercel.app/$1", "permanent": true }
   ]
 }
