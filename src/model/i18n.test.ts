@@ -18,12 +18,20 @@ test('redirects the old Vercel host to the Open Graph URL host', () => {
   const config = JSON.parse(readFileSync(resolve(process.cwd(), 'vercel.json'), 'utf8'))
   expect(config.redirects).toEqual([
     {
-      source: '/:path*',
+      source: '/(.*)',
       has: [{ type: 'host', value: 'rafaels-home.vercel.app' }],
-      destination: 'https://rafaels-house.vercel.app/:path*',
+      destination: 'https://rafaels-house.vercel.app/$1',
       permanent: true,
     },
   ])
+
+  // Vercel preserves query strings automatically.
+  const [{ source, destination }] = config.redirects
+  const pattern = new RegExp(`^${source}$`)
+  expect('/').toMatch(pattern)
+  expect('/foo/bar').toMatch(pattern)
+  expect('/'.replace(pattern, destination)).toBe('https://rafaels-house.vercel.app/')
+  expect('/foo/bar'.replace(pattern, destination)).toBe('https://rafaels-house.vercel.app/foo/bar')
 
   const html = readFileSync(resolve(process.cwd(), 'index.html'), 'utf8')
   expect(html).toContain('<meta property="og:url" content="https://rafaels-house.vercel.app/">')
