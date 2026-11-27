@@ -75,7 +75,7 @@ function Plan({ interactive = false, labels = false }: { interactive?: boolean; 
     {labels && house.rooms.map(zone => <text key={zone.id} className="plan-label"
       x={zone.label[0]} y={zone.label[1]} textAnchor="middle" dominantBaseline="central">{roomName(zone, language)}</text>)}
     <g transform={`translate(${x} ${y}) rotate(${pose.heading * 180 / Math.PI})`}>
-      <path d="M1.43 0-.45-.72-.16 0-.45.72Z" fill="none" stroke="var(--cream)" strokeWidth=".33" strokeLinejoin="round" />
+      <path d="M1.43 0-.45-.72-.16 0-.45.72Z" fill="none" stroke="var(--white)" strokeWidth=".33" strokeLinejoin="round" />
       <path d="M1.43 0-.45-.72-.16 0-.45.72Z" fill="var(--orange)" stroke="var(--near-black)" strokeWidth=".16" strokeLinejoin="round" />
     </g>
   </svg>

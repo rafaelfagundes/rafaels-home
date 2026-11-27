@@ -120,7 +120,7 @@ The reference photos set the look; anything they and the blueprint don't settle 
 - Night (dusk): deep-blue gradient sky with a faint warm horizon, dim moon without shadows, warm emissive downlight discs (~1 per 3 m²) on ceilings and soffits, 2 warm interior point lights, 1 cyan pool light, 1 fire light, emissive step lights. At most 6 real lights at night.
 - Textures are tiny procedural canvas textures (128–256 px, tiled, generated at load), so there are no image files to download or compress; they stay deliberately subtle.
 - Adaptive DPR (1 → 2, starting at 1.5 on touch devices). Add `?stats` to the URL to see FPS, draw calls, triangles and DPR.
-- The white model is still available (Settings → Style → White model). By day, the white Dollhouse uses a flat cream backdrop and white Walk keeps its original horizon.
+- The white model is still available (Settings → Style → White model). By day, the white Dollhouse uses a flat white backdrop and white Walk uses a flat horizon colour.
 
 ## v4 changes
 
@@ -132,19 +132,19 @@ The Lighting setting applies the same day or night theme to the viewer chrome, s
 
 | Token | Day | Night | Use |
 | --- | --- | --- | --- |
-| `surface` | `#EADCC8` | `#0A0F14` | Chrome, plan frame, dialogs, joystick, loading and room labels |
-| `foreground` | `#0A0F14` | `#EADCC8` | Primary text and icons |
+| `surface` | `#FFFFFF` | `#0A0F14` | Chrome, plan frame, dialogs, joystick, loading and room labels |
+| `foreground` | `#0A0F14` | `#FFFFFF` | Primary text and icons |
 | `secondary` | `#0F3D3E` | `#7FB3B8` | Secondary text, icons and control outlines |
 | `hover` | `#7FB3B8` | `#0F3D3E` | Inactive control hover |
-| `active` / `on-active` | `#0F3D3E` / `#EADCC8` | `#7FB3B8` / `#0A0F14` | Selected controls, primary buttons, distance labels and stats |
+| `active` / `on-active` | `#0F3D3E` / `#FFFFFF` | `#7FB3B8` / `#0A0F14` | Selected controls, primary buttons, distance labels and stats |
 | `plan-land` / `plan-water` | `#7FB3B8` / `#7FB3B8` | `#0F3D3E` / `#2E6F73` | Lot, garden and water fills |
-| `plan-room` / `plan-wall` | `#EADCC8` / `#0A0F14` | `#0A0F14` / `#EADCC8` | Room fills, wall lines and plan features |
+| `plan-room` / `plan-wall` | `#FFFFFF` / `#0A0F14` | `#0A0F14` / `#FFFFFF` | Room fills, wall lines and plan features |
 | `plan-opening` | `#2E6F73` | `#0F3D3E` | Window fills |
 | `orange` | `#C6601F` | `#C6601F` | Focus, plan marker, measurement graphics and house door accent |
 
-Vitest checks WCAG contrast for both themes. Cream on burnt orange is 3.06:1 and white is 4.12:1, so the accent is reserved for graphics. The startup manifest uses cream, and the browser theme color follows Lighting.
+Vitest checks WCAG contrast for both themes. Burnt orange on white is 4.12:1. The accent is reserved for graphics and focus indicators. The startup manifest uses white, and the browser theme color follows Lighting.
 
-Run `python3 tools/icons.py` with FFmpeg built with librsvg and Python Pillow to regenerate both SVGs, the 16/32/48 px ICO, the 180 px Apple touch icon, and the 192/512 px app icons. The Apple touch and maskable icons use opaque deep-teal backgrounds. The maskable icon keeps its cream house and orange door inside the central 80% circle.
+Run `python3 tools/icons.py` with FFmpeg built with librsvg and Python Pillow to regenerate both SVGs, the 16/32/48 px ICO, the 180 px Apple touch icon, and the 192/512 px app icons. The Apple touch and maskable icons use opaque deep-teal backgrounds. The maskable icon keeps its white house and orange door inside the central 80% circle.
 
 ## Furniture, appliances and vehicles
 

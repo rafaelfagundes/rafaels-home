@@ -14,9 +14,9 @@ it('serves all icons and the web manifest referenced by index.html and the manif
     background_color: string
     icons: { src: string; purpose: string }[]
   }
-  expect(html).toContain(`name="theme-color" content="${palette.cream}"`)
-  expect(manifest.theme_color).toBe(palette.cream)
-  expect(manifest.background_color).toBe(palette.cream)
+  expect(html).toContain(`name="theme-color" content="${palette.white}"`)
+  expect(manifest.theme_color).toBe(palette.white)
+  expect(manifest.background_color).toBe(palette.white)
   expect(manifest.icons.map(({ src, purpose }) => [src, purpose])).toEqual([
     ['favicon.svg', 'any'], ['icon-192.png', 'any'], ['icon-512.png', 'any'], ['icon-512-maskable.png', 'maskable'],
   ])
@@ -29,7 +29,7 @@ it('ships matching brand glyphs and the required icon sizes', () => {
   const svg = readFileSync(new URL('favicon.svg', publicDir), 'utf8')
   expect(readFileSync(new URL('house.svg', publicDir), 'utf8')).toBe(svg)
   expect([...svg.matchAll(/#[0-9a-f]{6}/gi)].map(([color]) => color)).toEqual([
-    palette['deep-teal'], palette.cream, palette.cream, palette.orange,
+    palette['deep-teal'], palette.white, palette.white, palette.orange,
   ])
 
   const ico = readFileSync(new URL('favicon.ico', publicDir))
