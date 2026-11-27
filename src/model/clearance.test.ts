@@ -74,6 +74,13 @@ it('has no overlapping furniture within a room', () => {
   expect(violations, violations.join('\n')).toEqual([])
 })
 
+it.each(['sofa', 'loungechair'])('keeps 0.45 m between the living-room %s and coffee table', kind => {
+  const living = furnitureItems.filter(item => item.room === 'living')
+  const seat = living.find(item => item.kind === kind)!
+  const table = living.find(item => item.kind === 'coffeeTable')!
+  expect(polygonDistance(footprint(seat), footprint(table))).toBeGreaterThanOrEqual(0.45 - 1e-8)
+})
+
 it('keeps a 0.6 m pull-out zone at every desk', () => {
   const violations: string[] = []
   for (const desk of items.filter(item => item.kind === 'desk')) {
